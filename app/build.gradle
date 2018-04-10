@@ -28,14 +28,17 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
+    //Firebase Core Authentication
+    implementation 'com.google.firebase:firebase-auth:11.0.4'
+
     // FirebaseUI login
-    compile 'com.firebaseui:firebase-ui-auth:3.2.2'
+    implementation 'com.firebaseui:firebase-ui:3.3.0'
 
     // Facebook login
-    compile('com.facebook.android:facebook-android-sdk:4.27.0')
+    implementation('com.facebook.android:facebook-android-sdk:4.27.0')
 
     // Twitter login
-    compile("com.twitter.sdk.android:twitter-core:3.0.0@aar") { transitive = true }
+    implementation("com.twitter.sdk.android:twitter-core:3.0.0@aar") { transitive = true }
 }
 
 

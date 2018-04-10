@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,9 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.AuthUI.IdpConfig;
+import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +30,8 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int RC_SIGN_IN = 123;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,9 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        intstantiateUser();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -60,15 +68,31 @@ public class HomeActivity extends AppCompatActivity
             new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
             new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
             new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/);
+        Log.d("User is:", String.valueOf(mFirebaseUser));
+        if(!isUserSignedIn()) {
+            // Create and launch sign-in intent
+            startActivityForResult(
+                    // Get an instance of AuthUI based on the default app
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .setAllowNewEmailAccounts(true)
+                            .setIsSmartLockEnabled(true)
+                            .build(),
+                    RC_SIGN_IN);
+        }
+    }
+    private void intstantiateUser(){
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+    }
 
-        // Create and launch sign-in intent
-        startActivityForResult(
-            // Get an instance of AuthUI based on the default app
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build(),
-            RC_SIGN_IN);
+    private boolean isUserSignedIn(){
+        if (mFirebaseUser == null){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     /**
@@ -79,18 +103,29 @@ public class HomeActivity extends AppCompatActivity
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
-
+            // Successfully signed in
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                // ...
-            } else {
-                // Sign in failed, check response for error code
-                // ...
+                Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
+                intstantiateUser();
+                return;
+            }else{
+                //User pressed back button
+                if (response == null) {
+                    Toast.makeText(this, "User pressed back button", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //No internet connection.
+                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    Toast.makeText(this, "No internet connection.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //Unknown error
+                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show();
+                    return;
+                }
             }
         }
     }
