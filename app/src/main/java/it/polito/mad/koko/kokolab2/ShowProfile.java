@@ -4,12 +4,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class ShowProfile extends AppCompatActivity {
@@ -23,12 +30,14 @@ public class ShowProfile extends AppCompatActivity {
     private TextView tv_location;
     private TextView tv_bio;
     private ImageView user_photo;
+    private Intent i;
 
     /**
-     * User profile data is stored in a shared XML file.
+     * User profile data is stored in a firebase database.
      */
-    private String MY_PREFS_NAME = "MySharedPreferences";
-    private SharedPreferences sharedPreferences;
+    private DatabaseReference mDatabase;
+    private String mFirebaseUser;
+
 
     /**
      * Instantiating the activity for the first time.
@@ -40,6 +49,14 @@ public class ShowProfile extends AppCompatActivity {
 
         // Loading the XML layout file
         setContentView(R.layout.activity_show_profile);
+
+
+        //Loading UserID from intent
+        i = getIntent();
+        mFirebaseUser= i.getExtras().getString("UserID");
+
+
+
 
         // Restoring UI fields containing user info
         tv_name=findViewById(R.id.user_name);
@@ -75,18 +92,18 @@ public class ShowProfile extends AppCompatActivity {
             case R.id.edit:
                 //Intent i = new Intent(getApplicationContext(), EditProfile.class);
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                //SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // If there previously was a profile pic
-                if(user_photo_uri != null)
+                if(user_photo_uri != null){}
                     // Restore it
-                    editor.putString("user_photo_temp", user_photo_uri);
-                else
+                    //editor.putString("user_photo_temp", user_photo_uri);
+                else{}
                     // Default profile pic
-                    editor.putString("user_photo_temp", String.valueOf(R.mipmap.ic_launcher_round));
+                    //editor.putString("user_photo_temp", String.valueOf(R.mipmap.ic_launcher_round));
 
                 // Writing in the sharedPreferences data structure containing user info
-                editor.apply();
+                //editor.apply();
 
                 // Launching the editing profile activity
                 //startActivity(i);
@@ -97,21 +114,36 @@ public class ShowProfile extends AppCompatActivity {
     }
 
     /**
-     * Filling all the UI fields retrieving all the needed information from the
-     * sharedPreferences XML file.
+     * Filling all the UI fields retrieving all the needed information from
+     * firebase.
      */
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Updating the sharedPreferences data structure containing user info
-        sharedPreferences = getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
 
+        //Loading firebase database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        User u=new User(mFirebaseUser,mDatabase);
+
+        // Updating the sharedPreferences data structure containing user info
+        //sharedPreferences = getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
         // Filling UI elements
-        tv_name.setText(sharedPreferences.getString("user_name",null));
-        tv_email.setText(sharedPreferences.getString("user_email",null));
-        tv_location.setText(sharedPreferences.getString("user_location",null));
-        tv_bio.setText(sharedPreferences.getString("user_bio",null));
+
+        DatabaseReference nameReference = mDatabase.child("users").child(mFirebaseUser);
+        nameReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tv_name.setText(dataSnapshot.child("name").getValue(String.class));
+                //Log.d("TAG",dataSnapshot.getValue(String.class));
+            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                };
+
+            });
+        /*
 
         // If there was not a profile pic previously
         if(sharedPreferences.getString("user_photo",null) == null)
@@ -124,6 +156,8 @@ public class ShowProfile extends AppCompatActivity {
             // Displaying it again
             Picasso.get().load(sharedPreferences.getString("user_photo", null)).fit().centerCrop().into(user_photo);
         }
-    }
+        */
 
+    }
 }
+

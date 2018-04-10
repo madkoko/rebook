@@ -22,6 +22,8 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +34,7 @@ public class HomeActivity extends AppCompatActivity
     private static final int RC_SIGN_IN = 123;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
+    private DatabaseReference mDatabase;
     private // Choose authentication providers
             List<IdpConfig> providers = Arrays.asList(
             new IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()/*,
@@ -112,6 +115,10 @@ public class HomeActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
                 intstantiateUser();
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                User u=new User(mFirebaseUser.getUid(),mDatabase);
+                u.setName(mFirebaseUser.getDisplayName());
+                u.setEmail(mFirebaseUser.getEmail());
                 return;
             }else{
                 //User pressed back button
@@ -173,7 +180,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.view_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
-            i.putExtra("UserID", mFirebaseUser);
+            i.putExtra("UserID", mFirebaseUser.getUid());
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
@@ -214,4 +221,5 @@ public class HomeActivity extends AppCompatActivity
                 RC_SIGN_IN);
 
     }
+
 }
