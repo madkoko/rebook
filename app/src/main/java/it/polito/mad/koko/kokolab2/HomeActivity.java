@@ -116,9 +116,10 @@ public class HomeActivity extends AppCompatActivity
                 Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
                 intstantiateUser();
                 mDatabase = FirebaseDatabase.getInstance().getReference();
-                User u=new User(mFirebaseUser.getUid(),mDatabase);
-                u.setName(mFirebaseUser.getDisplayName());
-                u.setEmail(mFirebaseUser.getEmail());
+                //creation firebase (real time database) value
+                mDatabase.child("users").child(mFirebaseUser.getUid()).child("name").setValue(mFirebaseUser.getDisplayName());
+                mDatabase.child("users").child(mFirebaseUser.getUid()).child("email").setValue(mFirebaseUser.getEmail());
+
                 return;
             }else{
                 //User pressed back button

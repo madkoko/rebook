@@ -1,7 +1,6 @@
 package it.polito.mad.koko.kokolab2;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -124,17 +122,15 @@ public class ShowProfile extends AppCompatActivity {
 
         //Loading firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        User u=new User(mFirebaseUser,mDatabase);
 
-        // Updating the sharedPreferences data structure containing user info
-        //sharedPreferences = getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
+
         // Filling UI elements
-
         DatabaseReference nameReference = mDatabase.child("users").child(mFirebaseUser);
         nameReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 tv_name.setText(dataSnapshot.child("name").getValue(String.class));
+                tv_email.setText(dataSnapshot.child("email").getValue(String.class));
                 //Log.d("TAG",dataSnapshot.getValue(String.class));
             }
                 @Override
@@ -143,6 +139,7 @@ public class ShowProfile extends AppCompatActivity {
                 };
 
             });
+
         /*
 
         // If there was not a profile pic previously
