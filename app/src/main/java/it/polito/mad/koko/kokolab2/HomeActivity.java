@@ -32,6 +32,13 @@ public class HomeActivity extends AppCompatActivity
     private static final int RC_SIGN_IN = 123;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
+    private // Choose authentication providers
+            List<IdpConfig> providers = Arrays.asList(
+            new IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()/*,
+            new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,31 +68,27 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Choose authentication providers
-        List<IdpConfig> providers = Arrays.asList(
-            new IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()/*,
-            new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/);
+
         Log.d("User is:", String.valueOf(mFirebaseUser));
         if(!isUserSignedIn()) {
-            // Create and launch sign-in intent
-            startActivityForResult(
-                    // Get an instance of AuthUI based on the default app
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .setAllowNewEmailAccounts(true)
-                            .setIsSmartLockEnabled(true)
-                            .build(),
-                    RC_SIGN_IN);
+            SignIn();
         }
     }
+
+    /**
+     *  mFirebaseAuth  instances  Auth
+     *  mFirebaseUser instances User
+     */
     private void intstantiateUser(){
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
     }
+
+    /**
+     *  Method that return if user is authenticated
+     * @return false if user is not authenticated and
+     *          true if user is authenticated
+     */
 
     private boolean isUserSignedIn(){
         if (mFirebaseUser == null){
@@ -168,9 +171,12 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.view_profile) {
+            Intent i = new Intent(getApplicationContext(), ShowProfile.class);
+            i.putExtra("UserID", mFirebaseUser);
+            startActivity(i);
+
+        } else if (id == R.id.edit_profile) {
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -180,10 +186,32 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.sign_out){
+            mFirebaseAuth.signOut();
+            SignIn();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    /**
+     * it creates a SingIn interface with Firebase-AuthUI
+     */
+
+    private void SignIn(){
+        // Create and launch sign-in intent
+        startActivityForResult(
+                // Get an instance of AuthUI based on the default app
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setAllowNewEmailAccounts(true)
+                        .setIsSmartLockEnabled(true)
+                        .build(),
+                RC_SIGN_IN);
+
     }
 }
