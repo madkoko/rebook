@@ -24,11 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ShowProfile"
-            android:label="@string/show_profile">
-        </activity>
+            android:label="@string/show_profile" />
+        <activity android:name=".InsertBook" />
+        <activity android:name=".ShowBooks"></activity>
     </application>
 
 </manifest>

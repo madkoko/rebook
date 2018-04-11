@@ -43,6 +43,8 @@ public class HomeActivity extends AppCompatActivity
             new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
             new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/);
 
+    private int INSERT_BOOK=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +59,10 @@ public class HomeActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
+                startActivityForResult(insertBook,INSERT_BOOK);
             }
         });
 
@@ -187,6 +191,9 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.edit_profile) {
 
         } else if (id == R.id.nav_slideshow) {
+
+            Intent showBooks= new Intent(getApplicationContext(),ShowBooks.class);
+            startActivity(showBooks);
 
         } else if (id == R.id.nav_manage) {
 

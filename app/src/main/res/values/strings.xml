@@ -34,24 +34,33 @@
 
 
     <!-- Strings related to ShowProfile and EditProfile -->
-        <!-- UI -->
-        <string name="show_profile">Profile</string>
-        <string name="user_name">Username</string>
-        <string name="user_password">Password</string>
-        <string name="user_email">E-mail</string>
-        <string name="user_phone">Phone</string>
-        <string name="user_location">Location</string>
-        <string name="user_bio">Bio</string>
-        <string name="user_profile_pic">Profile picture</string>
+    <!-- UI -->
+    <string name="show_profile">Profile</string>
+    <string name="user_name">Username</string>
+    <string name="user_password">Password</string>
+    <string name="user_email">E-mail</string>
+    <string name="user_phone">Phone</string>
+    <string name="user_location">Location</string>
+    <string name="user_bio">Bio</string>
+    <string name="user_profile_pic">Profile picture</string>
 
-        <!-- Buttons -->
-        <string name="edit_button_label">Edit</string>
-        <string name="save_button_label">Save</string>
+    <!-- Strings related to InsertBook -->
+    <!-- UI -->
+    <string name="book_ISBN">ISBN</string>
+    <string name="book_title">Title</string>
+    <string name="book_author">Author</string>
+    <string name="book_publisher">Publisher</string>
+    <string name="book_edition_year">Edition Year</string>
+    <string name="book_conditions">Conditions</string>
 
-        <!--    No image file can be created after taking a picture
+    <!-- Buttons -->
+    <string name="edit_button_label">Edit</string>
+    <string name="add_button_label">Add</string>
+
+    <!--    No image file can be created after taking a picture
             with the camera -->
-        <string name="image_file_creation_error_title">Cannot save this photo</string>
-        <string name="image_file_creation_error_message">
+    <string name="image_file_creation_error_title">Cannot save this photo</string>
+    <string name="image_file_creation_error_message">
             Empty your phone storage and check this app\'s permissions
             in the Setting app.
         </string>
