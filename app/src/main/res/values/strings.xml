@@ -43,6 +43,7 @@
     <string name="user_location">Location</string>
     <string name="user_bio">Bio</string>
     <string name="user_profile_pic">Profile picture</string>
+    <string name="save_button_label">Save</string>
 
     <!-- Strings related to InsertBook -->
     <!-- UI -->
@@ -64,5 +65,6 @@
             Empty your phone storage and check this app\'s permissions
             in the Setting app.
         </string>
+
 
 </resources>

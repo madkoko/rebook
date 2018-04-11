@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,12 @@ public class ShowProfile extends AppCompatActivity {
      */
     private DatabaseReference mDatabase;
     private String mFirebaseUser;
+
+    /**
+     * User profile data is stored in a shared XML file.
+     */
+    private String MY_PREFS_NAME = "MySharedPreferences";
+    private SharedPreferences sharedPreferences;
 
 
     /**
@@ -65,16 +73,20 @@ public class ShowProfile extends AppCompatActivity {
     }
 
     /**
+     *
      * Setting the edit profile button in the title bar.
      * @param menu      menu object to be instantiated.
-     * @return          whether the menu object has been inserted or not.
+     * @return true, whether the menu object has been inserted or not.
+     * @return false, Auth user != user from intent
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-
-        return true;
+        if(mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_main, menu);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -84,27 +96,29 @@ public class ShowProfile extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+
+        switch (item.getItemId()) {
 
             // Profile editing
             case R.id.edit:
-                //Intent i = new Intent(getApplicationContext(), EditProfile.class);
+                //Only if Auth user is equal to user from intent, we can use this menu
+                Intent i = new Intent(getApplicationContext(), EditProfile.class);
 
-                //SharedPreferences.Editor editor = sharedPreferences.edit();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // If there previously was a profile pic
-                if(user_photo_uri != null){}
+                if (user_photo_uri != null)
                     // Restore it
-                    //editor.putString("user_photo_temp", user_photo_uri);
-                else{}
+                    editor.putString("user_photo_temp", user_photo_uri);
+                else
                     // Default profile pic
-                    //editor.putString("user_photo_temp", String.valueOf(R.mipmap.ic_launcher_round));
+                    editor.putString("user_photo_temp", String.valueOf(R.mipmap.ic_launcher_round));
 
                 // Writing in the sharedPreferences data structure containing user info
-                //editor.apply();
+                editor.apply();
 
                 // Launching the editing profile activity
-                //startActivity(i);
+                startActivity(i);
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -119,6 +133,9 @@ public class ShowProfile extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // Updating the sharedPreferences data structure containing user info
+        sharedPreferences = getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
+
 
         //Loading firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -131,6 +148,8 @@ public class ShowProfile extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 tv_name.setText(dataSnapshot.child("name").getValue(String.class));
                 tv_email.setText(dataSnapshot.child("email").getValue(String.class));
+                tv_location.setText(dataSnapshot.child("location").getValue(String.class));
+                tv_bio.setText(dataSnapshot.child("bio").getValue(String.class));
                 //Log.d("TAG",dataSnapshot.getValue(String.class));
             }
                 @Override
@@ -140,7 +159,7 @@ public class ShowProfile extends AppCompatActivity {
 
             });
 
-        /*
+
 
         // If there was not a profile pic previously
         if(sharedPreferences.getString("user_photo",null) == null)
@@ -153,7 +172,7 @@ public class ShowProfile extends AppCompatActivity {
             // Displaying it again
             Picasso.get().load(sharedPreferences.getString("user_photo", null)).fit().centerCrop().into(user_photo);
         }
-        */
+
 
     }
 }

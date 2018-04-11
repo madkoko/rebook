@@ -121,8 +121,9 @@ public class HomeActivity extends AppCompatActivity
                 intstantiateUser();
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 //creation firebase (real time database) value
-                mDatabase.child("users").child(mFirebaseUser.getUid()).child("name").setValue(mFirebaseUser.getDisplayName());
-                mDatabase.child("users").child(mFirebaseUser.getUid()).child("email").setValue(mFirebaseUser.getEmail());
+                User user = new User(mDatabase,mFirebaseUser);
+                user.setName(mFirebaseUser.getDisplayName());
+                user.setEmail(mFirebaseUser.getEmail());
 
                 return;
             }else{
@@ -189,6 +190,8 @@ public class HomeActivity extends AppCompatActivity
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
+            Intent intent = new Intent(getApplicationContext(),EditProfile.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
 
