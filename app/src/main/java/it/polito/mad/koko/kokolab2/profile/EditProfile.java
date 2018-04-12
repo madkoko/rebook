@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.users;
+package it.polito.mad.koko.kokolab2.profile;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -46,13 +46,13 @@ public class EditProfile extends AppCompatActivity{
     private String user_photo_profile;
 
     /**
-     * User profile data is stored in a shared XML file.
+     * Profile profile data is stored in a shared XML file.
      */
     private String MY_PREFS_NAME = "MySharedPreferences";
     private SharedPreferences sharedPreferences;
 
     /**
-     * User profile data.
+     * Profile profile data.
      */
     private EditText et_name;
     private EditText et_password;
@@ -63,13 +63,13 @@ public class EditProfile extends AppCompatActivity{
     private ImageView user_photo;
 
     /**
-     *  Firebase login user, firebase database and user class
+     *  Firebase login profile, firebase database and profile class
      */
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabase;
-    private User user;
+    private Profile profile;
     /**
-     * Filling all the UI text fields and the user profile pic with all the
+     * Filling all the UI text fields and the profile profile pic with all the
      * previous values shown in the ShowProfile activity.
      * It also adds an edit profile pic button and the save button to save
      * the current modifications in the sharedPreferences XML file.
@@ -85,7 +85,7 @@ public class EditProfile extends AppCompatActivity{
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
-        // Restoring UI fields containing user info
+        // Restoring UI fields containing profile info
         et_name=findViewById(R.id.edit_user_name);
         et_password=findViewById(R.id.edit_user_password);
         et_email=findViewById(R.id.edit_user_email);
@@ -107,10 +107,10 @@ public class EditProfile extends AppCompatActivity{
         });
 
 
-        // inizialiate firebase user and database
+        // inizialiate firebase profile and database
         mFirebaseUser= FirebaseAuth.getInstance().getCurrentUser();
         mDatabase= FirebaseDatabase.getInstance().getReference();
-        user = new User(mDatabase,mFirebaseUser);
+        profile = new Profile(mDatabase,mFirebaseUser);
 
         // Save button
         Button save_button = findViewById(R.id.save_button);
@@ -122,11 +122,11 @@ public class EditProfile extends AppCompatActivity{
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // Saving all UI fields values in the sharedPreferences Firebase database.
-                user.setName(et_name.getText().toString());
-                user.setEmail(et_email.getText().toString());
-                user.setPhone(et_phone.getText().toString());
-                user.setLocation(et_location.getText().toString());
-                user.setBio(et_bio.getText().toString());
+                profile.setName(et_name.getText().toString());
+                profile.setEmail(et_email.getText().toString());
+                profile.setPhone(et_phone.getText().toString());
+                profile.setLocation(et_location.getText().toString());
+                profile.setBio(et_bio.getText().toString());
                 // Saving all UI fields values in the sharedPreferences XML Preferences.
                 editor.putString("user_photo",sharedPreferences.getString("user_photo_temp",null));
                 editor.apply();
@@ -138,7 +138,7 @@ public class EditProfile extends AppCompatActivity{
     }
 
     /**
-     * It displays an alert dialog by which the user can choose the camera or the gallery
+     * It displays an alert dialog by which the profile can choose the camera or the gallery
      * to take his/her new profile pic.
      */
     private void startDialog() {
@@ -277,7 +277,7 @@ public class EditProfile extends AppCompatActivity{
         // TODO debugging
         Log.d("debug", "onResume");
 
-        // Updating the sharedPreferences data structure containing user info
+        // Updating the sharedPreferences data structure containing profile info
         sharedPreferences=getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
 
         // Restoring all UI values

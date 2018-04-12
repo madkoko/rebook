@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.users;
+package it.polito.mad.koko.kokolab2.profile;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +23,7 @@ import it.polito.mad.koko.kokolab2.R;
 public class ShowProfile extends AppCompatActivity {
 
     /**
-     * User profile data.
+     * Profile profile data.
      */
     private static String user_photo_uri = null;
     private TextView tv_name;
@@ -34,13 +34,13 @@ public class ShowProfile extends AppCompatActivity {
     private Intent i;
 
     /**
-     * User profile data is stored in a firebase database.
+     * Profile profile data is stored in a firebase database.
      */
     private DatabaseReference mDatabase;
     private String mFirebaseUser;
 
     /**
-     * User profile data is stored in a shared XML file.
+     * Profile profile data is stored in a shared XML file.
      */
     private String MY_PREFS_NAME = "MySharedPreferences";
     private SharedPreferences sharedPreferences;

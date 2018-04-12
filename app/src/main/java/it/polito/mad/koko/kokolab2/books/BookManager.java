@@ -11,7 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import it.polito.mad.koko.kokolab2.R;
 
-public class InsertBook extends AppCompatActivity {
+public class BookManager extends AppCompatActivity {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();

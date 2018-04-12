@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.polito.mad.koko.kokolab2">
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <!-- To auto-complete the email text field in the login form with the profile's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -25,11 +25,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".users.ShowProfile"
+            android:name=".profile.ShowProfile"
             android:label="@string/show_profile" />
-        <activity android:name=".users.EditProfile"/>
+        <activity android:name=".profile.EditProfile"/>
 
-        <activity android:name=".books.InsertBook" />
+        <activity android:name=".books.BookManager" />
         <activity android:name=".books.ShowBooks"></activity>
     </application>
 

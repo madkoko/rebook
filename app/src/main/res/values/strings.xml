@@ -45,7 +45,7 @@
     <string name="user_profile_pic">Profile picture</string>
     <string name="save_button_label">Save</string>
 
-    <!-- Strings related to InsertBook -->
+    <!-- Strings related to BookManager -->
     <!-- UI -->
     <string name="book_ISBN">ISBN</string>
     <string name="book_title">Title</string>

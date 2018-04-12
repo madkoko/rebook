@@ -1,9 +1,9 @@
-package it.polito.mad.koko.kokolab2.users;
+package it.polito.mad.koko.kokolab2.profile;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
-public class User{
+public class Profile {
 
     private String  name,
                     email,
@@ -12,17 +12,17 @@ public class User{
                     bio;
 
     /**
-     * User profile data is stored in a firebase database.
+     * Profile profile data is stored in a firebase database.
      */
     private DatabaseReference mDatabase;
     private FirebaseUser mFirebaseUser;
 
     /**
-     *  class that implement User
+     *  class that implement Profile
      * @param mDatabase firebase database
      * @param mFirebaseUser firebase user information
      */
-    public User(DatabaseReference mDatabase, FirebaseUser mFirebaseUser) {
+    public Profile(DatabaseReference mDatabase, FirebaseUser mFirebaseUser) {
         this.mDatabase = mDatabase;
         this.mFirebaseUser = mFirebaseUser;
     }

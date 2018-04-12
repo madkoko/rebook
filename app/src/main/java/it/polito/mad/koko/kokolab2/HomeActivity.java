@@ -27,11 +27,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Arrays;
 import java.util.List;
 
-import it.polito.mad.koko.kokolab2.books.InsertBook;
+import it.polito.mad.koko.kokolab2.books.BookManager;
 import it.polito.mad.koko.kokolab2.books.ShowBooks;
-import it.polito.mad.koko.kokolab2.users.EditProfile;
-import it.polito.mad.koko.kokolab2.users.ShowProfile;
-import it.polito.mad.koko.kokolab2.users.User;
+import it.polito.mad.koko.kokolab2.profile.EditProfile;
+import it.polito.mad.koko.kokolab2.profile.Profile;
+import it.polito.mad.koko.kokolab2.profile.ShowProfile;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -76,7 +76,7 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-                Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
+                Intent insertBook = new Intent(getApplicationContext(), BookManager.class);
                 startActivityForResult(insertBook,INSERT_BOOK);
             }
         });
@@ -90,7 +90,7 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Log.d("User is:", String.valueOf(mFirebaseUser));
+        Log.d("Profile is:", String.valueOf(mFirebaseUser));
         if(!hasLoggedIn()) {
             signInUI();
         }
@@ -98,7 +98,7 @@ public class HomeActivity extends AppCompatActivity
 
     /**
      *  mFirebaseAuth  instances  Auth
-     *  mFirebaseUser instances User
+     *  mFirebaseUser instances Profile
      */
     private void instantiateUser(){
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -137,15 +137,15 @@ public class HomeActivity extends AppCompatActivity
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
                 //creation firebase (real time database) value
-                User user = new User(mDatabase,mFirebaseUser);
-                user.setName(mFirebaseUser.getDisplayName());
-                user.setEmail(mFirebaseUser.getEmail());
+                Profile profile = new Profile(mDatabase,mFirebaseUser);
+                profile.setName(mFirebaseUser.getDisplayName());
+                profile.setEmail(mFirebaseUser.getEmail());
 
                 return;
             }else{
-                //User pressed back button
+                //Profile pressed back button
                 if (response == null) {
-                    Toast.makeText(this, "User pressed back button", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Profile pressed back button", Toast.LENGTH_LONG).show();
                     return;
                 }
                 //No internet connection.
