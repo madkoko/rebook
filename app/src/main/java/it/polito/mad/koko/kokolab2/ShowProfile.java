@@ -103,7 +103,6 @@ public class ShowProfile extends AppCompatActivity {
             case R.id.edit:
                 //Only if Auth user is equal to user from intent, we can use this menu
                 Intent i = new Intent(getApplicationContext(), EditProfile.class);
-
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // If there previously was a profile pic

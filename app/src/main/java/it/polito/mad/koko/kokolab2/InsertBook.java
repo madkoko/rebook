@@ -35,7 +35,6 @@ public class InsertBook extends AppCompatActivity {
 
     public void createBook(){
 
-
         EditText bookIsbn=findViewById(R.id.edit_book_ISBN);
         EditText bookTitle=findViewById(R.id.edit_book_title);
         EditText bookAuthor=findViewById(R.id.edit_book_author);
@@ -43,24 +42,35 @@ public class InsertBook extends AppCompatActivity {
         EditText bookEditionYear=findViewById(R.id.edit_book_edition_year);
         EditText bookConditions=findViewById(R.id.edit_book_conditions);
 
-        Map<String, String> bookData = new HashMap<String, String>();
+        String isbn=bookIsbn.getText().toString();
+        String title=bookTitle.getText().toString();
+        String author=bookAuthor.getText().toString();
+        String publisher=bookPublisher.getText().toString();
+        String editionYear=bookEditionYear.getText().toString();
+        String conditions=bookConditions.getText().toString();
+
+        /*Map<String, String> bookData = new HashMap<String, String>();
 
         bookData.put("ISBN",bookIsbn.getText().toString());
         bookData.put("Title", bookTitle.getText().toString());
         bookData.put("Author", bookAuthor.getText().toString());
         bookData.put("Publisher", bookPublisher.getText().toString());
         bookData.put("EditionYear",bookEditionYear.getText().toString());
-        bookData.put("Conditions", bookConditions.getText().toString());
+        bookData.put("Conditions", bookConditions.getText().toString());*/
 
-        DatabaseReference booksRef = ref.child("books");
-
-        //DEBUG
+        /*DEBUG
         Log.d("debug", database.toString());
         Log.d("debug", ref.toString());
         Log.d("debug", booksRef.toString());
-        Log.d("debug", bookData.toString());
+        Log.d("debug", bookData.toString());*/
 
-        booksRef.push().setValue(bookData);
+        //booksRef.push().setValue(bookData);
+
+        DatabaseReference booksRef = ref.child("books");
+
+        Book book=new Book(isbn,title,author,publisher,editionYear,conditions);
+
+        booksRef.push().setValue(book);
 
         finish();
 
