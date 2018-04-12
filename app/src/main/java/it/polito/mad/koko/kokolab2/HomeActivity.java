@@ -3,7 +3,6 @@ package it.polito.mad.koko.kokolab2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -28,34 +27,50 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Arrays;
 import java.util.List;
 
+import it.polito.mad.koko.kokolab2.books.InsertBook;
+import it.polito.mad.koko.kokolab2.books.ShowBooks;
+import it.polito.mad.koko.kokolab2.users.EditProfile;
+import it.polito.mad.koko.kokolab2.users.ShowProfile;
+import it.polito.mad.koko.kokolab2.users.User;
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int RC_SIGN_IN = 123;
+
+    /**
+     * Firebase user objects
+     */
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabase;
-    private // Choose authentication providers
-            List<IdpConfig> providers = Arrays.asList(
-            new IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()/*,
-            new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()*/);
 
-    private int INSERT_BOOK=1;
+    /**
+     * Authentication providers
+     */
+    private List<IdpConfig> providers;
+
+    private int INSERT_BOOK = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Setting authentication providers
+        providers = Arrays.asList(
+            new AuthUI.IdpConfig.EmailBuilder().build(),
+            new AuthUI.IdpConfig.GoogleBuilder().build(),
+            new AuthUI.IdpConfig.PhoneBuilder().build()
+        );
+
+        // UI
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        instantiateUser();
 
-        intstantiateUser();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,10 +90,9 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         Log.d("User is:", String.valueOf(mFirebaseUser));
-        if(!isUserSignedIn()) {
-            SignIn();
+        if(!hasLoggedIn()) {
+            signInUI();
         }
     }
 
@@ -86,23 +100,21 @@ public class HomeActivity extends AppCompatActivity
      *  mFirebaseAuth  instances  Auth
      *  mFirebaseUser instances User
      */
-    private void intstantiateUser(){
+    private void instantiateUser(){
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
     }
 
     /**
-     *  Method that return if user is authenticated
-     * @return false if user is not authenticated and
-     *          true if user is authenticated
+     * Returns true if the user has logged in,
+     * false otherwise.
+     * @return  whether the user has logged in or not.
      */
-
-    private boolean isUserSignedIn(){
-        if (mFirebaseUser == null){
+    private boolean hasLoggedIn(){
+        if(mFirebaseUser == null)
             return false;
-        }else{
+        else
             return true;
-        }
     }
 
     /**
@@ -113,13 +125,17 @@ public class HomeActivity extends AppCompatActivity
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_SIGN_IN) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
+
             // Successfully signed in
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-                intstantiateUser();
+                instantiateUser();
                 mDatabase = FirebaseDatabase.getInstance().getReference();
+
                 //creation firebase (real time database) value
                 User user = new User(mDatabase,mFirebaseUser);
                 user.setName(mFirebaseUser.getDisplayName());
@@ -204,33 +220,36 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
-        } else if (id == R.id.sign_out){
-            mFirebaseAuth.signOut();
-            SignIn();
-        }
+        } else if (id == R.id.sign_out)
+            signOut();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-
     /**
-     * it creates a SingIn interface with Firebase-AuthUI
+     * It creates a SingIn interface with Firebase-AuthUI
      */
-
-    private void SignIn(){
+    private void signInUI(){
         // Create and launch sign-in intent
         startActivityForResult(
-                // Get an instance of AuthUI based on the default app
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setAllowNewEmailAccounts(true)
-                        .setIsSmartLockEnabled(true)
-                        .build(),
-                RC_SIGN_IN);
-
+            // Get an instance of AuthUI based on the default app
+            AuthUI  .getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .setAllowNewEmailAccounts(true)
+                    .setIsSmartLockEnabled(true)
+                    .build(),
+            RC_SIGN_IN
+        );
     }
 
+    /**
+     * Performs the user sign out.
+     */
+    private void signOut() {
+        mFirebaseAuth.signOut();
+        signInUI();
+    }
 }

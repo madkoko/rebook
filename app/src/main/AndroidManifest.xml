@@ -25,12 +25,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ShowProfile"
+            android:name=".users.ShowProfile"
             android:label="@string/show_profile" />
-        <activity android:name=".EditProfile"/>
+        <activity android:name=".users.EditProfile"/>
 
-        <activity android:name=".InsertBook" />
-        <activity android:name=".ShowBooks"></activity>
+        <activity android:name=".books.InsertBook" />
+        <activity android:name=".books.ShowBooks"></activity>
     </application>
 
 </manifest>

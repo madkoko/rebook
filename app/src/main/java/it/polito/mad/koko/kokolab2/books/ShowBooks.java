@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab2.books;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,16 +10,13 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import it.polito.mad.koko.kokolab2.R;
 
 public class ShowBooks extends AppCompatActivity {
 

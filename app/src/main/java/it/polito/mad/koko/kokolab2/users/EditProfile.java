@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab2.users;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import it.polito.mad.koko.kokolab2.R;
 
 public class EditProfile extends AppCompatActivity{
 

@@ -1,10 +1,9 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab2.users;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 public class User{
-
 
     private String  name,
                     email,

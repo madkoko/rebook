@@ -1,5 +1,6 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab2.books;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import java.util.Map;
  * Created by Francesco on 10/04/2018.
  */
 
-public class Book {
+public class Book implements Serializable {
 
     private static String ISBN;
     private static String title;

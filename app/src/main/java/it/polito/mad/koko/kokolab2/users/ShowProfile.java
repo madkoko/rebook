@@ -1,10 +1,9 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab2.users;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import it.polito.mad.koko.kokolab2.R;
 
 public class ShowProfile extends AppCompatActivity {
 
