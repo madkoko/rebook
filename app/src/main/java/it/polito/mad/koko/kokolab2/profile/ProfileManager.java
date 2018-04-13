@@ -63,24 +63,24 @@ public class ProfileManager {
         usersRef = database.getReference().child("users");
         /*Profile profile=new Profile(name,email,phone,location,bio);
         usersRef.push().setValue(profile);*/
-        usersRef.child(userId).setValue(name);
-        usersRef.child(userId).setValue(email);
-        usersRef.child(userId).setValue(phone);
-        usersRef.child(userId).setValue(location);
-        usersRef.child(userId).setValue(bio);
+        usersRef.child(userId).child("name").setValue(name);
+        usersRef.child(userId).child("email").setValue(email);
+        usersRef.child(userId).child("phone").setValue(phone);
+        usersRef.child(userId).child("location").setValue(location);
+        usersRef.child(userId).child("bio").setValue(bio);
     }
 
 
     public void editProfile(String name, String email, String phone, String location, String bio, FirebaseDatabase database, String userId) {
         usersRef = database.getReference().child("users");
-        String key = usersRef.push().getKey();
+        //String key = usersRef.push().getKey();
 
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(userId + "/" + key, name);
-        childUpdates.put(userId + "/" + key, email);
-        childUpdates.put(userId + "/" + key, phone);
-        childUpdates.put(userId + "/" + key, location);
-        childUpdates.put(userId + "/" + key, bio);
+        childUpdates.put(userId + "/" + "name", name);
+        childUpdates.put(userId + "/" + "email", email);
+        childUpdates.put(userId + "/" + "phone", phone);
+        childUpdates.put(userId + "/" + "location", location);
+        childUpdates.put(userId + "/" + "bio", bio);
 
         usersRef.updateChildren(childUpdates);
     }
