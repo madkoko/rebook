@@ -20,6 +20,10 @@ public class ProfileManager {
 
     }
 
+    /**
+     * synchronized method for different thread
+     * @return ProfileManager instance
+     */
     public static synchronized ProfileManager getOurInstance() {
         if (ourInstance == null) ourInstance = new ProfileManager();
         return ourInstance;
