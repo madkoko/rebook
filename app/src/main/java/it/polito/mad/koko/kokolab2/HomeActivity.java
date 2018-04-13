@@ -31,6 +31,7 @@ import it.polito.mad.koko.kokolab2.books.BookManager;
 import it.polito.mad.koko.kokolab2.books.ShowBooks;
 import it.polito.mad.koko.kokolab2.profile.EditProfile;
 import it.polito.mad.koko.kokolab2.profile.Profile;
+import it.polito.mad.koko.kokolab2.profile.ProfileManager;
 import it.polito.mad.koko.kokolab2.profile.ShowProfile;
 
 public class HomeActivity extends AppCompatActivity
@@ -43,7 +44,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
-    private DatabaseReference mDatabase;
+    private FirebaseDatabase mDatabase;
 
     /**
      * Authentication providers
@@ -134,13 +135,11 @@ public class HomeActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
                 instantiateUser();
-                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase = FirebaseDatabase.getInstance();
 
                 //creation firebase (real time database) value
-                Profile profile = new Profile(mDatabase,mFirebaseUser);
-                profile.setName(mFirebaseUser.getDisplayName());
-                profile.setEmail(mFirebaseUser.getEmail());
-
+                ProfileManager profileManager = ProfileManager.getOurInstance();
+                profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,mDatabase);
                 return;
             }else{
                 //Profile pressed back button

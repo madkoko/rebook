@@ -1,5 +1,7 @@
 package it.polito.mad.koko.kokolab2.profile;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
@@ -25,6 +27,14 @@ public class Profile {
     public Profile(DatabaseReference mDatabase, FirebaseUser mFirebaseUser) {
         this.mDatabase = mDatabase;
         this.mFirebaseUser = mFirebaseUser;
+    }
+
+    public Profile(String name, String email, String phone, String location, String bio) {
+        this.name=name;
+        this.email=email;
+        this.phone=phone;
+        this.location=location;
+        this.bio=bio;
     }
 
     /**
@@ -73,4 +83,5 @@ public class Profile {
         this.bio = bio;
         mDatabase.child("users").child(mFirebaseUser.getUid()).child("bio").setValue(bio);
     }
+
 }
