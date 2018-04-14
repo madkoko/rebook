@@ -5,15 +5,16 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ProfileManager {
 
     private List<Profile> list = Collections.synchronizedList(new ArrayList());
     private static ProfileManager ourInstance=null;
-    private DatabaseReference booksRef;
-
+    private DatabaseReference usersRef;
 
 
     public ProfileManager(){
@@ -58,9 +59,29 @@ public class ProfileManager {
      * @param database reference
      */
 
-    public void addProfile(String name, String email, String phone, String location, String bio, FirebaseDatabase database){
-        booksRef = database.getReference().child("users");
-        Profile profile=new Profile(name,email,phone,location,bio);
-        booksRef.push().setValue(profile);
+    public void addProfile(String name, String email, String phone, String location, String bio, FirebaseDatabase database, String userId){
+        usersRef = database.getReference().child("users");
+        /*Profile profile=new Profile(name,email,phone,location,bio);
+        usersRef.push().setValue(profile);*/
+        usersRef.child(userId).child("name").setValue(name);
+        usersRef.child(userId).child("email").setValue(email);
+        usersRef.child(userId).child("phone").setValue(phone);
+        usersRef.child(userId).child("location").setValue(location);
+        usersRef.child(userId).child("bio").setValue(bio);
+    }
+
+
+    public void editProfile(String name, String email, String phone, String location, String bio, FirebaseDatabase database, String userId) {
+        usersRef = database.getReference().child("users");
+        //String key = usersRef.push().getKey();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(userId + "/" + "name", name);
+        childUpdates.put(userId + "/" + "email", email);
+        childUpdates.put(userId + "/" + "phone", phone);
+        childUpdates.put(userId + "/" + "location", location);
+        childUpdates.put(userId + "/" + "bio", bio);
+
+        usersRef.updateChildren(childUpdates);
     }
 }

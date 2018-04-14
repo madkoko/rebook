@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab2;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -124,6 +125,7 @@ public class HomeActivity extends AppCompatActivity
      * @param resultCode
      * @param data
      */
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -139,7 +141,7 @@ public class HomeActivity extends AppCompatActivity
 
                 //creation firebase (real time database) value
                 ProfileManager profileManager = ProfileManager.getOurInstance();
-                profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,mDatabase);
+                profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,mDatabase, FirebaseAuth.getInstance().getUid());
                 return;
             }else{
                 //Profile pressed back button
