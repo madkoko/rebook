@@ -1,8 +1,6 @@
 package it.polito.mad.koko.kokolab2.books;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Francesco on 10/04/2018.
@@ -17,8 +15,7 @@ public class Book implements Serializable {
     private static String editionYear;
     private static String conditions;
 
-    public Book() {
-    }
+    public Book(){};
 
     public Book(String ISBN, String title, String author, String publisher, String eitionYear, String bookConditions) {
         this.ISBN = ISBN;

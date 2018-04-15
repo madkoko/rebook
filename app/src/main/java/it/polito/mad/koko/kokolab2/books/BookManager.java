@@ -1,75 +1,87 @@
 package it.polito.mad.koko.kokolab2.books;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-import it.polito.mad.koko.kokolab2.R;
+/**
+ * Created by Francesco on 13/04/2018.
+ */
 
-public class BookManager extends AppCompatActivity {
+public class BookManager {
 
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference ref = database.getReference();
+    private static DatabaseReference ref;
+    private static Map<String,Book> books;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_insert_book);
+    public BookManager(){
 
-        Button addButton=findViewById(R.id.add_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createBook();
-            }
-        });
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        ref = database.getReference().child("books");
+        populateBookList();
     }
 
-    public void createBook(){
+    public void populateBookList(){
 
-        EditText bookIsbn=findViewById(R.id.edit_book_ISBN);
-        EditText bookTitle=findViewById(R.id.edit_book_title);
-        EditText bookAuthor=findViewById(R.id.edit_book_author);
-        EditText bookPublisher=findViewById(R.id.edit_book_publisher);
-        EditText bookEditionYear=findViewById(R.id.edit_book_edition_year);
-        EditText bookConditions=findViewById(R.id.edit_book_conditions);
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("debug", "ondatachange");
+                        //books.clear();
+                        //booksTitle=new String[(int)dataSnapshot.getChildrenCount()];
+                        //int booksNum=(int)dataSnapshot.getChildrenCount();
+                        //Log.d("debug",String.valueOf(dataSnapshot.getChildrenCount())+String.valueOf(bookNum));
 
-        String isbn=bookIsbn.getText().toString();
-        String title=bookTitle.getText().toString();
-        String author=bookAuthor.getText().toString();
-        String publisher=bookPublisher.getText().toString();
-        String editionYear=bookEditionYear.getText().toString();
-        String conditions=bookConditions.getText().toString();
+                        books=new HashMap<>();
 
-        /*Map<String, String> bookData = new HashMap<String, String>();
+                        int i=0;
+                        for(DataSnapshot bookSnapshot: dataSnapshot.getChildren()){
+                            Book book=bookSnapshot.getValue(Book.class);
+                            Log.d("datasnapshot",book.toString());
+                            //books.add(book);
+                            books.put(book.getISBN(),book);
+                            Log.d("debug",i+" "+books.values());
+                            //printBooks();
+                            i++;
+                        }
 
-        bookData.put("ISBN",bookIsbn.getText().toString());
-        bookData.put("Title", bookTitle.getText().toString());
-        bookData.put("Author", bookAuthor.getText().toString());
-        bookData.put("Publisher", bookPublisher.getText().toString());
-        bookData.put("EditionYear",bookEditionYear.getText().toString());
-        bookData.put("Conditions", bookConditions.getText().toString());*/
+                    }
 
-        /*DEBUG
-        Log.d("debug", database.toString());
-        Log.d("debug", ref.toString());
-        Log.d("debug", booksRef.toString());
-        Log.d("debug", bookData.toString());*/
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+    }
 
-        //booksRef.push().setValue(bookData);
+
+    /*public static int getBooksNumber(){
+        return booksNum;
+    }*/
+
+    public static void printBooks(){
+
+        Log.d("debug",books.values().toArray().length+" "+books.values().toArray().toString());
+
+    }
+
+    public static Map<String,Book> getBooks(){
+
+        return books;
+    }
+
+    public static void insertBook(Book book){
 
         DatabaseReference booksRef = ref.child("books");
-
-        Book book=new Book(isbn,title,author,publisher,editionYear,conditions);
-
         booksRef.push().setValue(book);
-
-        finish();
 
     }
 }
