@@ -3,23 +3,21 @@ package it.polito.mad.koko.kokolab2.books;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab2.R;
 
 public class ShowBooks extends AppCompatActivity {
 
-    //private ArrayList<Book> books;
-    //private String[] booksTitle;
     private ListView bookListView;
 
     @Override
@@ -33,21 +31,17 @@ public class ShowBooks extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        //books=BookManager.getBooks();
-        //booksTitle=BookManager.getBooksTitle();
+        final HashMap<String,Book> books=(HashMap<String, Book>) BookManager.getBooks();
+        final List<String> bookTitles = new ArrayList<>();
 
-        BookManager.printBooks();
+        for (Object ob: books.values().toArray()){
+            Map<String,String> book=(HashMap<String, String>)ob;
+            String title;
+            title=book.get("title");
+            bookTitles.add(title);
+        }
 
-        // int bookNum=BookManager.getBooksNumber();
-
-        final Map<String,Book> books=BookManager.getBooks();
-
-        final Book[] bookList=books.values().toArray(new Book[books.size()]);
-
-        /*for(int i=0;i<BookManager.getBooks().length;i++){
-            Log.d("debug",BookManager.getBooks()[i].toString());
-            books[i]=BookManager.getBooks()[i];
-        }*/
+        // set the list view to show all the books
 
         bookListView =findViewById(R.id.books_listview);
         bookListView.setAdapter(new BaseAdapter() {
@@ -58,7 +52,7 @@ public class ShowBooks extends AppCompatActivity {
 
             @Override
             public Object getItem(int i) {
-                return bookList[i];
+                return bookTitles.get(i);
             }
 
             @Override
@@ -74,17 +68,39 @@ public class ShowBooks extends AppCompatActivity {
                 TextView title=(TextView) view.findViewById(R.id.book_title);
                 Button show=(Button)view.findViewById(R.id.show_book_button);
 
-                title.setText(bookList[i].getTitle());
+                title.setText(bookTitles.get(i));
 
                 final int position=i;
+
+                // start the activity "Show Book" passing the current book in the Intent
 
                 show.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         Intent showBook=new Intent(getApplicationContext(),ShowBook.class);
-                        showBook.putExtra("book",bookList[position]);
-                        startActivity(showBook);
+
+                        Book book;
+                        for (Object ob: books.values().toArray()){
+                            Map<String,String> bookVals=(HashMap<String, String>)ob;
+
+                            String isbn,title,author,publisher,editionYear,bookConditions;
+                            title=bookVals.get("title");
+
+                            if(title.equalsIgnoreCase(bookTitles.get(position))) {
+
+                                isbn = bookVals.get("isbn");
+                                author = bookVals.get("author");
+                                publisher = bookVals.get("publisher");
+                                editionYear = bookVals.get("editionYear");
+                                bookConditions = bookVals.get("bookConditions");
+                                book = new Book(isbn, title, author, publisher, editionYear, bookConditions);
+
+                                showBook.putExtra("book",book);
+                                startActivity(showBook);
+                            }
+
+                        }
 
                     }
                 });

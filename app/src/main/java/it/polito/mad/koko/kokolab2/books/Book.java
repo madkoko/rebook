@@ -17,12 +17,12 @@ public class Book implements Serializable {
 
     public Book(){};
 
-    public Book(String ISBN, String title, String author, String publisher, String eitionYear, String bookConditions) {
+    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions) {
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
         this.publisher = publisher;
-        this.editionYear = eitionYear;
+        this.editionYear = editionYear;
         this.conditions = bookConditions;
     }
 
@@ -58,12 +58,12 @@ public class Book implements Serializable {
         this.publisher = publisher;
     }
 
-    public String getEitionYear() {
+    public String getEditionYear() {
         return editionYear;
     }
 
-    public void setEitionYear(String eitionYear) {
-        this.editionYear = eitionYear;
+    public void setEditionYear(String editionYear) {
+        this.editionYear = editionYear;
     }
 
     public String getBookConditions() {
@@ -81,7 +81,7 @@ public class Book implements Serializable {
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", publisher='" + publisher + '\'' +
-                ", eitionYear='" + editionYear + '\'' +
+                ", editionYear='" + editionYear + '\'' +
                 ", bookConditions='" + conditions + '\'' +
                 '}';
     }
