@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -24,8 +25,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -68,6 +72,10 @@ public class EditProfile extends AppCompatActivity{
     private FirebaseUser mFirebaseUser;
     private FirebaseDatabase mDatabase;
     private Profile profile;
+    private FirebaseStorage mStorage;
+    private Uri imageRef;
+    private File f;
+
     /**
      * Filling all the UI text fields and the profile profile pic with all the
      * previous values shown in the ShowProfile activity.
@@ -120,6 +128,7 @@ public class EditProfile extends AppCompatActivity{
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 mDatabase = FirebaseDatabase.getInstance();
+                mStorage = FirebaseStorage.getInstance();
 
 
                 ProfileManager profileManager = ProfileManager.getOurInstance();
@@ -131,6 +140,15 @@ public class EditProfile extends AppCompatActivity{
                         et_bio.getText().toString(),
                         mDatabase,
                         mFirebaseUser.getUid());
+
+                //Uri file = Uri.fromFile(f);
+                try{
+                    profileManager.UserIm(mStorage, mFirebaseUser.getUid(),imageRef);
+
+                }catch (Exception e){
+                    Log.d("imageRef","++"+imageRef.toString());
+                }
+                //profileManager.UserIm(mStorage, mFirebaseUser.getUid(),imageRef);
                 // Saving all UI fields values in the sharedPreferences Firebase database.
                 /*
                 profile.setName(et_name.getText().toString());
@@ -184,7 +202,7 @@ public class EditProfile extends AppCompatActivity{
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                     // Saving the image file into the file system
-                    File f = createImageFile();
+                    f = createImageFile();
 
                     // The image file couldn't be created
                     if(f == null)
@@ -263,12 +281,15 @@ public class EditProfile extends AppCompatActivity{
 
         // If the photo has been picked from the gallery
         if(requestCode == GALLERY && resultCode != RESULT_CANCELED) {
+            imageRef = data.getData();
             editor.putString("user_photo_temp", data.getData().toString());
             editor.apply();
         }
 
         // If the photo has been taken with the camera
         if(requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
+
+            imageRef = data.getData();
             editor.putString("user_photo_temp", user_photo_profile);
 
             // TODO debugging

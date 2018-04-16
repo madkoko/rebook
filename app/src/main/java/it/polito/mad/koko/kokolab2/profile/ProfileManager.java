@@ -1,7 +1,18 @@
 package it.polito.mad.koko.kokolab2.profile;
 
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.twitter.sdk.android.core.identity.OAuthActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +26,7 @@ public class ProfileManager {
     private List<Profile> list = Collections.synchronizedList(new ArrayList());
     private static ProfileManager ourInstance=null;
     private DatabaseReference usersRef;
+    private StorageReference storageRef;
 
 
     public ProfileManager(){
@@ -65,9 +77,9 @@ public class ProfileManager {
         usersRef.push().setValue(profile);*/
         usersRef.child(userId).child("name").setValue(name);
         usersRef.child(userId).child("email").setValue(email);
-        usersRef.child(userId).child("phone").setValue(phone);
-        usersRef.child(userId).child("location").setValue(location);
-        usersRef.child(userId).child("bio").setValue(bio);
+        //usersRef.child(userId).child("phone").setValue(phone);
+        //usersRef.child(userId).child("location").setValue(location);
+        //usersRef.child(userId).child("bio").setValue(bio);
     }
 
 
@@ -84,4 +96,25 @@ public class ProfileManager {
 
         usersRef.updateChildren(childUpdates);
     }
+
+    public void UserIm(FirebaseStorage storage, String userId, Uri data){
+        Log.d("NomeTAG", String.valueOf(data));
+        storageRef = storage.getReference().child("users").child(userId);
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setCustomMetadata("text", userId.toString())
+                .build();
+        UploadTask uploadTask = storageRef.putFile(data,metadata);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            }
+        });
+    }
+
 }

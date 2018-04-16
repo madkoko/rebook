@@ -46,23 +46,21 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseUser mFirebaseUser;
     private FirebaseDatabase mDatabase;
 
+    // Setting authentication providers
     /**
      * Authentication providers
      */
-    private List<IdpConfig> providers;
+    private List<IdpConfig> providers = Arrays.asList(
+        new IdpConfig.EmailBuilder().build(),
+        new IdpConfig.GoogleBuilder().build(),
+        new IdpConfig.PhoneBuilder().build()
+    );
 
     private int INSERT_BOOK = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Setting authentication providers
-        providers = Arrays.asList(
-            new AuthUI.IdpConfig.EmailBuilder().build(),
-            new AuthUI.IdpConfig.GoogleBuilder().build(),
-            new AuthUI.IdpConfig.PhoneBuilder().build()
-        );
 
         // UI
         setContentView(R.layout.activity_main);

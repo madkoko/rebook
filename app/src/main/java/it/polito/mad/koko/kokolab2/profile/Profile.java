@@ -13,20 +13,7 @@ public class Profile {
                     location,
                     bio;
 
-    /**
-     * Profile profile data is stored in a firebase database.
-     */
-    private DatabaseReference mDatabase;
-    private FirebaseUser mFirebaseUser;
-
-    /**
-     *  class that implement Profile
-     * @param mDatabase firebase database
-     * @param mFirebaseUser firebase user information
-     */
-    public Profile(DatabaseReference mDatabase, FirebaseUser mFirebaseUser) {
-        this.mDatabase = mDatabase;
-        this.mFirebaseUser = mFirebaseUser;
+    public Profile() {
     }
 
     public Profile(String name, String email, String phone, String location, String bio) {
