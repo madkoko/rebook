@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Arrays;
 import java.util.List;
 
+import it.polito.mad.koko.kokolab2.auth.ChooserActivity;
 import it.polito.mad.koko.kokolab2.books.BookManager;
 import it.polito.mad.koko.kokolab2.books.InsertBook;
 import it.polito.mad.koko.kokolab2.books.ShowBooks;
@@ -238,16 +239,21 @@ public class HomeActivity extends AppCompatActivity
      * It creates a SingIn interface with Firebase-AuthUI
      */
     private void signInUI(){
-        // Create and launch sign-in intent
+//        // Create and launch sign-in intent
+//        startActivityForResult(
+//            // Get an instance of AuthUI based on the default app
+//            AuthUI  .getInstance()
+//                    .createSignInIntentBuilder()
+//                    .setAvailableProviders(providers)
+//                    .setAllowNewEmailAccounts(true)
+//                    .setIsSmartLockEnabled(true)
+//                    .build(),
+//            RC_SIGN_IN
+//        );
+
         startActivityForResult(
-            // Get an instance of AuthUI based on the default app
-            AuthUI  .getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .setAllowNewEmailAccounts(true)
-                    .setIsSmartLockEnabled(true)
-                    .build(),
-            RC_SIGN_IN
+            new Intent(getApplicationContext(), ChooserActivity.class),
+            1
         );
     }
 
