@@ -22,7 +22,7 @@
                 android:padding="8dp">
 
                 <ImageView
-                    android:id="@+id/user_photo"
+                    android:id="@+id/insert_book_photo"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_alignParentTop="false"
@@ -33,7 +33,7 @@
                     android:id="@+id/book_photo_button"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:layout_below="@+id/user_photo"
+                    android:layout_below="@+id/insert_book_photo"
                     android:layout_gravity="bottom"
                     android:layout_alignParentTop="false"
                     android:layout_alignParentEnd="false"

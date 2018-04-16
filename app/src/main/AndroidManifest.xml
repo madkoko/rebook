@@ -27,10 +27,10 @@
         <activity
             android:name=".profile.ShowProfile"
             android:label="@string/show_profile" />
-        <activity android:name=".profile.EditProfile"/>
-
-        <activity android:name=".books.BookManager" />
-        <activity android:name=".books.ShowBooks"></activity>
+        <activity android:name=".profile.EditProfile" />
+        <activity android:name=".books.InsertBook" />
+        <activity android:name=".books.ShowBooks" />
+        <activity android:name=".books.ShowBook"></activity>
     </application>
 
 </manifest>

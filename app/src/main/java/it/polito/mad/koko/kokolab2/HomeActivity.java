@@ -22,16 +22,15 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.List;
 
 import it.polito.mad.koko.kokolab2.books.BookManager;
+import it.polito.mad.koko.kokolab2.books.InsertBook;
 import it.polito.mad.koko.kokolab2.books.ShowBooks;
 import it.polito.mad.koko.kokolab2.profile.EditProfile;
-import it.polito.mad.koko.kokolab2.profile.Profile;
 import it.polito.mad.koko.kokolab2.profile.ProfileManager;
 import it.polito.mad.koko.kokolab2.profile.ShowProfile;
 
@@ -78,7 +77,7 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-                Intent insertBook = new Intent(getApplicationContext(), BookManager.class);
+                Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
                 startActivityForResult(insertBook,INSERT_BOOK);
             }
         });
@@ -95,6 +94,11 @@ public class HomeActivity extends AppCompatActivity
         Log.d("Profile is:", String.valueOf(mFirebaseUser));
         if(!hasLoggedIn()) {
             signInUI();
+        }
+
+        // creation of the BookManager if the user is authenticated
+        if(hasLoggedIn()) {
+            BookManager bm = new BookManager();
         }
     }
 
@@ -142,6 +146,7 @@ public class HomeActivity extends AppCompatActivity
                 //creation firebase (real time database) value
                 ProfileManager profileManager = ProfileManager.getOurInstance();
                 profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,mDatabase, FirebaseAuth.getInstance().getUid());
+
                 return;
             }else{
                 //Profile pressed back button
