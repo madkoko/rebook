@@ -22,7 +22,9 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,23 +48,21 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseUser mFirebaseUser;
     private FirebaseDatabase mDatabase;
 
+    // Setting authentication providers
     /**
      * Authentication providers
      */
-    private List<IdpConfig> providers;
+    private List<IdpConfig> providers = Arrays.asList(
+        new IdpConfig.EmailBuilder().build(),
+        new IdpConfig.GoogleBuilder().build(),
+        new IdpConfig.PhoneBuilder().build()
+    );
 
     private int INSERT_BOOK = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Setting authentication providers
-        providers = Arrays.asList(
-            new AuthUI.IdpConfig.EmailBuilder().build(),
-            new AuthUI.IdpConfig.GoogleBuilder().build(),
-            new AuthUI.IdpConfig.PhoneBuilder().build()
-        );
 
         // UI
         setContentView(R.layout.activity_main);
@@ -142,10 +142,14 @@ public class HomeActivity extends AppCompatActivity
                 Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
                 instantiateUser();
                 mDatabase = FirebaseDatabase.getInstance();
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
 
                 //creation firebase (real time database) value
-                ProfileManager profileManager = ProfileManager.getOurInstance();
-                profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,mDatabase, FirebaseAuth.getInstance().getUid());
+                ProfileManager profileManager = new ProfileManager(mDatabase, FirebaseAuth.getInstance().getUid(),storage);
+                DatabaseReference usersRef = mDatabase.getReference().child("users");
+
+                profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,null);
 
                 return;
             }else{

@@ -1,40 +1,24 @@
 package it.polito.mad.koko.kokolab2.profile;
 
-import android.support.annotation.NonNull;
-
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-
 public class Profile {
 
     private String  name,
                     email,
                     phone,
                     location,
-                    bio;
+                    bio,imgUrl;
 
-    /**
-     * Profile profile data is stored in a firebase database.
-     */
-    private DatabaseReference mDatabase;
-    private FirebaseUser mFirebaseUser;
-
-    /**
-     *  class that implement Profile
-     * @param mDatabase firebase database
-     * @param mFirebaseUser firebase user information
-     */
-    public Profile(DatabaseReference mDatabase, FirebaseUser mFirebaseUser) {
-        this.mDatabase = mDatabase;
-        this.mFirebaseUser = mFirebaseUser;
+    public Profile() {
     }
 
-    public Profile(String name, String email, String phone, String location, String bio) {
+
+    public Profile(String name, String email, String phone, String location, String bio, String imgUrl) {
         this.name=name;
         this.email=email;
         this.phone=phone;
         this.location=location;
         this.bio=bio;
+        this.imgUrl=imgUrl;
     }
 
     public String getName() {
@@ -75,5 +59,13 @@ public class Profile {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

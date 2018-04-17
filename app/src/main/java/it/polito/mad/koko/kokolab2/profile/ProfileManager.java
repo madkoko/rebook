@@ -1,7 +1,12 @@
 package it.polito.mad.koko.kokolab2.profile;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,10 +20,25 @@ public class ProfileManager {
     private List<Profile> list = Collections.synchronizedList(new ArrayList());
     private static ProfileManager ourInstance=null;
     private DatabaseReference usersRef;
+    private StorageReference storageRef;
+    private FirebaseDatabase database;
+    private FirebaseStorage storage;
+    private String userId;
+    private Map<String, Object> childUpdates;
+    private String downloadUrl;
 
 
-    public ProfileManager(){
+    public ProfileManager(FirebaseDatabase database, String userId, FirebaseStorage storage){
+        this.database=database;
+        this.userId=userId;
+        this.storage=storage;
+        usersRef = database.getReference().child("users").child(userId);
+        storageRef = storage.getReference().child("users").child(userId);
 
+
+    }
+
+    public ProfileManager() {
     }
 
     /**
@@ -56,32 +76,41 @@ public class ProfileManager {
      * @param phone phone of user
      * @param location location of user
      * @param bio bio of user
-     * @param database reference
      */
 
-    public void addProfile(String name, String email, String phone, String location, String bio, FirebaseDatabase database, String userId){
-        usersRef = database.getReference().child("users");
-        /*Profile profile=new Profile(name,email,phone,location,bio);
+    public void addProfile(String name, String email, String phone, String location, String bio, String imgUrl){
+
+        //This is for future implementation of Auth
+        /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
         usersRef.push().setValue(profile);*/
-        usersRef.child(userId).child("name").setValue(name);
-        usersRef.child(userId).child("email").setValue(email);
-        usersRef.child(userId).child("phone").setValue(phone);
-        usersRef.child(userId).child("location").setValue(location);
-        usersRef.child(userId).child("bio").setValue(bio);
+
+        usersRef.child("name").setValue(name);
+        usersRef.child("email").setValue(email);
     }
 
 
-    public void editProfile(String name, String email, String phone, String location, String bio, FirebaseDatabase database, String userId) {
-        usersRef = database.getReference().child("users");
-        //String key = usersRef.push().getKey();
+    public void editProfile(String name, String email, String phone, String location, String bio, byte[] data) {
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(userId + "/" + "name", name);
-        childUpdates.put(userId + "/" + "email", email);
-        childUpdates.put(userId + "/" + "phone", phone);
-        childUpdates.put(userId + "/" + "location", location);
-        childUpdates.put(userId + "/" + "bio", bio);
+        childUpdates = new HashMap<>();
+
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setCustomMetadata("text", userId.toString())
+                .build();
+        UploadTask uploadTask = storageRef.putBytes(data,metadata);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                usersRef.child("image").setValue(downloadUrl);
+            }
+        });
+        childUpdates.put("name", name);
+        childUpdates.put("email", email);
+        childUpdates.put("phone", phone);
+        childUpdates.put("location", location);
+        childUpdates.put("bio", bio);
 
         usersRef.updateChildren(childUpdates);
     }
+
 }
