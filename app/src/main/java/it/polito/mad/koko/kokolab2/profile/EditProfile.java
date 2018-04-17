@@ -3,8 +3,8 @@ package it.polito.mad.koko.kokolab2.profile;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -26,14 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import it.polito.mad.koko.kokolab2.R;
 
@@ -44,16 +41,6 @@ public class EditProfile extends AppCompatActivity{
      */
     private static final int    CAMERA_REQUEST = 0,
                                 GALLERY = 1;
-    /**
-     * Profile pic URI
-     */
-    private String user_photo_profile;
-
-    /**
-     * Profile profile data is stored in a shared XML file.
-     */
-    private String MY_PREFS_NAME = "MySharedPreferences";
-    private SharedPreferences sharedPreferences;
 
     /**
      * Profile profile data.
@@ -71,10 +58,16 @@ public class EditProfile extends AppCompatActivity{
      */
     private FirebaseUser mFirebaseUser;
     private FirebaseDatabase mDatabase;
-    private Profile profile;
     private FirebaseStorage mStorage;
+    private DatabaseReference nameReference;
+
+    /**
+     *
+     */
     private Uri imageRef;
-    private File f;
+    private Bitmap imageBitmap;
+    private boolean flagCamera;
+    private boolean flagGallery;
 
     /**
      * Filling all the UI text fields and the profile profile pic with all the
@@ -100,10 +93,15 @@ public class EditProfile extends AppCompatActivity{
         et_phone=findViewById(R.id.edit_user_phone);
         et_location=findViewById(R.id.edit_user_location);
         et_bio=findViewById(R.id.edit_user_bio);
-
-        // Restore the profile pic from the sharedPreferences data structure
-        sharedPreferences=getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
         user_photo= findViewById(R.id.user_photo);
+
+        // Restoring from past instanceState
+        if(savedInstanceState!= null) {
+            flagCamera = savedInstanceState.getBoolean("flagCamera");
+            flagGallery = savedInstanceState.getBoolean("flagGallery");
+            if(flagGallery)
+                imageRef= Uri.parse(savedInstanceState.getString("imageRef"));
+        }
 
         // Edit profile pic button
         ImageButton user_photo_button = findViewById(R.id.user_photo_button);
@@ -115,9 +113,13 @@ public class EditProfile extends AppCompatActivity{
         });
 
 
-        // inizialiate firebase profile and database
+        // inizialiate firebase profile, database and storage
         mFirebaseUser= FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
+        mStorage = FirebaseStorage.getInstance();
+        nameReference = mDatabase.getReference().child("users").child(mFirebaseUser.getUid());
+
+
 
         // Save button
         Button save_button = findViewById(R.id.save_button);
@@ -126,45 +128,43 @@ public class EditProfile extends AppCompatActivity{
             @Override
             public void onClick(View v) {
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                mDatabase = FirebaseDatabase.getInstance();
-                mStorage = FirebaseStorage.getInstance();
+                // Get the data from an ImageView as bytes
+                user_photo.setDrawingCacheEnabled(true);
+                user_photo.buildDrawingCache();
+                Bitmap bitmap = user_photo.getDrawingCache();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] shown_image = baos.toByteArray();
 
-
-                ProfileManager profileManager = ProfileManager.getOurInstance();
+                //Create a new profileManager
+                ProfileManager profileManager = new ProfileManager(mDatabase,mFirebaseUser.getUid(),mStorage);
                 profileManager.editProfile(
                         et_name.getText().toString(),
                         et_email.getText().toString(),
                         et_phone.getText().toString(),
                         et_location.getText().toString(),
                         et_bio.getText().toString(),
-                        mDatabase,
-                        mFirebaseUser.getUid());
-
-                //Uri file = Uri.fromFile(f);
-                try{
-                    profileManager.UserIm(mStorage, mFirebaseUser.getUid(),imageRef);
-
-                }catch (Exception e){
-                    Log.d("imageRef","++"+imageRef.toString());
-                }
-                //profileManager.UserIm(mStorage, mFirebaseUser.getUid(),imageRef);
-                // Saving all UI fields values in the sharedPreferences Firebase database.
-                /*
-                profile.setName(et_name.getText().toString());
-                profile.setEmail(et_email.getText().toString());
-                profile.setPhone(et_phone.getText().toString());
-                profile.setLocation(et_location.getText().toString());
-                profile.setBio(et_bio.getText().toString());
-                */
-                // Saving all UI fields values in the sharedPreferences XML Preferences.
-                editor.putString("user_photo",sharedPreferences.getString("user_photo_temp",null));
-                editor.apply();
-
+                        shown_image
+                        );
                 // Terminating the activity
                 finish();
             }
         });
+    }
+
+    /**
+     *
+     * @param savedInstanceState flag if we have selected camera or gallery
+     *                           imageRef is uri of image gallery
+     */
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean("flagCamera",flagCamera);
+        savedInstanceState.putBoolean("flagGallery",flagGallery);
+        if(flagGallery) {
+            savedInstanceState.putString("imageRef", imageRef.toString());
+        }
     }
 
     /**
@@ -185,8 +185,7 @@ public class EditProfile extends AppCompatActivity{
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface arg0, int arg1) {
                 Intent pictureActionIntent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-
-                // Launching the camera app
+                // Launching the gallery app
                 startActivityForResult(pictureActionIntent, GALLERY);
             }
                 });
@@ -198,21 +197,11 @@ public class EditProfile extends AppCompatActivity{
                     // Requested from Android 7.0 Nougat
                     StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                     StrictMode.setVmPolicy(builder.build());
-
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                    // Saving the image file into the file system
-                    f = createImageFile();
-
-                    // The image file couldn't be created
-                    if(f == null)
-                        // The camera app won't be launched
-                        return;
-
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-
-                    // Launching the camera app
-                    startActivityForResult(intent, CAMERA_REQUEST);
+                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
+                            // Launching the camera app
+                            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                        }
                 }
             });
 
@@ -221,26 +210,18 @@ public class EditProfile extends AppCompatActivity{
     }
 
     /**
-     * Upon taking a picture with the camera, it saves the image file. following
-     * @return  the image file.
+     * Upon taking a picture with the camera, it saves the Bitmap image.
+     * @param extras bundle with data from startDialog intent
      */
-    private File createImageFile() {
-        // Timestamp format
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-
-        // Filename format: 'JPEG' + timestamp + '_'
-        String imageFileName="JPEG"+timeStamp+"_";
-
-        // Pictures directory
-        File storgeDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-        // Trying to create the image file
-        File imageFile = null;
+    private void createImageFile(Bundle extras) {
+        imageBitmap = (Bitmap) extras.get("data");
+        FileOutputStream out = null;
         try {
-            // Image file creation
-            imageFile = File.createTempFile(imageFileName,".jpg",storgeDir);
-        }
-        // The image cannot be created
+            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+        }// The image cannot be created
         catch(IOException e) {
             // Creating an alert dialog indicating all possible causes
             AlertDialog.Builder builder = new AlertDialog.Builder(EditProfile.this);
@@ -251,18 +232,7 @@ public class EditProfile extends AppCompatActivity{
             // Showing the dialog to the screen
             AlertDialog dialog = builder.create();
             dialog.show();
-
-            return null;
-        }
-
-        // Saving the new profile pic
-        user_photo_profile = "file:"+imageFile.getAbsolutePath();
-
-        // TODO debugging
-        Log.d("debug", user_photo_profile);
-
-        // Returning the image file created
-        return imageFile;
+            }
     }
 
     /**
@@ -277,25 +247,33 @@ public class EditProfile extends AppCompatActivity{
         // TODO debugging
         Log.d("debug","onActivityResult");
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
         // If the photo has been picked from the gallery
         if(requestCode == GALLERY && resultCode != RESULT_CANCELED) {
+            // TODO debugging
+            Log.d("debug", "gallery");
+
+            // crete a reference from uri gallery
             imageRef = data.getData();
-            editor.putString("user_photo_temp", data.getData().toString());
-            editor.apply();
+            Log.d("debug", "onActivityResult imageRef: "+imageRef.toString());
+
+            // set flags for future state
+            flagGallery=true;
+            flagCamera=false;
+
         }
 
         // If the photo has been taken with the camera
         if(requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
-
-            imageRef = data.getData();
-            editor.putString("user_photo_temp", user_photo_profile);
-
+            //Return uri from intent
+            Bundle extras = data.getExtras();
             // TODO debugging
-            Log.d("debug",user_photo_profile);
+            Log.d("debug", "camera");
+            //create a new BitMap
+            createImageFile(extras);
+            // set flags for future state
+            flagCamera=true;
+            flagGallery=false;
 
-            editor.apply();
         }
     }
 
@@ -310,13 +288,8 @@ public class EditProfile extends AppCompatActivity{
         // TODO debugging
         Log.d("debug", "onResume");
 
-        // Updating the sharedPreferences data structure containing profile info
-        sharedPreferences=getApplicationContext().getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
-
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         // Restoring all UI values
-        DatabaseReference nameReference = database.child("users").child(mFirebaseUser.getUid());
         nameReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -325,7 +298,16 @@ public class EditProfile extends AppCompatActivity{
                 et_phone.setText(dataSnapshot.child("phone").getValue(String.class));
                 et_location.setText(dataSnapshot.child("location").getValue(String.class));
                 et_bio.setText(dataSnapshot.child("bio").getValue(String.class));
-                //Log.d("TAG",dataSnapshot.getValue(String.class));
+                Log.d("debug", "flagGallery:"+flagGallery+",flagCamera:"+flagCamera);
+                if(flagCamera){
+                    Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+                    user_photo.setImageBitmap(tmp);
+                }else if(flagGallery) {
+                    Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
+                }
+                else {
+                    Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).fit().centerCrop().into(user_photo);
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -333,10 +315,6 @@ public class EditProfile extends AppCompatActivity{
             };
 
         });
-        et_password.setText(sharedPreferences.getString("user_password", null));
-
-        // Restoring the profile picture
-        Picasso.get().load(sharedPreferences.getString("user_photo_temp", null)).fit().centerCrop().into(user_photo);
     }
 
 }
