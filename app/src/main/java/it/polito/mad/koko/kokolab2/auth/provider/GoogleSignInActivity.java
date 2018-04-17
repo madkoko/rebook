@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.polito.mad.koko.kokolab2.auth;
+package it.polito.mad.koko.kokolab2.auth.provider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,6 +38,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab2.auth.custom.BaseActivity;
 
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.

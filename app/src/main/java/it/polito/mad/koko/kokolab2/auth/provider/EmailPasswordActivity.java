@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.polito.mad.koko.kokolab2.auth;
+package it.polito.mad.koko.kokolab2.auth.provider;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab2.auth.custom.BaseActivity;
 
 public class EmailPasswordActivity extends BaseActivity implements
         View.OnClickListener {

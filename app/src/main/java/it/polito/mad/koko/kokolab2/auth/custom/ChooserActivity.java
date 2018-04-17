@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.polito.mad.koko.kokolab2.auth;
+package it.polito.mad.koko.kokolab2.auth.custom;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +29,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab2.auth.provider.EmailPasswordActivity;
+import it.polito.mad.koko.kokolab2.auth.provider.GoogleSignInActivity;
+import it.polito.mad.koko.kokolab2.auth.provider.PhoneAuthActivity;
 
 /**
  * Simple list-based Activity to redirect to one of the other Activities. This Activity does not

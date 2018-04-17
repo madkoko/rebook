@@ -17,16 +17,16 @@
 
         <!-- Auth activities -->
         <activity
-            android:name=".auth.ChooserActivity"
+            android:name=".auth.custom.ChooserActivity"
             android:label="@string/chooser_activity_title"/>
         <activity
-            android:name=".auth.GoogleSignInActivity"
+            android:name=".auth.provider.GoogleSignInActivity"
             android:label="@string/label_google_sign_in"/>
         <activity
-            android:name=".auth.EmailPasswordActivity"
+            android:name=".auth.provider.EmailPasswordActivity"
             android:label="@string/label_emailpassword"/>
         <activity
-            android:name=".auth.PhoneAuthActivity"
+            android:name=".auth.provider.PhoneAuthActivity"
             android:label="@string/label_phone_auth"/>
 
         <activity

@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.auth;
+package it.polito.mad.koko.kokolab2.auth.custom;
 
 import android.app.ProgressDialog;
 import android.content.Context;

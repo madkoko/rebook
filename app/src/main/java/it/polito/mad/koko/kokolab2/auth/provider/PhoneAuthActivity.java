@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.auth;
+package it.polito.mad.koko.kokolab2.auth.provider;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
