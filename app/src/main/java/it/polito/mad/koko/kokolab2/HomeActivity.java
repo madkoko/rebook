@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,19 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.AuthUI.IdpConfig;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 
-import java.util.Arrays;
-import java.util.List;
-
+import it.polito.mad.koko.kokolab2.auth.Authenticator;
 import it.polito.mad.koko.kokolab2.books.BookManager;
 import it.polito.mad.koko.kokolab2.books.InsertBook;
 import it.polito.mad.koko.kokolab2.books.ShowBooks;
@@ -39,24 +30,10 @@ import it.polito.mad.koko.kokolab2.profile.ShowProfile;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int RC_SIGN_IN = 123;
-
     /**
-     * Firebase user objects
+     * Custom class managing the user authentication
      */
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mFirebaseUser;
-    private FirebaseDatabase mDatabase;
-
-    // Setting authentication providers
-    /**
-     * Authentication providers
-     */
-    private List<IdpConfig> providers = Arrays.asList(
-        new IdpConfig.EmailBuilder().build(),
-        new IdpConfig.GoogleBuilder().build(),
-        new IdpConfig.PhoneBuilder().build()
-    );
+    private Authenticator authenticator;
 
     private int INSERT_BOOK = 1;
 
@@ -64,12 +41,12 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        authenticator = new Authenticator(this);
+
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        instantiateUser();
 
         FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +56,7 @@ public class HomeActivity extends AppCompatActivity
                         .setAction("Action", null).show();*/
 
                 Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
+                startActivityForResult(insertBook, INSERT_BOOK);
                 insertBook.putExtra("uid",FirebaseAuth.getInstance().getCurrentUser().getUid());
                 startActivityForResult(insertBook,INSERT_BOOK);
             }
@@ -93,31 +71,12 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Log.d("Profile is:", String.valueOf(mFirebaseUser));
-        if(!hasLoggedIn()) {
-            signInUI();
+        authenticator.authUI();
+
+        // creation of the BookManager if the user is authenticated
+        if(authenticator.hasLoggedIn()) {
+            BookManager bm = new BookManager();
         }
-    }
-
-    /**
-     *  mFirebaseAuth  instances  Auth
-     *  mFirebaseUser instances Profile
-     */
-    private void instantiateUser(){
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-    }
-
-    /**
-     * Returns true if the user has logged in,
-     * false otherwise.
-     * @return  whether the user has logged in or not.
-     */
-    private boolean hasLoggedIn(){
-        if(mFirebaseUser == null)
-            return false;
-        else
-            return true;
     }
 
     /**
@@ -131,27 +90,30 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RC_SIGN_IN) {
+        /*if(requestCode == authenticator.getRcSignIn()) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             // Successfully signed in
-            if (resultCode == RESULT_OK) {
+            if(resultCode == RESULT_OK) {
                 Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-                instantiateUser();
-                mDatabase = FirebaseDatabase.getInstance();
-                FirebaseStorage storage = FirebaseStorage.getInstance();
+                authenticator.instantiateUser();
 
-
-                //creation firebase (real time database) value
-                ProfileManager profileManager = new ProfileManager(mDatabase, FirebaseAuth.getInstance().getCurrentUser(),storage);
-                DatabaseReference usersRef = mDatabase.getReference().child("users");
-
-                profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,null);
+                // Creating the Firebase user entry in the database
+                ProfileManager profileManager = ProfileManager.getOurInstance();
+                profileManager.addProfile(
+                    authenticator.getUser().getDisplayName(),
+                    authenticator.getUser().getEmail(),
+                    null,
+                    null,
+                    null,
+                    authenticator.getDatabase(),
+                    authenticator.getAuth().getUid()
+                );
 
                 return;
-            }else{
+            } else {
                 //Profile pressed back button
-                if (response == null) {
+                if(response == null) {
                     Toast.makeText(this, "Profile pressed back button", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -166,7 +128,15 @@ public class HomeActivity extends AppCompatActivity
                     return;
                 }
             }
-        }
+        }*/
+
+        Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
+        authenticator.instantiateUser();
+
+        // Creating the Firebase user entry in the database
+        ProfileManager profileManager = new ProfileManager(mDatabase, FirebaseAuth.getInstance().getCurrentUser(),storage);
+        profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,null);
+
     }
 
     @Override
@@ -209,7 +179,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.view_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
-            i.putExtra("UserID", mFirebaseUser.getUid());
+            i.putExtra("UserID", authenticator.getUser().getUid());
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
@@ -228,36 +198,11 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         } else if (id == R.id.sign_out)
-            signOut();
+            authenticator.signOut();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    /**
-     * It creates a SingIn interface with Firebase-AuthUI
-     */
-    private void signInUI(){
-        // Create and launch sign-in intent
-        startActivityForResult(
-            // Get an instance of AuthUI based on the default app
-            AuthUI  .getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .setAllowNewEmailAccounts(true)
-                    .setIsSmartLockEnabled(true)
-                    .build(),
-            RC_SIGN_IN
-        );
-    }
-
-    /**
-     * Performs the user sign out.
-     */
-    private void signOut() {
-        mFirebaseAuth.signOut();
-        signInUI();
     }
 
     @Override
