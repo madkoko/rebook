@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/book_photo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:src="@mipmap/ic_launcher"
         android:layout_gravity="center_vertical"/>
     <TextView
@@ -17,16 +17,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="24dp"
-        android:hint="Book_Title"
+        android:textSize="24sp"
+        android:hint="@string/book_title"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_gravity="center_vertical"/>
-    <Button
-        android:id="@+id/show_book_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Book"
         android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

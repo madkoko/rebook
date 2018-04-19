@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab2.books;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -15,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -126,6 +129,10 @@ public class InsertBook extends AppCompatActivity {
             createImageFile(extras);
             // set flags for future state
             flagCamera=true;
+
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+            bookPhoto.setImageBitmap(tmp);
+
         }
 
         if(requestCode==SCAN_BOOK_INFO&&resultCode==RESULT_OK){

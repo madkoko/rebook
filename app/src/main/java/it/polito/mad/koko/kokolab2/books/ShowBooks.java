@@ -7,8 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +35,7 @@ public class ShowBooks extends AppCompatActivity {
 
         final HashMap<String,Book> books=(HashMap<String, Book>) BookManager.getBooks();
         final List<String> bookTitles = new ArrayList<>();
+        final List<String> bookPhotos=new ArrayList<>();
         ListView bookListView = findViewById(R.id.books_listview);
 
         // set the list view to show all the books
@@ -39,8 +44,11 @@ public class ShowBooks extends AppCompatActivity {
             for (Object ob : books.values().toArray()) {
                 Map<String, String> book = (HashMap<String, String>) ob;
                 String title;
+                String bookPhoto;
                 title = book.get("title");
+                bookPhoto=book.get("image");
                 bookTitles.add(title);
+                bookPhotos.add(bookPhoto);
             }
 
             bookListView.setAdapter(new BaseAdapter() {
@@ -65,15 +73,15 @@ public class ShowBooks extends AppCompatActivity {
                         view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
                     TextView title = (TextView) view.findViewById(R.id.book_title);
-                    Button show = (Button) view.findViewById(R.id.show_book_button);
-
+                    ImageView photo=(ImageView) view.findViewById(R.id.book_photo);
                     title.setText(bookTitles.get(i));
+                    Picasso.get().load(bookPhotos.get(i)).fit().centerCrop().into(photo);
 
                     final int position = i;
 
                     // start the activity "Show Book" passing the current book in the Intent
 
-                    show.setOnClickListener(new View.OnClickListener() {
+                    view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
@@ -97,6 +105,7 @@ public class ShowBooks extends AppCompatActivity {
                                     book = new Book(isbn, title, author, publisher, editionYear, bookConditions, uid);
 
                                     showBook.putExtra("book", book);
+                                    showBook.putExtra("bookPhoto",bookVals.get("image"));
                                     startActivity(showBook);
                                 }
 
@@ -107,9 +116,6 @@ public class ShowBooks extends AppCompatActivity {
                     return view;
                 }
             });
-        }
-        else {
-
         }
     }
 

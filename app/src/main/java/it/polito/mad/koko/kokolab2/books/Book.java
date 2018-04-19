@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 public class Book implements Serializable {
 
-    private static String ISBN;
-    private static String title;
-    private static String author;
-    private static String publisher;
-    private static String editionYear;
-    private static String conditions;
-    private static String uid;
+    private String ISBN;
+    private String title;
+    private String author;
+    private String publisher;
+    private String editionYear;
+    private String conditions;
+    private String uid;
 
     public Book(){};
 
@@ -79,6 +79,7 @@ public class Book implements Serializable {
     public void setUid(String uid) {
         this.uid = uid;
     }
+
     public String getUid() {
         return uid;
     }

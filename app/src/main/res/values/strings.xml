@@ -58,6 +58,7 @@
     <string name="edit_button_label">Edit</string>
     <string name="add_button_label">Add</string>
     <string name="scan_button_label">Scan</string>
+    <string name="show_book_button">Show</string>
 
     <!--    No image file can be created after taking a picture
             with the camera -->

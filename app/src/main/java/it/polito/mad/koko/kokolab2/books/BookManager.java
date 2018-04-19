@@ -97,19 +97,26 @@ public class BookManager {
 
     public static void insertBook(Book book,byte[] data){
 
+        final String bookKey=ref.push().getKey();
         /*StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", userId.toString())
+                .setCustomMetadata("text", bookKey)
                 .build();*/
-        UploadTask uploadTask = storageRef.putBytes(data);
+        UploadTask uploadTask = storageRef.child(bookKey).putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                ref.child("image").setValue(downloadUrl);
+                ref.child(bookKey).child("image").setValue(downloadUrl);
             }
         });
 
-        ref.push().setValue(book);
+        ref.child(bookKey).setValue(book);
+
+        Log.d("book",book.toString());
+
+
+
+
     }
 
     public static void retrieveBookInfo(String bookSearchString){
