@@ -78,6 +78,7 @@ public class ShowProfile extends AppCompatActivity {
             return true;
         }
         return false;
+
     }
 
     /**
@@ -95,6 +96,7 @@ public class ShowProfile extends AppCompatActivity {
                 //Only if Auth user is equal to user from intent, we can use this menu
                 Intent i = new Intent(getApplicationContext(), EditProfile.class);
                 startActivity(i);
+                finish();
 
             default:
                 return super.onOptionsItemSelected(item);
