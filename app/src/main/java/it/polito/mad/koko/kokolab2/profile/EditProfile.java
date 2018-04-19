@@ -88,7 +88,7 @@ public class EditProfile extends AppCompatActivity{
 
         // Restoring UI fields containing profile info
         et_name=findViewById(R.id.edit_user_name);
-        et_password=findViewById(R.id.edit_user_password);
+        //et_password=findViewById(R.id.edit_user_password);
         et_email=findViewById(R.id.edit_user_email);
         et_phone=findViewById(R.id.edit_user_phone);
         et_location=findViewById(R.id.edit_user_location);
@@ -137,7 +137,7 @@ public class EditProfile extends AppCompatActivity{
                 byte[] shown_image = baos.toByteArray();
 
                 //Create a new profileManager
-                ProfileManager profileManager = new ProfileManager(mDatabase,mFirebaseUser.getUid(),mStorage);
+                ProfileManager profileManager = new ProfileManager(mDatabase,mFirebaseUser,mStorage);
                 profileManager.editProfile(
                         et_name.getText().toString(),
                         et_email.getText().toString(),
@@ -305,7 +305,7 @@ public class EditProfile extends AppCompatActivity{
                 }else if(flagGallery) {
                     Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
                 }
-                else {
+                else if(dataSnapshot.child("image").getValue(String.class)!=null) {
                     Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).fit().centerCrop().into(user_photo);
                 }
             }

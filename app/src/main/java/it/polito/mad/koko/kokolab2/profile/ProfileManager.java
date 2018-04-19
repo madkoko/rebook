@@ -1,6 +1,9 @@
 package it.polito.mad.koko.kokolab2.profile;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -26,12 +29,15 @@ public class ProfileManager {
     private String userId;
     private Map<String, Object> childUpdates;
     private String downloadUrl;
+    private FirebaseUser firebaseUser;
 
 
-    public ProfileManager(FirebaseDatabase database, String userId, FirebaseStorage storage){
+
+    public ProfileManager(FirebaseDatabase database, FirebaseUser firebaseUser, FirebaseStorage storage){
         this.database=database;
-        this.userId=userId;
+        this.firebaseUser=firebaseUser;
         this.storage=storage;
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         usersRef = database.getReference().child("users").child(userId);
         storageRef = storage.getReference().child("users").child(userId);
 
@@ -109,8 +115,12 @@ public class ProfileManager {
         childUpdates.put("phone", phone);
         childUpdates.put("location", location);
         childUpdates.put("bio", bio);
-
         usersRef.updateChildren(childUpdates);
+        firebaseUser.updateProfile(new UserProfileChangeRequest
+                .Builder()
+                .setDisplayName(name)
+                .build()
+        );
     }
 
 }

@@ -143,7 +143,7 @@ public class HomeActivity extends AppCompatActivity
 
 
                 //creation firebase (real time database) value
-                ProfileManager profileManager = new ProfileManager(mDatabase, FirebaseAuth.getInstance().getUid(),storage);
+                ProfileManager profileManager = new ProfileManager(mDatabase, FirebaseAuth.getInstance().getCurrentUser(),storage);
                 DatabaseReference usersRef = mDatabase.getReference().child("users");
 
                 profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,null);

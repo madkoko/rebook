@@ -61,7 +61,7 @@
 
                 </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <!--android.support.design.widget.TextInputLayout
                     android:id="@+id/text_user_password"
                     android:layout_below="@id/text_input_name"
                     android:layout_gravity="bottom"
@@ -77,11 +77,11 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPassword" />
 
-                </android.support.design.widget.TextInputLayout>
+                </android.support.design.widget.TextInputLayout-->
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/text_user_email"
-                    android:layout_below="@+id/text_user_password"
+                    android:layout_below="@id/text_input_name"
                     android:layout_gravity="bottom"
                     android:hint="@string/user_email"
                     android:layout_width="match_parent"

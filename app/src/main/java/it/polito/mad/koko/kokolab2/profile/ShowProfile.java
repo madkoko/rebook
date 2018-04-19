@@ -121,7 +121,8 @@ public class ShowProfile extends AppCompatActivity {
                 tv_email.setText(dataSnapshot.child("email").getValue(String.class));
                 tv_location.setText(dataSnapshot.child("location").getValue(String.class));
                 tv_bio.setText(dataSnapshot.child("bio").getValue(String.class));
-                Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).fit().centerCrop().into(user_photo);
+                if(dataSnapshot.child("image").getValue(String.class)!=null)
+                    Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).fit().centerCrop().into(user_photo);
 
             }
                 @Override
