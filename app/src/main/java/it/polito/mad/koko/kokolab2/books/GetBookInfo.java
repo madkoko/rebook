@@ -59,6 +59,14 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
 
         JsonObject bookJson = new JsonParser().parse(bookBuilder.toString()).getAsJsonObject();
 
+        Log.d("debug",bookJson.toString());
+        Object totalItems=bookJson.get("totalItems");
+        Log.d("debug",totalItems.toString());
+
+        if(totalItems.toString().equalsIgnoreCase("0")){
+            return null;
+        }
+
         JsonObject volumeInfo=bookJson.getAsJsonArray("items").get(0).getAsJsonObject().get("volumeInfo").getAsJsonObject();
 
         //Log.d("book",volumeInfo.toString());

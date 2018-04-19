@@ -103,11 +103,16 @@ public class InsertBook extends AppCompatActivity {
 
                     Map<String,String> bookInfo=BookManager.getBookInfo();
 
-                    //bookIsbn.setText(bookInfo.get("isbn"));
-                    bookTitle.setText(bookInfo.get("title"));
-                    bookAuthor.setText(bookInfo.get("authors"));
-                    bookPublisher.setText((bookInfo.get("publisher")));
-                    bookEditionYear.setText(bookInfo.get("editionYear"));
+                    if(bookInfo==null){
+                        Toast.makeText(getApplicationContext(),"Insert a valid ISBN",Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        //bookIsbn.setText(bookInfo.get("isbn"));
+                        bookTitle.setText(bookInfo.get("title"));
+                        bookAuthor.setText(bookInfo.get("authors"));
+                        bookPublisher.setText((bookInfo.get("publisher")));
+                        bookEditionYear.setText(bookInfo.get("editionYear"));
+                    }
                 }
                 else{
                     Toast.makeText(getApplicationContext(),"Insert a valid ISBN",Toast.LENGTH_SHORT).show();

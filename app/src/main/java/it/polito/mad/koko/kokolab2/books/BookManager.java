@@ -46,7 +46,7 @@ public class BookManager {
     }
     public static Map<String,String> getBookInfo(){
         Log.d("debug","getBookInfo");
-        Log.d("debug",bookInfo.toString());
+        //Log.d("debug",bookInfo.toString());
         return bookInfo;
     }
 
