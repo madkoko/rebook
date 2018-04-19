@@ -61,18 +61,15 @@ public class ScanISBNActivity extends AppCompatActivity implements ZXingScannerV
     public void onResume() {
         super.onResume();
 
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.M) {
-            if (checkPermission()) {
-                if(scannerView == null) {
-                    scannerView = new ZXingScannerView(this);
-                    setContentView(scannerView);
-                }
-                scannerView.setResultHandler(this);
-                scannerView.startCamera();
-            } else {
-                requestPermission();
+        if (checkPermission()) {
+            if(scannerView == null) {
+                scannerView = new ZXingScannerView(this);
+                setContentView(scannerView);
             }
+            scannerView.setResultHandler(this);
+            scannerView.startCamera();
+        } else {
+            requestPermission();
         }
     }
 
@@ -99,8 +96,7 @@ public class ScanISBNActivity extends AppCompatActivity implements ZXingScannerV
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                    requestPermissions(new String[]{CAMERA},
-                                                            REQUEST_CAMERA);
+                                                    requestPermissions(new String[]{CAMERA}, REQUEST_CAMERA);
                                                 }
                                             }
                                         });
