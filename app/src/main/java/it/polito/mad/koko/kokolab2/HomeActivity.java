@@ -56,7 +56,6 @@ public class HomeActivity extends AppCompatActivity
                         .setAction("Action", null).show();*/
 
                 Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
-                startActivityForResult(insertBook, INSERT_BOOK);
                 insertBook.putExtra("uid",FirebaseAuth.getInstance().getCurrentUser().getUid());
                 startActivityForResult(insertBook,INSERT_BOOK);
             }
@@ -134,8 +133,20 @@ public class HomeActivity extends AppCompatActivity
         authenticator.instantiateUser();
 
         // Creating the Firebase user entry in the database
-        ProfileManager profileManager = new ProfileManager(mDatabase, FirebaseAuth.getInstance().getCurrentUser(),storage);
-        profileManager.addProfile(mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail(),null,null,null,null);
+        ProfileManager profileManager = new ProfileManager(
+            authenticator.getDatabase(),
+            authenticator.getUser(),
+            authenticator.getStorage()
+        );
+
+        profileManager.addProfile(
+            authenticator.getUser().getDisplayName(),
+            authenticator.getUser().getEmail(),
+            null,
+            null,
+            null,
+            null
+        );
 
     }
 
@@ -210,8 +221,7 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
 
         // creation of the BookManager if the user is authenticated
-        if(hasLoggedIn()) {
-            BookManager bm = new BookManager();
-        }
+        if(authenticator.hasLoggedIn())
+            new BookManager();
     }
 }

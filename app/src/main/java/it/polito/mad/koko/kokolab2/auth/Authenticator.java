@@ -8,6 +8,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -166,6 +167,8 @@ public class Authenticator {
     public FirebaseDatabase getDatabase() {
         return database;
     }
+
+    public FirebaseStorage getStorage() { return FirebaseStorage.getInstance(); }
 
     public static int getRcSignIn() {
         return RC_SIGN_IN;
