@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -56,6 +57,7 @@ public class InsertBook extends AppCompatActivity {
         bookConditions=findViewById(R.id.edit_book_conditions);
         bookPhoto=findViewById(R.id.insert_book_photo);
 
+
         ImageButton photoButton=findViewById(R.id.book_photo_button);
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +88,31 @@ public class InsertBook extends AppCompatActivity {
 
                 Log.d("debug","scan button pressed");
                 startActivityForResult(scanIntent,SCAN_BOOK_INFO);
+            }
+        });
+
+        Button searchButton=findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("debug", String.valueOf(bookIsbn.getText().length()));
+                if(bookIsbn.getText().length()!=0) {
+                    Log.d("debug","isbn: "+bookIsbn.getText().toString());
+                    String bookSearchString = "https://www.googleapis.com/books/v1/volumes?q=isbn:"+bookIsbn.getText().toString();
+                    BookManager.retrieveBookInfo(bookSearchString);
+
+                    Map<String,String> bookInfo=BookManager.getBookInfo();
+
+                    //bookIsbn.setText(bookInfo.get("isbn"));
+                    bookTitle.setText(bookInfo.get("title"));
+                    bookAuthor.setText(bookInfo.get("authors"));
+                    bookPublisher.setText((bookInfo.get("publisher")));
+                    bookEditionYear.setText(bookInfo.get("editionYear"));
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"Insert a valid ISBN",Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
     }
