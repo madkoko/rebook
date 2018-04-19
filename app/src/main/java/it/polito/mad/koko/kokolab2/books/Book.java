@@ -14,16 +14,18 @@ public class Book implements Serializable {
     private static String publisher;
     private static String editionYear;
     private static String conditions;
+    private static String uid;
 
     public Book(){};
 
-    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions) {
+    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions, String uid) {
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
         this.publisher = publisher;
         this.editionYear = editionYear;
         this.conditions = bookConditions;
+        this.uid=uid;
     }
 
     public String getISBN() {
@@ -74,6 +76,13 @@ public class Book implements Serializable {
         this.conditions = bookConditions;
     }
 
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+    public String getUid() {
+        return uid;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -83,6 +92,7 @@ public class Book implements Serializable {
                 ", publisher='" + publisher + '\'' +
                 ", editionYear='" + editionYear + '\'' +
                 ", bookConditions='" + conditions + '\'' +
+                ", userId='" + uid + '\'' +
                 '}';
     }
 

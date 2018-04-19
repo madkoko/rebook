@@ -77,7 +77,9 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
+
                 Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
+                insertBook.putExtra("uid",FirebaseAuth.getInstance().getCurrentUser().getUid());
                 startActivityForResult(insertBook,INSERT_BOOK);
             }
         });
@@ -94,11 +96,6 @@ public class HomeActivity extends AppCompatActivity
         Log.d("Profile is:", String.valueOf(mFirebaseUser));
         if(!hasLoggedIn()) {
             signInUI();
-        }
-
-        // creation of the BookManager if the user is authenticated
-        if(hasLoggedIn()) {
-            BookManager bm = new BookManager();
         }
     }
 
@@ -261,5 +258,15 @@ public class HomeActivity extends AppCompatActivity
     private void signOut() {
         mFirebaseAuth.signOut();
         signInUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // creation of the BookManager if the user is authenticated
+        if(hasLoggedIn()) {
+            BookManager bm = new BookManager();
+        }
     }
 }

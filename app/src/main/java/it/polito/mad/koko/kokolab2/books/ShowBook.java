@@ -3,7 +3,6 @@ package it.polito.mad.koko.kokolab2.books;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import it.polito.mad.koko.kokolab2.R;
@@ -28,8 +27,6 @@ public class ShowBook extends AppCompatActivity {
         Book book;
         if(i.getExtras().get("book")!=null) {
             book = (Book) i.getExtras().get("book");
-
-            Log.d("debug",book.toString());
 
             if(book.getISBN()!=null)isbn.setText(book.getISBN());
             if(book.getTitle()!=null)title.setText(book.getTitle());

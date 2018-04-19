@@ -18,8 +18,6 @@ import it.polito.mad.koko.kokolab2.R;
 
 public class ShowBooks extends AppCompatActivity {
 
-    private ListView bookListView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,80 +31,86 @@ public class ShowBooks extends AppCompatActivity {
 
         final HashMap<String,Book> books=(HashMap<String, Book>) BookManager.getBooks();
         final List<String> bookTitles = new ArrayList<>();
-
-        for (Object ob: books.values().toArray()){
-            Map<String,String> book=(HashMap<String, String>)ob;
-            String title;
-            title=book.get("title");
-            bookTitles.add(title);
-        }
+        ListView bookListView = findViewById(R.id.books_listview);
 
         // set the list view to show all the books
 
-        bookListView =findViewById(R.id.books_listview);
-        bookListView.setAdapter(new BaseAdapter() {
-            @Override
-            public int getCount() {
-                return books.size();
+        if(books!=null) {
+            for (Object ob : books.values().toArray()) {
+                Map<String, String> book = (HashMap<String, String>) ob;
+                String title;
+                title = book.get("title");
+                bookTitles.add(title);
             }
 
-            @Override
-            public Object getItem(int i) {
-                return bookTitles.get(i);
-            }
+            bookListView.setAdapter(new BaseAdapter() {
+                @Override
+                public int getCount() {
+                    return books.size();
+                }
 
-            @Override
-            public long getItemId(int i) {
-                return 0;
-            }
+                @Override
+                public Object getItem(int i) {
+                    return bookTitles.get(i);
+                }
 
-            @Override
-            public View getView(int i, View view, ViewGroup viewGroup) {
-                if (view==null)
-                    view=getLayoutInflater().inflate(R.layout.books_adapter_layout,viewGroup, false);
+                @Override
+                public long getItemId(int i) {
+                    return 0;
+                }
 
-                TextView title=(TextView) view.findViewById(R.id.book_title);
-                Button show=(Button)view.findViewById(R.id.show_book_button);
+                @Override
+                public View getView(int i, View view, ViewGroup viewGroup) {
+                    if (view == null)
+                        view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
-                title.setText(bookTitles.get(i));
+                    TextView title = (TextView) view.findViewById(R.id.book_title);
+                    Button show = (Button) view.findViewById(R.id.show_book_button);
 
-                final int position=i;
+                    title.setText(bookTitles.get(i));
 
-                // start the activity "Show Book" passing the current book in the Intent
+                    final int position = i;
 
-                show.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                    // start the activity "Show Book" passing the current book in the Intent
 
-                        Intent showBook=new Intent(getApplicationContext(),ShowBook.class);
+                    show.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                        Book book;
-                        for (Object ob: books.values().toArray()){
-                            Map<String,String> bookVals=(HashMap<String, String>)ob;
+                            Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
 
-                            String isbn,title,author,publisher,editionYear,bookConditions;
-                            title=bookVals.get("title");
+                            Book book;
+                            for (Object ob : books.values().toArray()) {
+                                Map<String, String> bookVals = (HashMap<String, String>) ob;
 
-                            if(title.equalsIgnoreCase(bookTitles.get(position))) {
+                                String isbn, title, author, publisher, editionYear, bookConditions, uid;
+                                title = bookVals.get("title");
 
-                                isbn = bookVals.get("isbn");
-                                author = bookVals.get("author");
-                                publisher = bookVals.get("publisher");
-                                editionYear = bookVals.get("editionYear");
-                                bookConditions = bookVals.get("bookConditions");
-                                book = new Book(isbn, title, author, publisher, editionYear, bookConditions);
+                                if (title.equalsIgnoreCase(bookTitles.get(position))) {
 
-                                showBook.putExtra("book",book);
-                                startActivity(showBook);
+                                    isbn = bookVals.get("isbn");
+                                    author = bookVals.get("author");
+                                    publisher = bookVals.get("publisher");
+                                    editionYear = bookVals.get("editionYear");
+                                    bookConditions = bookVals.get("bookConditions");
+                                    uid = bookVals.get("uid");
+                                    book = new Book(isbn, title, author, publisher, editionYear, bookConditions, uid);
+
+                                    showBook.putExtra("book", book);
+                                    startActivity(showBook);
+                                }
+
                             }
 
                         }
+                    });
+                    return view;
+                }
+            });
+        }
+        else {
 
-                    }
-                });
-                return view;
-            }
-        });
+        }
     }
 
 }

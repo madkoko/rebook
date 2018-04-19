@@ -3,9 +3,19 @@
     package="it.polito.mad.koko.kokolab2">
 
     <!-- To auto-complete the email text field in the login form with the profile's emails -->
+
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="true" />
 
     <!-- Permission To acces to storage and camera -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -35,7 +45,8 @@
         <activity android:name=".profile.EditProfile" />
         <activity android:name=".books.InsertBook" />
         <activity android:name=".books.ShowBooks" />
-        <activity android:name=".books.ShowBook"></activity>
+        <activity android:name=".books.ShowBook" />
+        <activity android:name=".books.ScanISBNActivity"></activity>
     </application>
 
 </manifest>
