@@ -37,6 +37,12 @@ import it.polito.mad.koko.kokolab2.auth.custom.BaseActivity;
 public class EmailPasswordActivity extends BaseActivity implements
         View.OnClickListener {
 
+    /**
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab2.auth.custom.ChooserActivity}
+     */
+    private static final int    AUTH_SUCCESS = 0,
+                                AUTH_FAIL = -1;
+
     private static final String TAG = "EmailPassword";
 
     private TextView mStatusTextView;
@@ -79,6 +85,15 @@ public class EmailPasswordActivity extends BaseActivity implements
         updateUI(currentUser);
     }
     // [END on_start_check_user]
+
+    /**
+     * Pressing the back button makes the authentication fail.
+     */
+    @Override
+    public void onBackPressed() {
+        setResult(AUTH_FAIL);
+        finish();
+    }
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
@@ -212,7 +227,10 @@ public class EmailPasswordActivity extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+            setResult(AUTH_SUCCESS);
+            finish();
+
+            /*mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
                     user.getEmail(), user.isEmailVerified()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
@@ -220,7 +238,7 @@ public class EmailPasswordActivity extends BaseActivity implements
             findViewById(R.id.email_password_fields).setVisibility(View.GONE);
             findViewById(R.id.signed_in_buttons).setVisibility(View.VISIBLE);
 
-            findViewById(R.id.verify_email_button).setEnabled(!user.isEmailVerified());
+            findViewById(R.id.verify_email_button).setEnabled(!user.isEmailVerified());*/
         } else {
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);

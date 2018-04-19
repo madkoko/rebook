@@ -43,6 +43,12 @@ import it.polito.mad.koko.kokolab2.auth.provider.PhoneAuthActivity;
  */
 public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    /**
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab2.auth.custom.ChooserActivity}
+     */
+    private static final int    AUTH_SUCCESS = 0,
+                                AUTH_FAIL = -1;
+
     private static final Class[] CLASSES = new Class[]{
             GoogleSignInActivity.class,
             EmailPasswordActivity.class/*,
@@ -81,7 +87,13 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Class clicked = CLASSES[position];
-        startActivity(new Intent(this, clicked));
+        startActivityForResult(new Intent(this, clicked), 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == AUTH_SUCCESS)
+            finish();
     }
 
     public static class MyArrayAdapter extends ArrayAdapter<Class> {
