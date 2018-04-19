@@ -96,6 +96,8 @@ public class Authenticator {
                 firebaseUI();
             else
                 customAuthUI();
+
+            instantiateUser();
         }
         else
             Log.d("debug", "User has already logged in");
@@ -135,8 +137,7 @@ public class Authenticator {
      */
     private void customAuthUI() {
         activity.startActivityForResult(
-            new Intent(activity.getApplicationContext(), ChooserActivity.class),
-            1
+            new Intent(activity.getApplicationContext(), ChooserActivity.class),1
         );
     }
 

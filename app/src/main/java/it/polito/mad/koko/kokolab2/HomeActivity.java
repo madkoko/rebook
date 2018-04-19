@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == authenticator.getRcSignIn()) {
+        /*if(requestCode == authenticator.getRcSignIn()) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             // Successfully signed in
@@ -124,7 +124,23 @@ public class HomeActivity extends AppCompatActivity
                     return;
                 }
             }
-        }
+        }*/
+
+        Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
+        authenticator.instantiateUser();
+
+        // Creating the Firebase user entry in the database
+        ProfileManager profileManager = ProfileManager.getOurInstance();
+        profileManager.addProfile(
+                authenticator.getUser().getDisplayName(),
+                authenticator.getUser().getEmail(),
+                null,
+                null,
+                null,
+                authenticator.getDatabase(),
+                authenticator.getAuth().getUid()
+        );
+
     }
 
     @Override
