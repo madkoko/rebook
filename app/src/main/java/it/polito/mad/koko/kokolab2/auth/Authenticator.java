@@ -16,13 +16,16 @@ import it.polito.mad.koko.kokolab2.auth.custom.ChooserActivity;
 
 public class Authenticator {
 
+    /**
+     * Sign in request code
+     */
     private static final int RC_SIGN_IN = 123;
 
     /**
      * If true, FirebaseUI will be used.
      * Otherwise, a custom login/sign in UI will be displayed.
      */
-    private static final boolean FIREBASE_UI = true;
+    private static final boolean FIREBASE_UI = false;
 
     /**
      * Firebase user objects
@@ -37,19 +40,20 @@ public class Authenticator {
     private List<AuthUI.IdpConfig> providers;
 
     /**
-     * Activity to which this authenticator refers to.
+     * Activity to which this authenticator manages the user
+     * authentication process.
      */
     private AppCompatActivity activity;
 
+    /**
+     * Default constructor.
+     * @param activity  the activity this authenticator refers to.
+     */
     public Authenticator(AppCompatActivity activity) {
         this.activity = activity;
 
-        // Setting authentication providers
-        providers = Arrays.asList(
-            new AuthUI.IdpConfig.EmailBuilder().build(),
-            new AuthUI.IdpConfig.GoogleBuilder().build(),
-            new AuthUI.IdpConfig.PhoneBuilder().build()
-        );
+        if(FIREBASE_UI)
+            setProviders();
 
         instantiateUser();
     }
@@ -82,8 +86,8 @@ public class Authenticator {
      * It creates a login/sign in UI depending on the
      * specific setting.
      */
-    public void signInUI(){
-        Log.d("debug", "signInuUI() called");
+    public void authUI(){
+        Log.d("debug", "authUI() called");
 
         if(!hasLoggedIn()) {
             Log.d("debug", "User has not logged in already");
@@ -91,10 +95,21 @@ public class Authenticator {
             if(FIREBASE_UI)
                 firebaseUI();
             else
-                customLoginUI();
+                customAuthUI();
         }
         else
             Log.d("debug", "User has already logged in");
+    }
+
+    /**
+     * Setting authentication providers for FirebaseUI.
+     */
+    private void setProviders() {
+        // Setting authentication providers
+        providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build()
+        );
     }
 
     /**
@@ -118,7 +133,7 @@ public class Authenticator {
     /**
      * It creates a custom login/sign in UI.
      */
-    private void customLoginUI() {
+    private void customAuthUI() {
         activity.startActivityForResult(
             new Intent(activity.getApplicationContext(), ChooserActivity.class),
             1
@@ -136,7 +151,7 @@ public class Authenticator {
 
         Log.d("debug","database: " + database + "\nauth: " + auth + "\nuser: " + user);
 
-        signInUI();
+        authUI();
     }
 
     public FirebaseAuth getAuth() {
@@ -154,4 +169,5 @@ public class Authenticator {
     public static int getRcSignIn() {
         return RC_SIGN_IN;
     }
+
 }

@@ -45,15 +45,23 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
     private static final Class[] CLASSES = new Class[]{
             GoogleSignInActivity.class,
-            EmailPasswordActivity.class,
-            PhoneAuthActivity.class
+            EmailPasswordActivity.class/*,
+            PhoneAuthActivity.class*/
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {
             R.string.desc_google_sign_in,
-            R.string.desc_emailpassword,
-            R.string.desc_phone_auth
+            R.string.desc_emailpassword/*,
+            R.string.desc_phone_auth*/
     };
+
+    /**
+     * Disabling the back button.
+     */
+    @Override
+    public void onBackPressed() {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

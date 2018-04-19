@@ -202,6 +202,8 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
 
     private void startPhoneNumberVerification(String phoneNumber) {
+        Log.d("debug", "Verifying " + phoneNumber + "...");
+
         // [START start_phone_auth]
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,        // Phone number to verify

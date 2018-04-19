@@ -67,7 +67,7 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        authenticator.signInUI();
+        authenticator.authUI();
 
         // creation of the BookManager if the user is authenticated
         if(authenticator.hasLoggedIn()) {
@@ -107,9 +107,9 @@ public class HomeActivity extends AppCompatActivity
                 );
 
                 return;
-            } else{
+            } else {
                 //Profile pressed back button
-                if (response == null) {
+                if(response == null) {
                     Toast.makeText(this, "Profile pressed back button", Toast.LENGTH_LONG).show();
                     return;
                 }
