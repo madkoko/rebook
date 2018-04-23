@@ -32,8 +32,11 @@ public class ShowProfile extends AppCompatActivity {
      * Profile profile data is stored in a firebase database.
      */
     private String mFirebaseUser;
-    private HashMap<String, Profile> profile;
 
+    /**
+     * User profile information
+     */
+    private ProfileManager profileManager;
 
     /**
      * Instantiating the activity for the first time.
@@ -43,9 +46,11 @@ public class ShowProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Retrieving the ProfileManager singleton
+        profileManager = ProfileManager.getInstance();
+
         // Loading the XML layout file
         setContentView(R.layout.activity_show_profile);
-
 
         //Loading UserID from intent
         i = getIntent();
@@ -57,8 +62,6 @@ public class ShowProfile extends AppCompatActivity {
         tv_location=findViewById(R.id.user_location);
         tv_bio=findViewById(R.id.user_bio);
         user_photo=findViewById(R.id.user_photo);
-        profile =(HashMap<String, Profile>) ProfileManager.getProfile();
-
     }
 
     /**
@@ -109,13 +112,14 @@ public class ShowProfile extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Profile p = profile.get(mFirebaseUser);
-        tv_name.setText(p.getName());
-        tv_email.setText(p.getEmail());
-        tv_location.setText(p.getLocation());
-        tv_bio.setText(p.getBio());
-        if(p.getImgUrl()!=null)
-            Picasso.get().load(p.getImgUrl()).fit().centerCrop().into(user_photo);
+
+        Profile profile = profileManager.getProfile();
+        tv_name.setText(profile.getName());
+        tv_email.setText(profile.getEmail());
+        tv_location.setText(profile.getLocation());
+        tv_bio.setText(profile.getBio());
+        if(profile.getImgUrl()!=null)
+            Picasso.get().load(profile.getImgUrl()).fit().centerCrop().into(user_photo);
     }
 }
 

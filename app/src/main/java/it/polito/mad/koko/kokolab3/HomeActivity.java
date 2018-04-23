@@ -96,7 +96,7 @@ public class HomeActivity extends AppCompatActivity
                 authenticator.instantiateUser();
 
                 // Creating the Firebase user entry in the database
-                ProfileManager profileManager = ProfileManager.getOurInstance();
+                ProfileManager profileManager = ProfileManager.getInstance();
                 profileManager.addProfile(
                     authenticator.getUser().getDisplayName(),
                     authenticator.getUser().getEmail(),
@@ -131,8 +131,7 @@ public class HomeActivity extends AppCompatActivity
         authenticator.instantiateUser();
 
         // Creating the Firebase user entry in the database
-        ProfileManager profileManager = new ProfileManager();
-
+        ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.addProfile(
             authenticator.getUser().getDisplayName(),
             authenticator.getUser().getEmail(),
@@ -214,8 +213,5 @@ public class HomeActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        // creation of the BookManager if the user is authenticated
-        if(authenticator.hasLoggedIn())
-            new ProfileManager();
     }
 }

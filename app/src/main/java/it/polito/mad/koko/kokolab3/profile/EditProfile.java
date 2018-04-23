@@ -52,7 +52,12 @@ public class EditProfile extends AppCompatActivity{
     private ImageView user_photo;
 
     /**
-     *  Firebase login profile, firebase database and profile class
+     * User profile information
+     */
+    private ProfileManager profileManager;
+
+    /**
+     *  Firebase login profile, firebase database
      */
     private FirebaseUser mFirebaseUser;
     private FirebaseDatabase mDatabase;
@@ -66,7 +71,6 @@ public class EditProfile extends AppCompatActivity{
     private Bitmap imageBitmap;
     private boolean flagCamera;
     private boolean flagGallery;
-    private HashMap<String, Profile> profile;
 
     /**
      * Filling all the UI text fields and the profile profile pic with all the
@@ -81,6 +85,9 @@ public class EditProfile extends AppCompatActivity{
 
         // TODO Debugging
         Log.d("debug","onCreate");
+
+        // Retrieving the ProfileManager singleton
+        profileManager = ProfileManager.getInstance();
 
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
@@ -111,12 +118,6 @@ public class EditProfile extends AppCompatActivity{
             }
         });
 
-
-        // inizialiate firebase profile, database and storage
-        profile =(HashMap<String, Profile>) ProfileManager.getProfile();
-
-
-
         // Save button
         Button save_button = findViewById(R.id.save_button);
         save_button.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +134,6 @@ public class EditProfile extends AppCompatActivity{
                 byte[] shown_image = baos.toByteArray();
 
                 //Create a new profileManager
-                ProfileManager profileManager = new ProfileManager();
                 profileManager.editProfile(
                         et_name.getText().toString(),
                         et_email.getText().toString(),
@@ -281,7 +281,7 @@ public class EditProfile extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        Profile p = profile.get(FirebaseAuth.getInstance().getUid());
+        Profile p = profileManager.getProfile();
         et_name.setText(p.getName());
         et_email.setText(p.getEmail());
         et_bio.setText(p.getBio());

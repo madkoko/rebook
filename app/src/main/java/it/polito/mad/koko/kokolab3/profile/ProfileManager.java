@@ -1,99 +1,104 @@
 package it.polito.mad.koko.kokolab3.profile;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.prefs.PreferencesFactory;
 
-
+/**
+ * Singleton profile manager class
+ */
 public class ProfileManager {
 
-    private List<Profile> lista = Collections.synchronizedList(new ArrayList());
-    private static Map<String,Profile> profileMap=null;
-    private static ProfileManager ourInstance=null;
+    /**
+     * Unique instance
+     */
+    private static ProfileManager instance = null;
+
+    /**
+     * User data
+     */
+    private Profile profile;
+    // private static Map<String,Profile> profileMap = null;
+    private String profileId;
+
+    /**
+     * Firebase objects
+     */
     private DatabaseReference usersRef;
     private StorageReference storageRef;
-    private FirebaseDatabase database;
-    private FirebaseStorage storage;
-    private String userId;
     private Map<String, Object> childUpdates;
     private String downloadUrl;
-    private FirebaseUser firebaseUser;
-    private Profile profile;
-    private DatabaseReference newUser;
-
-
-    public ProfileManager(){
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        newUser= FirebaseDatabase.getInstance().getReference().child("users");
-        usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
-        storageRef = FirebaseStorage.getInstance().getReference().child("users").child(userId);
-        profile = new Profile();
-        loadProfile();
-    }
 
     /**
      * synchronized method for different thread
      * @return ProfileManager instance
      */
-    public static synchronized ProfileManager getOurInstance() {
-        if (ourInstance == null) ourInstance = new ProfileManager();
-        return ourInstance;
+    public static synchronized ProfileManager getInstance() {
+        if(instance == null)
+            instance = new ProfileManager();
+        return instance;
     }
 
-    /**
-     * for future implementation list of users
-     * @return list of user
-     */
-    public List<Profile> getProfiles() {
-        return lista;
+    protected ProfileManager() {
+        initializeFirebase();
+        profile = new Profile();
+        loadProfile();
     }
 
-
-    public static Map<String, Profile> getProfile(){
-        return profileMap;
+    private void initializeFirebase() {
+        profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(profileId);
+        storageRef = FirebaseStorage.getInstance().getReference().child("users").child(profileId);
     }
 
-
-    public void loadProfile(){
+    private void loadProfile(){
         usersRef.addValueEventListener(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        profileMap = new HashMap<>();
-                        profileMap.clear();
+                        // profileMap = new HashMap<>();
+                        // profileMap.clear();
                         profile.setName(dataSnapshot.child("name").getValue(String.class));
                         profile.setEmail(dataSnapshot.child("email").getValue(String.class));
                         profile.setBio(dataSnapshot.child("bio").getValue(String.class));
                         profile.setLocation(dataSnapshot.child("location").getValue(String.class));
                         profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
                         profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
-                        profileMap.put(userId, profile);
-                        System.out.println(profileMap);
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
+                        // profileMap.put(profileId, profile);
+                        // System.out.println(profileMap);
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
                 });
     }
 
-            /**
+    public Profile getProfile(){
+        return profile;
+    }
+
+    public String getProfileId() {
+        return profileId;
+    }
+
+    /**
      * Manager for add Profile on Firebase
      * @param name name of user
      * @param email email of user
@@ -101,7 +106,7 @@ public class ProfileManager {
      * @param location location of user
      * @param bio bio of user
      */
-
+    @SuppressLint("LongLogTag")
     public void addProfile(String name, String email, String phone, String location, String bio, String imgUrl){
 
         //This is for future implementation of Auth
@@ -109,12 +114,13 @@ public class ProfileManager {
         usersRef.push().setValue(profile);*/
 
 
-        Profile profile = new Profile(name,email);
-        usersRef.setValue(profile);
-/*
-        usersRef.child("name").setValue(name);
-        usersRef.child("email").setValue(email);
-  */
+        //Profile profile = new Profile(name,email);
+        //usersRef.setValue(profile);
+        Log.d("profile.getName(), userRef", profile.getEmail()+ " " +usersRef.child("email"));
+        if(usersRef.child("name")== null && usersRef.child("email")==null) {
+            usersRef.child("name").setValue(name);
+            usersRef.child("email").setValue(email);
+        }
     }
 
 
@@ -123,7 +129,7 @@ public class ProfileManager {
         childUpdates = new HashMap<>();
 
         StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", userId.toString())
+                .setCustomMetadata("text", profileId.toString())
                 .build();
         UploadTask uploadTask = storageRef.putBytes(data,metadata);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

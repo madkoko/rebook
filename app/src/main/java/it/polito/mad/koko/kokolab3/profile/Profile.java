@@ -32,47 +32,47 @@ public class Profile implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getLocation() {
         return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getBio() {
         return bio;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
     public String getImgUrl() {
         return imgUrl;
     }
 
-    public void setImgUrl(String imgUrl) {
+    public synchronized void setName(String name) {
+        this.name = name;
+    }
+
+    public synchronized void setEmail(String email) {
+        this.email = email;
+    }
+
+    public synchronized void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public synchronized void setLocation(String location) {
+        this.location = location;
+    }
+
+    public synchronized void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public synchronized void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
     }
 
