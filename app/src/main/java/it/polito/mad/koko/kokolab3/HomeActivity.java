@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab3;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -15,17 +15,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 
-import it.polito.mad.koko.kokolab2.auth.Authenticator;
-import it.polito.mad.koko.kokolab2.books.BookManager;
-import it.polito.mad.koko.kokolab2.books.InsertBook;
-import it.polito.mad.koko.kokolab2.books.ShowBooks;
-import it.polito.mad.koko.kokolab2.profile.EditProfile;
-import it.polito.mad.koko.kokolab2.profile.ProfileManager;
-import it.polito.mad.koko.kokolab2.profile.ShowProfile;
+import it.polito.mad.koko.kokolab3.auth.Authenticator;
+import it.polito.mad.koko.kokolab3.books.BookManager;
+import it.polito.mad.koko.kokolab3.books.InsertBook;
+import it.polito.mad.koko.kokolab3.books.ShowBooks;
+import it.polito.mad.koko.kokolab3.profile.EditProfile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,7 +72,7 @@ public class HomeActivity extends AppCompatActivity
 
         // creation of the BookManager if the user is authenticated
         if(authenticator.hasLoggedIn()) {
-            BookManager bm = new BookManager();
+            new BookManager();
         }
     }
 
@@ -219,6 +217,5 @@ public class HomeActivity extends AppCompatActivity
         // creation of the BookManager if the user is authenticated
         if(authenticator.hasLoggedIn())
             new ProfileManager();
-            new BookManager();
     }
 }

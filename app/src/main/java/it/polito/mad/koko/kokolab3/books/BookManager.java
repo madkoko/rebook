@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.books;
+package it.polito.mad.koko.kokolab3.books;
 
 import android.util.Log;
 
@@ -10,7 +10,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -76,7 +75,15 @@ public class BookManager {
                                 if(!book.get("uid").equalsIgnoreCase(FirebaseAuth.getInstance().getCurrentUser().getUid()))
                                     bookIterator.remove();
                             }
+
                         }
+
+                        /*ref.orderByChild('name').equalTo('John Doe').on("value", function(snapshot) {
+                            console.log(snapshot.val());
+                            snapshot.forEach(function(data) {
+                                console.log(data.key);
+                            });
+                        });*/
                     }
 
                     @Override

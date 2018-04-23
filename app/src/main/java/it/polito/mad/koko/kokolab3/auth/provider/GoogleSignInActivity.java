@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.polito.mad.koko.kokolab2.auth.provider;
+package it.polito.mad.koko.kokolab3.auth.provider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,8 +37,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import it.polito.mad.koko.kokolab2.R;
-import it.polito.mad.koko.kokolab2.auth.custom.BaseActivity;
+import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.auth.custom.BaseActivity;
 
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
@@ -47,7 +47,7 @@ public class GoogleSignInActivity extends BaseActivity implements
         View.OnClickListener {
 
     /**
-     * Authentication code needed to {@link it.polito.mad.koko.kokolab2.auth.custom.ChooserActivity}
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
      */
     private static final int    AUTH_SUCCESS = 0,
                                 AUTH_FAIL = -1;

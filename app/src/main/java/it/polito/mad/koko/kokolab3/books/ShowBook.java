@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.books;
+package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab3.R;
 
 public class ShowBook extends AppCompatActivity {
 

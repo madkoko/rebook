@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.books;
+package it.polito.mad.koko.kokolab3.books;
 
 import java.io.Serializable;
 

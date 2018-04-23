@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.books;
+package it.polito.mad.koko.kokolab3.books;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -18,14 +18,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab3.R;
 
 public class InsertBook extends AppCompatActivity {
 

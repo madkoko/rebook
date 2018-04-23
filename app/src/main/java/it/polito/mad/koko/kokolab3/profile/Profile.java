@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.profile;
+package it.polito.mad.koko.kokolab3.profile;
 
 import java.io.Serializable;
 
