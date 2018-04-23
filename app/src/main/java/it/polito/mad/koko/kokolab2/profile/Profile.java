@@ -1,6 +1,8 @@
 package it.polito.mad.koko.kokolab2.profile;
 
-public class Profile {
+import java.io.Serializable;
+
+public class Profile implements Serializable {
 
     private String  name,
                     email,
@@ -67,5 +69,17 @@ public class Profile {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", location='" + location + '\'' +
+                ", bio='" + bio + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                '}';
     }
 }

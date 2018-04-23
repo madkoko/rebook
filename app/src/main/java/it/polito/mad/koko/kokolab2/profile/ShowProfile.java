@@ -17,6 +17,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import it.polito.mad.koko.kokolab2.R;
 
 public class ShowProfile extends AppCompatActivity {
@@ -34,9 +36,8 @@ public class ShowProfile extends AppCompatActivity {
     /**
      * Profile profile data is stored in a firebase database.
      */
-    private DatabaseReference mDatabase;
     private String mFirebaseUser;
-
+    private HashMap<String, Profile> profile;
 
 
     /**
@@ -61,6 +62,8 @@ public class ShowProfile extends AppCompatActivity {
         tv_location=findViewById(R.id.user_location);
         tv_bio=findViewById(R.id.user_bio);
         user_photo=findViewById(R.id.user_photo);
+        profile =(HashMap<String, Profile>) ProfileManager.getProfile();
+
     }
 
     /**
@@ -103,6 +106,7 @@ public class ShowProfile extends AppCompatActivity {
         }
     }
 
+
     /**
      * Filling all the UI fields retrieving all the needed information from
      * firebase.
@@ -110,29 +114,13 @@ public class ShowProfile extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        //Loading firebase database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        // Filling UI elements
-        DatabaseReference nameReference = mDatabase.child("users").child(mFirebaseUser);
-        nameReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                tv_name.setText(dataSnapshot.child("name").getValue(String.class));
-                tv_email.setText(dataSnapshot.child("email").getValue(String.class));
-                tv_location.setText(dataSnapshot.child("location").getValue(String.class));
-                tv_bio.setText(dataSnapshot.child("bio").getValue(String.class));
-                if(dataSnapshot.child("image").getValue(String.class)!=null)
-                    Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).fit().centerCrop().into(user_photo);
-
-            }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                };
-
-            });
+        Profile p = profile.get(mFirebaseUser);
+        tv_name.setText(p.getName());
+        tv_email.setText(p.getEmail());
+        tv_location.setText(p.getLocation());
+        tv_bio.setText(p.getBio());
+        if(p.getImgUrl()!=null)
+            Picasso.get().load(p.getImgUrl()).fit().centerCrop().into(user_photo);
     }
 }
 

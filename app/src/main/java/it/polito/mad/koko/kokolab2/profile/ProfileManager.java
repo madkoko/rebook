@@ -4,8 +4,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -20,7 +23,8 @@ import java.util.Map;
 
 public class ProfileManager {
 
-    private List<Profile> list = Collections.synchronizedList(new ArrayList());
+    private List<Profile> lista = Collections.synchronizedList(new ArrayList());
+    private static Map<String,Profile> profileMap=null;
     private static ProfileManager ourInstance=null;
     private DatabaseReference usersRef;
     private StorageReference storageRef;
@@ -30,21 +34,16 @@ public class ProfileManager {
     private Map<String, Object> childUpdates;
     private String downloadUrl;
     private FirebaseUser firebaseUser;
+    private Profile profile;
 
 
 
-    public ProfileManager(FirebaseDatabase database, FirebaseUser firebaseUser, FirebaseStorage storage){
-        this.database=database;
-        this.firebaseUser=firebaseUser;
-        this.storage=storage;
+    public ProfileManager(){
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        usersRef = database.getReference().child("users").child(userId);
-        storageRef = storage.getReference().child("users").child(userId);
-
-
-    }
-
-    public ProfileManager() {
+        usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+        storageRef = FirebaseStorage.getInstance().getReference().child("users").child(userId);
+        profile = new Profile();
+        loadProfile();
     }
 
     /**
@@ -61,21 +60,38 @@ public class ProfileManager {
      * @return list of user
      */
     public List<Profile> getProfiles() {
-        return list;
+        return lista;
     }
 
-    /**
-     * for future implementation user
-     * @param i position of user
-     * @return position of user from the list
-     */
-    public Profile getProfile(int i){
-        synchronized (list) {
-            return list.get(i);
-        }
+
+    public static Map<String, Profile> getProfile(){
+        return profileMap;
     }
 
-    /**
+
+    public void loadProfile(){
+        usersRef.addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        profileMap = new HashMap<>();
+                        profileMap.clear();
+                        profile.setName(dataSnapshot.child("name").getValue(String.class));
+                        profile.setEmail(dataSnapshot.child("email").getValue(String.class));
+                        profile.setBio(dataSnapshot.child("bio").getValue(String.class));
+                        profile.setLocation(dataSnapshot.child("location").getValue(String.class));
+                        profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
+                        profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
+                        profileMap.put(userId, profile);
+                        System.out.println(profileMap);
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                });
+    }
+
+            /**
      * Manager for add Profile on Firebase
      * @param name name of user
      * @param email email of user
@@ -116,11 +132,12 @@ public class ProfileManager {
         childUpdates.put("location", location);
         childUpdates.put("bio", bio);
         usersRef.updateChildren(childUpdates);
-        firebaseUser.updateProfile(new UserProfileChangeRequest
+        /*firebaseUser.updateProfile(new UserProfileChangeRequest
                 .Builder()
                 .setDisplayName(name)
                 .build()
         );
+        */
     }
 
 }

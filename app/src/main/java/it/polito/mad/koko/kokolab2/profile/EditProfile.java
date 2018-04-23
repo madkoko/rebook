@@ -31,6 +31,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 import it.polito.mad.koko.kokolab2.R;
 
@@ -68,6 +69,7 @@ public class EditProfile extends AppCompatActivity{
     private Bitmap imageBitmap;
     private boolean flagCamera;
     private boolean flagGallery;
+    private HashMap<String, Profile> profile;
 
     /**
      * Filling all the UI text fields and the profile profile pic with all the
@@ -114,10 +116,7 @@ public class EditProfile extends AppCompatActivity{
 
 
         // inizialiate firebase profile, database and storage
-        mFirebaseUser= FirebaseAuth.getInstance().getCurrentUser();
-        mDatabase = FirebaseDatabase.getInstance();
-        mStorage = FirebaseStorage.getInstance();
-        nameReference = mDatabase.getReference().child("users").child(mFirebaseUser.getUid());
+        profile =(HashMap<String, Profile>) ProfileManager.getProfile();
 
 
 
@@ -137,7 +136,7 @@ public class EditProfile extends AppCompatActivity{
                 byte[] shown_image = baos.toByteArray();
 
                 //Create a new profileManager
-                ProfileManager profileManager = new ProfileManager(mDatabase,mFirebaseUser,mStorage);
+                ProfileManager profileManager = new ProfileManager();
                 profileManager.editProfile(
                         et_name.getText().toString(),
                         et_email.getText().toString(),
@@ -285,36 +284,19 @@ public class EditProfile extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        // TODO debugging
-        Log.d("debug", "onResume");
-
-
-        // Restoring all UI values
-        nameReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                et_name.setText(dataSnapshot.child("name").getValue(String.class));
-                et_email.setText(dataSnapshot.child("email").getValue(String.class));
-                et_phone.setText(dataSnapshot.child("phone").getValue(String.class));
-                et_location.setText(dataSnapshot.child("location").getValue(String.class));
-                et_bio.setText(dataSnapshot.child("bio").getValue(String.class));
-                Log.d("debug", "flagGallery:"+flagGallery+",flagCamera:"+flagCamera);
-                if(flagCamera){
-                    Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
-                    user_photo.setImageBitmap(tmp);
-                }else if(flagGallery) {
-                    Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
-                }
-                else if(dataSnapshot.child("image").getValue(String.class)!=null) {
-                    Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).fit().centerCrop().into(user_photo);
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            };
-
-        });
+        Profile p = profile.get(FirebaseAuth.getInstance().getUid());
+        et_name.setText(p.getName());
+        et_email.setText(p.getEmail());
+        et_bio.setText(p.getBio());
+        et_location.setText(p.getLocation());
+        et_phone.setText(p.getPhone());
+        if(flagCamera) {
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+            user_photo.setImageBitmap(tmp);
+        }else if (flagGallery){
+            Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
+        }else if(p.getImgUrl()!=null){
+            Picasso.get().load(p.getImgUrl()).fit().centerCrop().into(user_photo);
+        }
     }
-
 }
