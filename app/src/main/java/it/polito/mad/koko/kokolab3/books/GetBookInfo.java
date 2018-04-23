@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.books;
+package it.polito.mad.koko.kokolab3.books;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -8,8 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

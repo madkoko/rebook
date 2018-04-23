@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.auth;
+package it.polito.mad.koko.kokolab3.auth;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +13,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.Arrays;
 import java.util.List;
 
-import it.polito.mad.koko.kokolab2.auth.custom.ChooserActivity;
+import it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity;
 
 public class Authenticator {
 

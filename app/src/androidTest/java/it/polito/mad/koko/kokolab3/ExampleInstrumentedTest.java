@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab3;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("it.polito.mad.koko.kokolab2", appContext.getPackageName());
+        assertEquals("it.polito.mad.koko.kokolab3", appContext.getPackageName());
     }
 }

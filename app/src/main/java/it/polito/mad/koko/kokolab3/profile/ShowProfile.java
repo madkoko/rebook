@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.profile;
+package it.polito.mad.koko.kokolab3.profile;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,16 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
-import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab3.R;
 
 public class ShowProfile extends AppCompatActivity {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.polito.mad.koko.kokolab2.auth.custom;
+package it.polito.mad.koko.kokolab3.auth.custom;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,10 +28,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import it.polito.mad.koko.kokolab2.R;
-import it.polito.mad.koko.kokolab2.auth.provider.EmailPasswordActivity;
-import it.polito.mad.koko.kokolab2.auth.provider.GoogleSignInActivity;
-import it.polito.mad.koko.kokolab2.auth.provider.PhoneAuthActivity;
+import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.auth.provider.EmailPasswordActivity;
+import it.polito.mad.koko.kokolab3.auth.provider.GoogleSignInActivity;
+import it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity;
 
 /**
  * Simple list-based Activity to redirect to one of the other Activities. This Activity does not
@@ -44,7 +44,7 @@ import it.polito.mad.koko.kokolab2.auth.provider.PhoneAuthActivity;
 public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     /**
-     * Authentication code needed to {@link it.polito.mad.koko.kokolab2.auth.custom.ChooserActivity}
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
      */
     private static final int    AUTH_SUCCESS = 0,
                                 AUTH_FAIL = -1;

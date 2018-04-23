@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2;
+package it.polito.mad.koko.kokolab3;
 
 import org.junit.Test;
 

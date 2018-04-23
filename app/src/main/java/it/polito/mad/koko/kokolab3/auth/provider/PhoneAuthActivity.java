@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.auth.provider;
+package it.polito.mad.koko.kokolab3.auth.provider;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,7 +25,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
 
-import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab3.R;
 
 public class PhoneAuthActivity extends AppCompatActivity implements
         View.OnClickListener {

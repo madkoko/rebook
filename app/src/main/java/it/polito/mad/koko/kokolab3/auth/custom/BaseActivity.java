@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab2.auth.custom;
+package it.polito.mad.koko.kokolab3.auth.custom;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import it.polito.mad.koko.kokolab2.R;
+import it.polito.mad.koko.kokolab3.R;
 
 public class BaseActivity extends AppCompatActivity {
 
