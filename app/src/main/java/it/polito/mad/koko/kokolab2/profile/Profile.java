@@ -23,6 +23,11 @@ public class Profile implements Serializable {
         this.imgUrl=imgUrl;
     }
 
+    public Profile(String name, String email) {
+        this.name=name;
+        this.email=email;
+    }
+
     public String getName() {
         return name;
     }

@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.PreferencesFactory;
 
 
 public class ProfileManager {
@@ -35,11 +37,12 @@ public class ProfileManager {
     private String downloadUrl;
     private FirebaseUser firebaseUser;
     private Profile profile;
-
+    private DatabaseReference newUser;
 
 
     public ProfileManager(){
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        newUser= FirebaseDatabase.getInstance().getReference().child("users");
         usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
         storageRef = FirebaseStorage.getInstance().getReference().child("users").child(userId);
         profile = new Profile();
@@ -106,8 +109,13 @@ public class ProfileManager {
         /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
         usersRef.push().setValue(profile);*/
 
+
+        Profile profile = new Profile(name,email);
+        usersRef.setValue(profile);
+/*
         usersRef.child("name").setValue(name);
         usersRef.child("email").setValue(email);
+  */
     }
 
 
