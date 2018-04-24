@@ -49,11 +49,6 @@ public class HomeActivity extends AppCompatActivity
 
         authenticator = new Authenticator(this);
 
-
-        // Retrieving the ProfileManager singleton
-        profileManager = ProfileManager.getInstance();
-
-
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -145,7 +140,7 @@ public class HomeActivity extends AppCompatActivity
 
         profileManager=null;
         Log.d("debug_profileId_1", String.valueOf(profileManager));
-
+        profileManager=new ProfileManager();
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
         Log.d("debug_profileId_2", String.valueOf(profileManager));
@@ -235,6 +230,12 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
         String profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Log.d("debug_profileId_onRe",profileId);
+
+
+        // Retrieving the ProfileManager singleton
+        profileManager = ProfileManager.getInstance();
+
+
 
     }
 }

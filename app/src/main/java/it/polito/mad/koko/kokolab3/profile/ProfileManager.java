@@ -53,7 +53,7 @@ public class ProfileManager {
         return instance;
     }
 
-    protected ProfileManager() {
+    public ProfileManager() {
         initializeFirebase();
         profile = new Profile();
         loadProfile();
@@ -113,7 +113,6 @@ public class ProfileManager {
 
         //Profile profile = new Profile(name,email);
         //usersRef.setValue(profile);
-
         usersRef.child("email").setValue(email);
     }
 

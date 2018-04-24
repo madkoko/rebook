@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
 
 import it.polito.mad.koko.kokolab3.R;
 
