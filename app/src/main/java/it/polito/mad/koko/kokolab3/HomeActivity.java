@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -33,13 +34,25 @@ public class HomeActivity extends AppCompatActivity
      */
     private Authenticator authenticator;
 
+    /**
+     * User profile information
+     */
+    private ProfileManager profileManager;
+
+
     private int INSERT_BOOK = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         authenticator = new Authenticator(this);
+
+
+        // Retrieving the ProfileManager singleton
+        profileManager = ProfileManager.getInstance();
+
 
         // UI
         setContentView(R.layout.activity_main);
@@ -130,8 +143,15 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
         authenticator.instantiateUser();
 
+        profileManager=null;
+        Log.d("debug_profileId_1", String.valueOf(profileManager));
+
+        // Retrieving the ProfileManager singleton
+        profileManager = ProfileManager.getInstance();
+        Log.d("debug_profileId_2", String.valueOf(profileManager));
+
+
         // Creating the Firebase user entry in the database
-        ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.addProfile(
             authenticator.getUser().getDisplayName(),
             authenticator.getUser().getEmail(),
@@ -201,8 +221,9 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
-        } else if (id == R.id.sign_out)
+        } else if (id == R.id.sign_out){
             authenticator.signOut();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -212,6 +233,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        String profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.d("debug_profileId_onRe",profileId);
 
     }
 }

@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab3.auth;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -147,7 +148,6 @@ public class Authenticator {
      */
     public void signOut() {
         Log.d("debug","signOut() called");
-
         auth.signOut();
         user = null;
 

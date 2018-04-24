@@ -61,6 +61,7 @@ public class ProfileManager {
 
     private void initializeFirebase() {
         profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.d("debug_profileId",profileId);
         usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(profileId);
         storageRef = FirebaseStorage.getInstance().getReference().child("users").child(profileId);
     }
@@ -70,16 +71,12 @@ public class ProfileManager {
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        // profileMap = new HashMap<>();
-                        // profileMap.clear();
                         profile.setName(dataSnapshot.child("name").getValue(String.class));
                         profile.setEmail(dataSnapshot.child("email").getValue(String.class));
                         profile.setBio(dataSnapshot.child("bio").getValue(String.class));
                         profile.setLocation(dataSnapshot.child("location").getValue(String.class));
                         profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
                         profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
-                        // profileMap.put(profileId, profile);
-                        // System.out.println(profileMap);
 
 
                     }
@@ -116,11 +113,8 @@ public class ProfileManager {
 
         //Profile profile = new Profile(name,email);
         //usersRef.setValue(profile);
-        Log.d("profile.getName(), userRef", profile.getEmail()+ " " +usersRef.child("email"));
-        if(usersRef.child("name")== null && usersRef.child("email")==null) {
-            usersRef.child("name").setValue(name);
-            usersRef.child("email").setValue(email);
-        }
+
+        usersRef.child("email").setValue(email);
     }
 
 

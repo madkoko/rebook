@@ -44,7 +44,6 @@ public class EditProfile extends AppCompatActivity{
      * Profile profile data.
      */
     private EditText et_name;
-    private EditText et_password;
     private EditText et_email;
     private EditText et_phone;
     private EditText et_location;
