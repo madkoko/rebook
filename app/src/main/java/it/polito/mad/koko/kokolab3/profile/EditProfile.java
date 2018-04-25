@@ -44,9 +44,10 @@ public class EditProfile extends AppCompatActivity{
     /**
      * Profile pic source
      */
-    private static final int    CAMERA_REQUEST = 0,
-                                GALLERY = 1;
-    private static int PLACE_PICKER_REQUEST = 1;
+    private static final int
+            CAMERA_REQUEST = 0,
+            GALLERY = 1,
+            PLACE_PICKER_REQUEST = 2;
 
     /**
      * Profile profile data.
@@ -174,7 +175,6 @@ public class EditProfile extends AppCompatActivity{
     }
 
     private void PlaceApi() {
-        PLACE_PICKER_REQUEST = 1;
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
         try {
@@ -309,22 +309,17 @@ public class EditProfile extends AppCompatActivity{
                 flagGallery = false;
 
             }
-        /*
-            if (requestCode == PLACE_PICKER_REQUEST) {
-                if (resultCode == RESULT_OK) {
-                    Place place = PlacePicker.getPlace(data, this);
 
-                    final CharSequence name = place.getName();
-                    final CharSequence address = place.getAddress();
-                    et_location.setText(address);
+            if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(data, this);
+                final CharSequence name = place.getName();
+                final CharSequence address = place.getAddress();
+                et_location.setText(address);
 
-                    String toastMsg = String.format("Place: %s", place.getName());
-                    Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
-                    flagGallery = false;
-                    flagCamera = false;
-                }
+                String toastMsg = String.format("Place: %s", place.getName());
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
             }
-            */
+
 
     }
 
