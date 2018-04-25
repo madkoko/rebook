@@ -18,6 +18,10 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -41,7 +45,8 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:4.27.0'
     // Twitter login
     implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true }
-
+    //google places
+    compile 'com.google.android.gms:play-services-places:11.8.0'
     // Important - the CameraSource implementation in this project requires version 8.1 or higher.
     //compile 'com.google.android.gms:play-services-vision:15.0.0'
     /*androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
