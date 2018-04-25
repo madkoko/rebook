@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.auth.Authenticator;
 
 public class EditProfile extends AppCompatActivity{
 
@@ -70,6 +71,7 @@ public class EditProfile extends AppCompatActivity{
     private Bitmap imageBitmap;
     private boolean flagCamera;
     private boolean flagGallery;
+    private Authenticator authenticator;
 
     /**
      * Filling all the UI text fields and the profile profile pic with all the
@@ -81,6 +83,11 @@ public class EditProfile extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+        authenticator = new Authenticator(this);
+
 
         // TODO Debugging
         Log.d("debug","onCreate");
@@ -139,7 +146,8 @@ public class EditProfile extends AppCompatActivity{
                         et_phone.getText().toString(),
                         et_location.getText().toString(),
                         et_bio.getText().toString(),
-                        shown_image
+                        shown_image,
+                        authenticator.getStorage().getReference().child("users").child(authenticator.getUser().getUid())
                         );
                 // Terminating the activity
                 finish();

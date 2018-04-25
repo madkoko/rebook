@@ -78,9 +78,16 @@ public class HomeActivity extends AppCompatActivity
 
         authenticator.authUI();
 
+
+
+
+
         // creation of the BookManager if the user is authenticated
         if(authenticator.hasLoggedIn()) {
             new BookManager();
+            // Retrieving the ProfileManager singleton
+            profileManager = ProfileManager.getInstance();
+            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
         }
     }
 
@@ -138,22 +145,13 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
         authenticator.instantiateUser();
 
-        profileManager=null;
-        Log.d("debug_profileId_1", String.valueOf(profileManager));
-        profileManager=new ProfileManager();
-        // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
         Log.d("debug_profileId_2", String.valueOf(profileManager));
-
+        profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
 
         // Creating the Firebase user entry in the database
         profileManager.addProfile(
-            authenticator.getUser().getDisplayName(),
-            authenticator.getUser().getEmail(),
-            null,
-            null,
-            null,
-            null
+                authenticator.getUser().getEmail()
         );
 
     }
@@ -230,10 +228,6 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
         String profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Log.d("debug_profileId_onRe",profileId);
-
-
-        // Retrieving the ProfileManager singleton
-        profileManager = ProfileManager.getInstance();
 
 
 

@@ -15,7 +15,10 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +46,8 @@ public class ProfileManager {
     private Map<String, Object> childUpdates;
     private String downloadUrl;
 
+    private List<Profile> list = Collections.synchronizedList(new ArrayList());
+
     /**
      * synchronized method for different thread
      * @return ProfileManager instance
@@ -53,32 +58,26 @@ public class ProfileManager {
         return instance;
     }
 
-    public ProfileManager() {
-        initializeFirebase();
+    protected ProfileManager() {
         profile = new Profile();
-        loadProfile();
     }
 
-    private void initializeFirebase() {
-        profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.d("debug_profileId",profileId);
-        usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(profileId);
-        storageRef = FirebaseStorage.getInstance().getReference().child("users").child(profileId);
-    }
-
-    private void loadProfile(){
+    public void loadProfile(DatabaseReference usersRef){
+        this.usersRef=usersRef;
         usersRef.addValueEventListener(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        profile.setName(dataSnapshot.child("name").getValue(String.class));
-                        profile.setEmail(dataSnapshot.child("email").getValue(String.class));
-                        profile.setBio(dataSnapshot.child("bio").getValue(String.class));
-                        profile.setLocation(dataSnapshot.child("location").getValue(String.class));
-                        profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
-                        profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
-
-
+                        synchronized (list) {
+                            profile.setName(dataSnapshot.child("name").getValue(String.class));
+                            profile.setEmail(dataSnapshot.child("email").getValue(String.class));
+                            profile.setBio(dataSnapshot.child("bio").getValue(String.class));
+                            profile.setLocation(dataSnapshot.child("location").getValue(String.class));
+                            profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
+                            profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
+                            list.clear();
+                            list.add(profile);
+                        }
                     }
 
                     @Override
@@ -88,7 +87,9 @@ public class ProfileManager {
     }
 
     public Profile getProfile(){
-        return profile;
+        synchronized (list) {
+            return list.get(0);
+        }
     }
 
     public String getProfileId() {
@@ -97,15 +98,10 @@ public class ProfileManager {
 
     /**
      * Manager for add Profile on Firebase
-     * @param name name of user
      * @param email email of user
-     * @param phone phone of user
-     * @param location location of user
-     * @param bio bio of user
      */
     @SuppressLint("LongLogTag")
-    public void addProfile(String name, String email, String phone, String location, String bio, String imgUrl){
-
+    public void addProfile(String email){
         //This is for future implementation of Auth
         /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
         usersRef.push().setValue(profile);*/
@@ -117,14 +113,15 @@ public class ProfileManager {
     }
 
 
-    public void editProfile(String name, String email, String phone, String location, String bio, byte[] data) {
-
+    public void editProfile(String name, String email, String phone, String location, String bio, byte[] data, StorageReference storageRef) {
+        this.storageRef=storageRef;
         childUpdates = new HashMap<>();
-
+        /*
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setCustomMetadata("text", profileId.toString())
                 .build();
-        UploadTask uploadTask = storageRef.putBytes(data,metadata);
+                */
+        UploadTask uploadTask = storageRef.putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
