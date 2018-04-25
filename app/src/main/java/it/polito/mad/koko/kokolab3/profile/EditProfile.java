@@ -17,7 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -33,13 +38,16 @@ import java.util.HashMap;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
 
+
 public class EditProfile extends AppCompatActivity{
 
     /**
      * Profile pic source
      */
-    private static final int    CAMERA_REQUEST = 0,
-                                GALLERY = 1;
+    private static final int
+            CAMERA_REQUEST = 0,
+            GALLERY = 1,
+            PLACE_PICKER_REQUEST = 2;
 
     /**
      * Profile profile data.
@@ -72,6 +80,8 @@ public class EditProfile extends AppCompatActivity{
     private boolean flagCamera;
     private boolean flagGallery;
     private Authenticator authenticator;
+    private Button map_button;
+    private Profile p;
 
     /**
      * Filling all the UI text fields and the profile profile pic with all the
@@ -94,7 +104,7 @@ public class EditProfile extends AppCompatActivity{
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
-
+        p= profileManager.getProfile();
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -107,6 +117,12 @@ public class EditProfile extends AppCompatActivity{
         et_bio=findViewById(R.id.edit_user_bio);
         user_photo= findViewById(R.id.user_photo);
 
+        et_name.setText(p.getName());
+        et_email.setText(p.getEmail());
+        et_bio.setText(p.getBio());
+        et_location.setText(p.getLocation());
+        et_phone.setText(p.getPhone());
+
         // Restoring from past instanceState
         if(savedInstanceState!= null) {
             flagCamera = savedInstanceState.getBoolean("flagCamera");
@@ -114,6 +130,9 @@ public class EditProfile extends AppCompatActivity{
             if(flagGallery)
                 imageRef= Uri.parse(savedInstanceState.getString("imageRef"));
         }
+
+        map_button = findViewById(R.id.button_map);
+        map_button.setOnClickListener(v -> PlaceApi());
 
         // Edit profile pic button
         ImageButton user_photo_button = findViewById(R.id.user_photo_button);
@@ -153,6 +172,18 @@ public class EditProfile extends AppCompatActivity{
                 finish();
             }
         });
+    }
+
+    private void PlaceApi() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+        try {
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -248,36 +279,48 @@ public class EditProfile extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO debugging
-        Log.d("debug","onActivityResult");
+        Log.d("debug", "onActivityResult");
 
         // If the photo has been picked from the gallery
-        if(requestCode == GALLERY && resultCode != RESULT_CANCELED) {
+        if (requestCode == GALLERY && resultCode != RESULT_CANCELED) {
             // TODO debugging
             Log.d("debug", "gallery");
 
             // crete a reference from uri gallery
-            imageRef = data.getData();
-            Log.d("debug", "onActivityResult imageRef: "+imageRef.toString());
+                imageRef = data.getData();
+                Log.d("debug", "onActivityResult imageRef: " + imageRef.toString());
+
 
             // set flags for future state
-            flagGallery=true;
-            flagCamera=false;
-
+            flagGallery = true;
+            flagCamera = false;
         }
 
-        // If the photo has been taken with the camera
-        if(requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
-            //Return uri from intent
-            Bundle extras = data.getExtras();
-            // TODO debugging
-            Log.d("debug", "camera");
-            //create a new BitMap
-            createImageFile(extras);
-            // set flags for future state
-            flagCamera=true;
-            flagGallery=false;
+            // If the photo has been taken with the camera
+            if (requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
+                //Return uri from intent
+                Bundle extras = data.getExtras();
+                // TODO debugging
+                Log.d("debug", "camera");
+                //create a new BitMap
+                createImageFile(extras);
+                // set flags for future state
+                flagCamera = true;
+                flagGallery = false;
 
-        }
+            }
+
+            if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(data, this);
+                final CharSequence name = place.getName();
+                final CharSequence address = place.getAddress();
+                et_location.setText(address);
+
+                String toastMsg = String.format("Place: %s", place.getName());
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+            }
+
+
     }
 
     /**
@@ -288,12 +331,7 @@ public class EditProfile extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        Profile p = profileManager.getProfile();
-        et_name.setText(p.getName());
-        et_email.setText(p.getEmail());
-        et_bio.setText(p.getBio());
-        et_location.setText(p.getLocation());
-        et_phone.setText(p.getPhone());
+
         if(flagCamera) {
             Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
             user_photo.setImageBitmap(tmp);

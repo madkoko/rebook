@@ -120,12 +120,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="text">
+                    android:inputType="text"
+                    android:layout_toLeftOf="@id/button_map">
                 <EditText
                     android:id="@+id/edit_user_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
                 </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/button_map"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/text_user_phone"
+                    android:layout_alignParentRight="true"
+                    android:text="@string/map"
+                    android:layout_alignParentEnd="true" />
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/text_user_bio"
