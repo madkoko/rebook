@@ -1,17 +1,13 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -36,17 +32,17 @@ public class ProfileManager {
      */
     private Profile profile;
     // private static Map<String,Profile> profileMap = null;
-    private String profileId;
 
     /**
      * Firebase objects
      */
-    private DatabaseReference usersRef;
+    private DatabaseReference userRef;
     private StorageReference storageRef;
     private Map<String, Object> childUpdates;
     private String downloadUrl;
 
-    private List<Profile> list = Collections.synchronizedList(new ArrayList());
+    private List<Profile> listAutProfile = Collections.synchronizedList(new ArrayList());
+    private List<Profile> listForBook= Collections.synchronizedList(new ArrayList());
 
     /**
      * synchronized method for different thread
@@ -62,21 +58,22 @@ public class ProfileManager {
         profile = new Profile();
     }
 
-    public void loadProfile(DatabaseReference usersRef){
-        this.usersRef=usersRef;
-        usersRef.addValueEventListener(
+    public void loadProfile(DatabaseReference userRef){
+        this.userRef=userRef;
+        userRef.addValueEventListener(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        synchronized (list) {
+                        synchronized (listAutProfile) {
                             profile.setName(dataSnapshot.child("name").getValue(String.class));
                             profile.setEmail(dataSnapshot.child("email").getValue(String.class));
                             profile.setBio(dataSnapshot.child("bio").getValue(String.class));
                             profile.setLocation(dataSnapshot.child("location").getValue(String.class));
                             profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
                             profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
-                            list.clear();
-                            list.add(profile);
+                            profile.setPosition(dataSnapshot.child("position").getValue(String.class));
+                            listAutProfile.clear();
+                            listAutProfile.add(profile);
                         }
                     }
 
@@ -86,15 +83,72 @@ public class ProfileManager {
                 });
     }
 
+
     public Profile getProfile(){
-        synchronized (list) {
-            return list.get(0);
+        synchronized (listAutProfile) {
+            return listAutProfile.get(0);
         }
     }
 
-    public String getProfileId() {
-        return profileId;
+
+    /**
+     *  For implementation of listBooks
+     * @param usersStringRef List of String with userId
+     */
+
+    public void loadListForBook(List<String> usersStringRef){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        listForBook.clear();
+        for (int i = 0; i<usersStringRef.size(); i++){
+            DatabaseReference usersRef = database.getReference().child("users").child(usersStringRef.get(i));
+            usersRef.addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            synchronized (listForBook) {
+                                profile.setName(dataSnapshot.child("name").getValue(String.class));
+                                profile.setEmail(dataSnapshot.child("email").getValue(String.class));
+                                profile.setBio(dataSnapshot.child("bio").getValue(String.class));
+                                profile.setLocation(dataSnapshot.child("location").getValue(String.class));
+                                profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
+                                profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
+                                profile.setPosition(dataSnapshot.child("position").getValue(String.class));
+                                listForBook.add(profile);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+
     }
+
+    /**
+     *
+     * @return list of profile for each book
+     */
+
+    public List<Profile> getBookProfiles(){
+        synchronized (listForBook){
+            return listForBook;
+        }
+    }
+
+    /**
+     *
+     * @param i list position of profile
+     * @return one profile from position i
+     */
+
+    public Profile getBookProfile(int i){
+        synchronized (listForBook){
+            return listForBook.get(i);
+        }
+    }
+
 
     /**
      * Manager for add Profile on Firebase
@@ -109,11 +163,11 @@ public class ProfileManager {
 
         //Profile profile = new Profile(name,email);
         //usersRef.setValue(profile);
-        usersRef.child("email").setValue(email);
+        userRef.child("email").setValue(email);
     }
 
 
-    public void editProfile(String name, String email, String phone, String location, String bio, byte[] data, StorageReference storageRef) {
+    public void editProfile(String name, String email, String phone, String location, String bio, byte[] data, String latLng, StorageReference storageRef) {
         this.storageRef=storageRef;
         childUpdates = new HashMap<>();
         /*
@@ -126,7 +180,7 @@ public class ProfileManager {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                usersRef.child("image").setValue(downloadUrl);
+                userRef.child("image").setValue(downloadUrl);
             }
         });
         childUpdates.put("name", name);
@@ -134,7 +188,8 @@ public class ProfileManager {
         childUpdates.put("phone", phone);
         childUpdates.put("location", location);
         childUpdates.put("bio", bio);
-        usersRef.updateChildren(childUpdates);
+        if(latLng!=null)childUpdates.put("position",latLng);
+        userRef.updateChildren(childUpdates);
         /*firebaseUser.updateProfile(new UserProfileChangeRequest
                 .Builder()
                 .setDisplayName(name)

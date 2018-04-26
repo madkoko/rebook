@@ -23,6 +23,8 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -82,6 +84,7 @@ public class EditProfile extends AppCompatActivity{
     private Authenticator authenticator;
     private Button map_button;
     private Profile p;
+    private String latLng;
 
     /**
      * Filling all the UI text fields and the profile profile pic with all the
@@ -122,6 +125,8 @@ public class EditProfile extends AppCompatActivity{
         et_bio.setText(p.getBio());
         et_location.setText(p.getLocation());
         et_phone.setText(p.getPhone());
+        latLng=p.getPosition();
+
 
         // Restoring from past instanceState
         if(savedInstanceState!= null) {
@@ -166,6 +171,7 @@ public class EditProfile extends AppCompatActivity{
                         et_location.getText().toString(),
                         et_bio.getText().toString(),
                         shown_image,
+                        latLng,
                         authenticator.getStorage().getReference().child("users").child(authenticator.getUser().getUid())
                         );
                 // Terminating the activity
@@ -312,7 +318,7 @@ public class EditProfile extends AppCompatActivity{
 
             if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(data, this);
-                final CharSequence name = place.getName();
+                latLng = place.getLatLng().toString();
                 final CharSequence address = place.getAddress();
                 et_location.setText(address);
 

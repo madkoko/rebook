@@ -1,5 +1,7 @@
 package it.polito.mad.koko.kokolab3.profile;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.Serializable;
 
 public class Profile implements Serializable {
@@ -8,13 +10,13 @@ public class Profile implements Serializable {
                     email,
                     phone,
                     location,
-                    bio,imgUrl;
+                    bio,imgUrl, latLng;
 
     public Profile() {
     }
 
 
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl) {
+    public Profile(String name, String email, String phone, String location, String bio, String imgUrl,LatLng latLng) {
         this.name=name;
         this.email=email;
         this.phone=phone;
@@ -23,10 +25,6 @@ public class Profile implements Serializable {
         this.imgUrl=imgUrl;
     }
 
-    public Profile(String name, String email) {
-        this.name=name;
-        this.email=email;
-    }
 
     public String getName() {
         return name;
@@ -43,6 +41,8 @@ public class Profile implements Serializable {
     public String getLocation() {
         return location;
     }
+
+    public String getPosition() {return latLng;}
 
     public String getBio() {
         return bio;
@@ -68,6 +68,8 @@ public class Profile implements Serializable {
         this.location = location;
     }
 
+    public void setPosition(String latLng) {this.latLng=latLng;}
+
     public void setBio(String bio) {
         this.bio = bio;
     }
@@ -85,6 +87,7 @@ public class Profile implements Serializable {
                 ", location='" + location + '\'' +
                 ", bio='" + bio + '\'' +
                 ", imgUrl='" + imgUrl + '\'' +
+                ", position='" + latLng + '\'' +
                 '}';
     }
 }
