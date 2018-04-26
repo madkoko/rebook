@@ -78,10 +78,6 @@ public class HomeActivity extends AppCompatActivity
 
         authenticator.authUI();
 
-
-
-
-
         // creation of the BookManager if the user is authenticated
         if(authenticator.hasLoggedIn()) {
             new BookManager();
@@ -226,10 +222,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        String profileId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.d("debug_profileId_onRe",profileId);
-
-
 
     }
 }
