@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab3.UI;
+package it.polito.mad.koko.kokolab3.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,6 +10,9 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.RequiresApi;
 
 public class BlurBuilder {
+
+    private static final String TAG = "BlurBuilder";
+
     private static final float BITMAP_SCALE = 0.6f;
     private static final float BLUR_RADIUS = 15f;
 

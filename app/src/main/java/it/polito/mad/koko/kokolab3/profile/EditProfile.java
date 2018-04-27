@@ -41,7 +41,9 @@ import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
 
 
-public class EditProfile extends AppCompatActivity{
+public class EditProfile extends AppCompatActivity {
+
+    private static final String TAG = "EditProfile";
 
     /**
      * Profile pic source
@@ -103,7 +105,7 @@ public class EditProfile extends AppCompatActivity{
 
 
         // TODO Debugging
-        Log.d("debug","onCreate");
+        Log.d(TAG, "onCreate");
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
@@ -213,7 +215,7 @@ public class EditProfile extends AppCompatActivity{
      */
     private void startDialog() {
         // TODO debugging
-        Log.d("debug","startDialog");
+        Log.d(TAG, "startDialog");
 
         // Alert dialog showing the two possibilities: camera or gallery
         // TODO Implement a context-menu instead, with custom style
@@ -285,16 +287,16 @@ public class EditProfile extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO debugging
-        Log.d("debug", "onActivityResult");
+        Log.d(TAG, "onActivityResult");
 
         // If the photo has been picked from the gallery
         if (requestCode == GALLERY && resultCode != RESULT_CANCELED) {
             // TODO debugging
-            Log.d("debug", "gallery");
+            Log.d(TAG, "gallery");
 
             // crete a reference from uri gallery
                 imageRef = data.getData();
-                Log.d("debug", "onActivityResult imageRef: " + imageRef.toString());
+                Log.d(TAG, "onActivityResult imageRef: " + imageRef.toString());
 
 
             // set flags for future state
@@ -307,7 +309,7 @@ public class EditProfile extends AppCompatActivity{
                 //Return uri from intent
                 Bundle extras = data.getExtras();
                 // TODO debugging
-                Log.d("debug", "camera");
+                Log.d(TAG, "camera");
                 //create a new BitMap
                 createImageFile(extras);
                 // set flags for future state

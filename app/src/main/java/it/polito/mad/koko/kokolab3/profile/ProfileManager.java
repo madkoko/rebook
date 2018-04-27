@@ -22,6 +22,8 @@ import java.util.Map;
  */
 public class ProfileManager {
 
+    private static final String TAG = "ProfileManager";
+
     /**
      * Unique instance
      */

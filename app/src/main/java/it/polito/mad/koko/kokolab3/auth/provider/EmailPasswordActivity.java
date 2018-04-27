@@ -43,7 +43,7 @@ public class EmailPasswordActivity extends BaseActivity implements
     private static final int    AUTH_SUCCESS = 0,
                                 AUTH_FAIL = -1;
 
-    private static final String TAG = "EmailPassword";
+    private static final String TAG = "EmailPasswordActivity";
 
     private TextView mStatusTextView;
     private TextView mDetailTextView;
@@ -226,6 +226,7 @@ public class EmailPasswordActivity extends BaseActivity implements
 
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
+
         if (user != null) {
             setResult(AUTH_SUCCESS);
             finish();

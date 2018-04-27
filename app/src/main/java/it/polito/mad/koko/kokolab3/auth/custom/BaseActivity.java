@@ -11,6 +11,8 @@ import it.polito.mad.koko.kokolab3.R;
 
 public class BaseActivity extends AppCompatActivity {
 
+    private static final String TAG = "BaseActivity";
+
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
 

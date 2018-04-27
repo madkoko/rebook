@@ -17,7 +17,6 @@
 package it.polito.mad.koko.kokolab3.auth.custom;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -42,7 +41,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.UI.BlurBuilder;
+import it.polito.mad.koko.kokolab3.ui.BlurBuilder;
 import it.polito.mad.koko.kokolab3.auth.provider.EmailPasswordActivity;
 import it.polito.mad.koko.kokolab3.auth.provider.GoogleSignInActivity;
 import it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity;
@@ -57,11 +56,18 @@ import it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity;
  */
 public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    private static final String TAG = "ChooserActivity";
+
     /**
-     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
+     * Authentication code needed from provider classes.
      */
     private static final int    AUTH_SUCCESS = 0,
                                 AUTH_FAIL = -1;
+
+    /**
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.HomeActivity}
+     */
+    private static final int    AUTH = 10;
 
     private static final Class[] CLASSES = new Class[]{
             GoogleSignInActivity.class,
@@ -112,8 +118,6 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
         ///
 
         Bitmap resultBmp = BlurBuilder.blur(this, BitmapFactory.decodeResource(getResources(), R.mipmap.koko));
-        resultBmp.getScaledHeight(getWindowManager().getDefaultDisplay().getDisplayId());
-        resultBmp.getScaledWidth(getWindowManager().getDefaultDisplay().getDisplayId());
         Drawable drawable = new BitmapDrawable(getResources(), resultBmp);
         linearLayout =findViewById(R.id.lay);
         linearLayout.setBackground(drawable);
@@ -122,6 +126,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
         ImageView imageView = findViewById(R.id.koko_logo);
         Picasso.get().load(R.mipmap.logo).into(imageView);
     }
+
     @Override
     protected void onResume(){
         super.onResume();
@@ -136,8 +141,10 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == AUTH_SUCCESS)
+        if(resultCode == AUTH_SUCCESS) {
+            setResult(AUTH);
             finish();
+        }
     }
 
     public class MyArrayAdapter extends ArrayAdapter<Class> {
@@ -173,7 +180,6 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
                 chooser_activity.setText(R.string.label_emailpassword);
             }
             chooser_activity.setOnClickListener(v -> ChooserAc(position));
-
 
             //((TextView) view.findViewById(android.R.id.text1)).setText(mClasses[position].getSimpleName());
             //((TextView) view.findViewById(android.R.id.text2)).setText(mDescriptionIds[position]);

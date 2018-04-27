@@ -27,6 +27,8 @@ import it.polito.mad.koko.kokolab3.R;
 
 public class InsertBook extends AppCompatActivity {
 
+    private static final String TAG = "InsertBook";
+
     private EditText bookIsbn;
     private EditText bookTitle;
     private EditText bookAuthor;
@@ -84,7 +86,7 @@ public class InsertBook extends AppCompatActivity {
             public void onClick(View view) {
                 Intent scanIntent= new Intent(getApplicationContext(),ScanISBNActivity.class);
 
-                Log.d("debug","scan button pressed");
+                Log.d(TAG, "scan button pressed");
                 startActivityForResult(scanIntent,SCAN_BOOK_INFO);
             }
         });
@@ -93,9 +95,9 @@ public class InsertBook extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("debug", String.valueOf(bookIsbn.getText().length()));
+                Log.d(TAG, String.valueOf(bookIsbn.getText().length()));
                 if(bookIsbn.getText().length()!=0) {
-                    Log.d("debug","isbn: "+bookIsbn.getText().toString());
+                    Log.d(TAG, "isbn: "+bookIsbn.getText().toString());
                     String bookSearchString = "https://www.googleapis.com/books/v1/volumes?q=isbn:"+bookIsbn.getText().toString();
                     BookManager.retrieveBookInfo(bookSearchString);
 
@@ -147,14 +149,14 @@ public class InsertBook extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO debugging
-        Log.d("debug","onActivityResult");
+        Log.d(TAG, "onActivityResult");
 
         // If the photo has been taken with the camera
         if(requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
             //Return uri from intent
             Bundle extras = data.getExtras();
             // TODO debugging
-            Log.d("debug", "camera");
+            Log.d(TAG, "camera");
             //create a new BitMap
             createImageFile(extras);
             // set flags for future state
@@ -167,7 +169,7 @@ public class InsertBook extends AppCompatActivity {
 
         if(requestCode==SCAN_BOOK_INFO&&resultCode==RESULT_OK){
 
-            Log.d("debug","onActivityResult: scan_book_info");
+            Log.d(TAG, "onActivityResult: scan_book_info");
 
             String bookSearchString=data.getStringExtra("bookSearchString");
 

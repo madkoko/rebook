@@ -8,15 +8,24 @@ import android.util.Log;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Arrays;
 import java.util.List;
 
 import it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity;
+import it.polito.mad.koko.kokolab3.profile.EditProfile;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 
 public class Authenticator {
+
+    private static final String TAG = "Authenticator";
 
     /**
      * Sign in request code
@@ -49,36 +58,38 @@ public class Authenticator {
 
     /**
      * Default constructor.
-     * @param activity  the activity this authenticator refers to.
+     *
+     * @param activity the activity this authenticator refers to.
      */
     public Authenticator(AppCompatActivity activity) {
         this.activity = activity;
 
-        if(FIREBASE_UI)
+        if (FIREBASE_UI)
             setProviders();
 
         instantiateUser();
     }
 
     /**
-     *  auth  instances  Auth
-     *  user instances Profile
+     * auth  instances  Auth
+     * user instances Profile
      */
-    public void instantiateUser(){
+    public void instantiateUser() {
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        Log.d("debug", "Profile is: " + String.valueOf(user));
+        Log.d(TAG, "Profile is: " + String.valueOf(user));
     }
 
     /**
      * Returns true if the user has logged in,
      * false otherwise.
-     * @return  whether the user has logged in or not.
+     *
+     * @return whether the user has logged in or not.
      */
-    public boolean hasLoggedIn(){
-        if(user == null)
+    public boolean hasLoggedIn() {
+        if (user == null)
             return false;
         else
             return true;
@@ -88,21 +99,20 @@ public class Authenticator {
      * It creates a login/sign in UI depending on the
      * specific setting.
      */
-    public void authUI(){
-        Log.d("debug", "authUI() called");
+    public void authUI() {
+        Log.d(TAG, "authUI() called");
 
-        if(!hasLoggedIn()) {
-            Log.d("debug", "User has not logged in already");
+        if (!hasLoggedIn()) {
+            Log.d(TAG, "User has not logged in already");
 
-            if(FIREBASE_UI)
+            if (FIREBASE_UI)
                 firebaseUI();
             else
                 customAuthUI();
 
             instantiateUser();
-        }
-        else
-            Log.d("debug", "User has already logged in");
+        } else
+            Log.d(TAG, "User has already logged in");
     }
 
     /**
@@ -123,14 +133,14 @@ public class Authenticator {
     private void firebaseUI() {
         // Create and launch sign-in intent
         activity.startActivityForResult(
-            // Get an instance of AuthUI based on the default app
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setAllowNewEmailAccounts(true)
-                .setIsSmartLockEnabled(true)
-                .build(),
-            RC_SIGN_IN
+                // Get an instance of AuthUI based on the default app
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setAllowNewEmailAccounts(true)
+                        .setIsSmartLockEnabled(true)
+                        .build(),
+                RC_SIGN_IN
         );
     }
 
@@ -139,7 +149,7 @@ public class Authenticator {
      */
     private void customAuthUI() {
         activity.startActivityForResult(
-            new Intent(activity.getApplicationContext(), ChooserActivity.class),1
+                new Intent(activity.getApplicationContext(), ChooserActivity.class), 1
         );
     }
 
@@ -147,13 +157,21 @@ public class Authenticator {
      * Performs the user sign out.
      */
     public void signOut() {
-        Log.d("debug","signOut() called");
+        Log.d(TAG, "signOut() called");
         auth.signOut();
         user = null;
 
-        Log.d("debug","database: " + database + "\nauth: " + auth + "\nuser: " + user);
+        Log.d(TAG, "database: " + database + "\nauth: " + auth + "\nuser: " + user);
 
         authUI();
+    }
+
+    public boolean firstAccess() {
+        Log.d(TAG, "User location: " +
+                database.getReference("users/" + user.getUid() + "/location")
+        );
+
+        return false;
     }
 
     public FirebaseAuth getAuth() {
@@ -168,10 +186,8 @@ public class Authenticator {
         return database;
     }
 
-    public FirebaseStorage getStorage() { return FirebaseStorage.getInstance(); }
-
-    public static int getRcSignIn() {
-        return RC_SIGN_IN;
+    public FirebaseStorage getStorage() {
+        return FirebaseStorage.getInstance();
     }
 
 }

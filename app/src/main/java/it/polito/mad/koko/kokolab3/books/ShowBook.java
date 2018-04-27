@@ -12,6 +12,8 @@ import it.polito.mad.koko.kokolab3.R;
 
 public class ShowBook extends AppCompatActivity {
 
+    private static final String TAG = "ShowBook";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

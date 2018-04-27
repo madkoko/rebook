@@ -23,6 +23,8 @@ import java.util.HashMap;
 
 public class BookManager {
 
+    private static final String TAG = "BookManager";
+
     private static DatabaseReference ref;
     private static Map<String,Book> books=null;
     private static StorageReference storageRef;
@@ -40,12 +42,12 @@ public class BookManager {
     }
 
     public static void setBookInfo(Map<String,String> scanBookInfo){
-        Log.d("debug","setBookInfo");
+        Log.d(TAG, "setBookInfo");
         bookInfo=scanBookInfo;
     }
     public static Map<String,String> getBookInfo(){
-        Log.d("debug","getBookInfo");
-        //Log.d("debug",bookInfo.toString());
+        Log.d(TAG, "getBookInfo");
+        //Log.d(TAG, bookInfo.toString());
         return bookInfo;
     }
 
@@ -59,7 +61,7 @@ public class BookManager {
                         if(dataSnapshot.getChildrenCount()!=0) {
                             books = new HashMap<>();
                             books.clear();
-                            Log.d("debug",dataSnapshot.getValue().toString());
+                            Log.d(TAG, dataSnapshot.getValue().toString());
 
                             // add all the books to an HashMap that will be passed to the activity "ShowBooks"
 
@@ -95,7 +97,7 @@ public class BookManager {
 
 
     public static void printBooks(){
-        Log.d("debug",books.size()+" "+books.toString());
+        Log.d(TAG, books.size()+" "+books.toString());
     }
 
     public static Map<String,Book> getBooks(){
@@ -119,7 +121,7 @@ public class BookManager {
 
         ref.child(bookKey).setValue(book);
 
-        Log.d("book",book.toString());
+        Log.d(TAG, book.toString());
 
 
 
@@ -128,7 +130,7 @@ public class BookManager {
 
     public static void retrieveBookInfo(String bookSearchString){
 
-        Log.d("debug","retrieveBookInfo");
+        Log.d(TAG, "retrieveBookInfo");
         try{
         bookInfo=new GetBookInfo().execute(bookSearchString).get();
         }

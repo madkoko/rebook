@@ -25,6 +25,8 @@ import java.util.Map;
 public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
     //fetch book info
 
+    private static final String TAG = "GetBookInfo";
+
     @Override
     protected Map<String,String> doInBackground(String... bookURLs) {
         //request book info
@@ -39,7 +41,7 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
 
                 HttpURLConnection bookConnection = (HttpURLConnection)url.openConnection();
 
-                Log.d("conn",bookConnection.getResponseMessage());
+                Log.d(TAG, bookConnection.getResponseMessage());
                 InputStream bookContent = new BufferedInputStream(bookConnection.getInputStream());
                 InputStreamReader bookInput = new InputStreamReader(bookContent);
                 BufferedReader bookReader = new BufferedReader(bookInput);
@@ -57,9 +59,9 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
 
         JsonObject bookJson = new JsonParser().parse(bookBuilder.toString()).getAsJsonObject();
 
-        Log.d("debug",bookJson.toString());
+        Log.d(TAG, bookJson.toString());
         Object totalItems=bookJson.get("totalItems");
-        Log.d("debug",totalItems.toString());
+        Log.d(TAG, totalItems.toString());
 
         if(totalItems.toString().equalsIgnoreCase("0")){
             return null;
@@ -67,7 +69,7 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
 
         JsonObject volumeInfo=bookJson.getAsJsonArray("items").get(0).getAsJsonObject().get("volumeInfo").getAsJsonObject();
 
-        //Log.d("book",volumeInfo.toString());
+        //Log.d(TAG, volumeInfo.toString());
 
         String title=volumeInfo.get("title").toString().replace("\"", "");
 
@@ -76,12 +78,12 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
         StringBuilder authors=new StringBuilder();
 
         for(JsonElement author:authorsArray){
-            //Log.d("book",author.toString());
+            //Log.d(TAG, author.toString());
             authors.append(author.toString().replace("\"", "")+",");
         }
 
-        /*Log.d("book","authors: "+authors.toString().substring(0, authors.length() - 1));
-        Log.d("book","isbn: "+isbn+"\ntitle: "+title);*/
+        /*Log.d(TAG, "authors: "+authors.toString().substring(0, authors.length() - 1));
+        Log.d(TAG, "isbn: "+isbn+"\ntitle: "+title);*/
 
         String publisher=null;
 
@@ -89,8 +91,8 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
             publisher=volumeInfo.get("publisher").toString().replace("\"", "");
         }
 
-        /*if(publisher!=null){Log.d("book","publisher: "+publisher);}
-        else{Log.d("book","publisher not found");}*/
+        /*if(publisher!=null){Log.d(TAG, "publisher: "+publisher);}
+        else{Log.d(TAG, "publisher not found");}*/
 
         String editionYear=volumeInfo.get("publishedDate").toString().replace("\"", "");
 
@@ -110,7 +112,7 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String,String>> {
         // TODO: do something with the feed
 
 
-        Log.d("debug","onPostExecute");
+        Log.d(TAG, "onPostExecute");
 
         BookManager.setBookInfo(bookInfo);
     }*/

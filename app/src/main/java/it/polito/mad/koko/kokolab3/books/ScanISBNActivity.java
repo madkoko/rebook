@@ -21,6 +21,8 @@ import static android.Manifest.permission.CAMERA;
 
 public class ScanISBNActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
+    private static final String TAG = "ScanISBNActivity";
+
     private static final int REQUEST_CAMERA = 1;
     private ZXingScannerView scannerView;
     private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -120,10 +122,10 @@ public class ScanISBNActivity extends AppCompatActivity implements ZXingScannerV
     @Override
     public void handleResult(Result result) {
 
-        Log.d("debug","handle scan result");
+        Log.d(TAG, "handle scan result");
         final String myResult = result.getText();
-        Log.d("QRCodeScanner", result.getText());
-        Log.d("QRCodeScanner", result.getBarcodeFormat().toString());
+        Log.d(TAG, result.getText());
+        Log.d(TAG, result.getBarcodeFormat().toString());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Scan Result");
@@ -133,7 +135,7 @@ public class ScanISBNActivity extends AppCompatActivity implements ZXingScannerV
                 scannerView.resumeCameraPreview(ScanISBNActivity.this);
 
                 String bookSearchString = "https://www.googleapis.com/books/v1/volumes?q=isbn:"+myResult;
-                Log.d("book",bookSearchString);
+                Log.d(TAG, bookSearchString);
                 Intent returnData=new Intent();
                 returnData.putExtra("bookSearchString",bookSearchString);
                 setResult(RESULT_OK,returnData);

@@ -29,6 +29,8 @@ import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "HomeActivity";
+
     /**
      * Custom class managing the user authentication
      */
@@ -39,6 +41,11 @@ public class HomeActivity extends AppCompatActivity
      */
     private ProfileManager profileManager;
 
+    /**
+     * Result codes needed to distinguish among all possible activities launched
+     * by this one.
+     */
+    private static final int    AUTH = 10;
 
     private int INSERT_BOOK = 1;
 
@@ -81,6 +88,7 @@ public class HomeActivity extends AppCompatActivity
         // creation of the BookManager if the user is authenticated
         if(authenticator.hasLoggedIn()) {
             new BookManager();
+
             // Retrieving the ProfileManager singleton
             profileManager = ProfileManager.getInstance();
             profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
@@ -98,58 +106,34 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        /*if(requestCode == authenticator.getRcSignIn()) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
+        // Debugging
+        Log.d(TAG, "HomeActivity::onActivityResult() has been called");
+        Log.d(TAG, "requestCode: " + requestCode);
+        Log.d(TAG, "resultCode: " + resultCode);
 
-            // Successfully signed in
-            if(resultCode == RESULT_OK) {
-                Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-                authenticator.instantiateUser();
+        // Returning in HomeActivity from an Authentication procedure
+        if(resultCode == AUTH) {
+            // Debug
+            Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
-                // Creating the Firebase user entry in the database
-                ProfileManager profileManager = ProfileManager.getInstance();
-                profileManager.addProfile(
-                    authenticator.getUser().getDisplayName(),
-                    authenticator.getUser().getEmail(),
-                    null,
-                    null,
-                    null,
-                    authenticator.getDatabase(),
-                    authenticator.getAuth().getUid()
-                );
+            // Inform the user of the successful authentication
+            Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
 
-                return;
-            } else {
-                //Profile pressed back button
-                if(response == null) {
-                    Toast.makeText(this, "Profile pressed back button", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                //No internet connection.
-                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Toast.makeText(this, "No internet connection.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                //Unknown error
-                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show();
-                    return;
-                }
-            }
-        }*/
+            authenticator.instantiateUser();
 
-        Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-        authenticator.instantiateUser();
+            profileManager = ProfileManager.getInstance();
+            Log.d(TAG, String.valueOf(profileManager));
+            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
 
-        profileManager = ProfileManager.getInstance();
-        Log.d("debug_profileId_2", String.valueOf(profileManager));
-        profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
+            // Creating the Firebase user entry in the database
+            profileManager.addProfile(
+                    authenticator.getUser().getEmail()
+            );
 
-        // Creating the Firebase user entry in the database
-        profileManager.addProfile(
-                authenticator.getUser().getEmail()
-        );
-
+            /*if(authenticator.firstAccess()) {
+                startActivity(new Intent(getApplicationContext(), EditProfile.class));
+            }*/
+        }
     }
 
     @Override

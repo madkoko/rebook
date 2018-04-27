@@ -1,10 +1,12 @@
 package it.polito.mad.koko.kokolab3.profile;
 
-import com.google.android.gms.maps.model.LatLng;
+
 
 import java.io.Serializable;
 
 public class Profile implements Serializable {
+
+    private static final String TAG = "Profile";
 
     private String  name,
                     email,
@@ -16,13 +18,14 @@ public class Profile implements Serializable {
     }
 
 
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl,LatLng latLng) {
+    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String latLng) {
         this.name=name;
         this.email=email;
         this.phone=phone;
         this.location=location;
         this.bio=bio;
         this.imgUrl=imgUrl;
+        this.latLng = latLng;
     }
 
 

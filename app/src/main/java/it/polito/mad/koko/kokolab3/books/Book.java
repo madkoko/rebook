@@ -8,6 +8,8 @@ import java.io.Serializable;
 
 public class Book implements Serializable {
 
+    private static final String TAG = "Book";
+
     private String ISBN;
     private String title;
     private String author;

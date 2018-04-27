@@ -17,6 +17,8 @@ import it.polito.mad.koko.kokolab3.R;
 
 public class ShowProfile extends AppCompatActivity {
 
+    private static final String TAG = "ShowProfile";
+
     /**
      * Profile profile data.
      */
