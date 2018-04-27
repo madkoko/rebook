@@ -74,16 +74,16 @@
     <!-- Auth -->
     <string name="chooser_activity_title">Sign In</string>
 
-    <string name="label_google_sign_in">Firebase + Google Sign In</string>
+    <string name="label_google_sign_in">Google Sign In</string>
     <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
 
     <string name="label_facebook_login">Firebase + Facebook Login</string>
     <string name="desc_facebook_login">Use a Facebook Login credential to authenticate with Firebase.</string>
 
-    <string name="label_twitter_login">Firebase + Twitter Login</string>
+    <string name="label_twitter_login">Twitter Login</string>
     <string name="desc_twitter_login">Use a Twitter Login credential to authenticate with Firebase.</string>
 
-    <string name="label_emailpassword">Email/Password Authentication</string>
+    <string name="label_emailpassword">Email/Password</string>
     <string name="desc_emailpassword">Use an email and password to authenticate with Firebase.</string>
 
     <string name="label_passwordless">Passwordless Authentication</string>

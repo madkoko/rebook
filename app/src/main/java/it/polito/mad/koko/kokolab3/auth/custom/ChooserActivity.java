@@ -17,6 +17,7 @@
 package it.polito.mad.koko.kokolab3.auth.custom;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -87,6 +88,16 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+
         setContentView(R.layout.activity_chooser);
 
 
@@ -101,6 +112,8 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
         ///
 
         Bitmap resultBmp = BlurBuilder.blur(this, BitmapFactory.decodeResource(getResources(), R.mipmap.koko));
+        resultBmp.getScaledHeight(getWindowManager().getDefaultDisplay().getDisplayId());
+        resultBmp.getScaledWidth(getWindowManager().getDefaultDisplay().getDisplayId());
         Drawable drawable = new BitmapDrawable(getResources(), resultBmp);
         linearLayout =findViewById(R.id.lay);
         linearLayout.setBackground(drawable);
@@ -108,6 +121,11 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
         ImageView imageView = findViewById(R.id.koko_logo);
         Picasso.get().load(R.mipmap.logo).into(imageView);
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+
     }
 
     @Override
@@ -144,8 +162,18 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
                 view = inflater.inflate(R.layout.chooser_adapter_layout, null);
             }
             Button chooser_activity = view.findViewById(R.id.chooser_button);
-            chooser_activity.setText(mClasses[position].getSimpleName());
+            //chooser_activity.setText(mClasses[position].getSimpleName());
+
+            ImageView imageView = view.findViewById(R.id.chooser_imageView);
+            if(position==0){
+                imageView.setImageResource(R.drawable.fui_ic_googleg_color_24dp);
+                chooser_activity.setText(R.string.label_google_sign_in);
+            }else if(position==1){
+                imageView.setImageResource(R.drawable.fui_ic_mail_white_24dp);
+                chooser_activity.setText(R.string.label_emailpassword);
+            }
             chooser_activity.setOnClickListener(v -> ChooserAc(position));
+
 
             //((TextView) view.findViewById(android.R.id.text1)).setText(mClasses[position].getSimpleName());
             //((TextView) view.findViewById(android.R.id.text2)).setText(mDescriptionIds[position]);
