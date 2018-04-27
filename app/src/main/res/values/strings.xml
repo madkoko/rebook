@@ -33,6 +33,8 @@
     <!-- Strings related to menu -->
     <string name="view_profile">View Profile</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="my_books">My Books</string>
+    <string name="search_books">Search Books</string>
 
 
     <!-- Strings related to ShowProfile and EditProfile -->

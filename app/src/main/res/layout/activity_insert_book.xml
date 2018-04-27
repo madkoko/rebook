@@ -73,8 +73,8 @@
                             android:id="@+id/search_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_toRightOf="@id/scan_button"
                             android:layout_toEndOf="@id/scan_button"
+                            android:layout_toRightOf="@id/scan_button"
                             android:text="@string/search_button_label" />
                     </RelativeLayout>
 

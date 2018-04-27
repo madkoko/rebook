@@ -17,10 +17,11 @@ public class Book implements Serializable {
     private String editionYear;
     private String conditions;
     private String uid;
+    private String image;
 
     public Book(){};
 
-    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions, String uid) {
+    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions, String uid,String image) {
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
@@ -28,6 +29,7 @@ public class Book implements Serializable {
         this.editionYear = editionYear;
         this.conditions = bookConditions;
         this.uid=uid;
+        this.image=image;
     }
 
     public String getISBN() {
@@ -86,6 +88,14 @@ public class Book implements Serializable {
         return uid;
     }
 
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -96,6 +106,7 @@ public class Book implements Serializable {
                 ", editionYear='" + editionYear + '\'' +
                 ", bookConditions='" + conditions + '\'' +
                 ", userId='" + uid + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 

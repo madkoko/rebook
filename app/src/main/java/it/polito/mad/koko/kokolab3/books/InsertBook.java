@@ -138,7 +138,7 @@ public class InsertBook extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] shown_image = baos.toByteArray();
 
-        Book book=new Book(isbn,title,author,publisher,editionYear,conditions,uid);
+        Book book=new Book(isbn,title,author,publisher,editionYear,conditions,uid,null);
 
         BookManager.insertBook(book,shown_image);
 

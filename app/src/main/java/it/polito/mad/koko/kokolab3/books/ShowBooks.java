@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.books;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,8 +13,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +26,21 @@ public class ShowBooks extends AppCompatActivity {
 
     private static final String TAG = "ShowBooks";
 
+    private int USER_BOOKS =0,SEARCH_BOOKS=2;
+    private ArrayList<Book> myBooks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_books);
+
+
+        int requestCode=getIntent().getIntExtra("request_code",-1);
+
+        if(requestCode==USER_BOOKS)
+            myBooks=BookManager.getUserBooks();
+        else if(requestCode==SEARCH_BOOKS)
+            myBooks=BookManager.getSearchBooks();
 
     }
 
@@ -41,26 +55,20 @@ public class ShowBooks extends AppCompatActivity {
 
         // set the list view to show all the books
 
-        if(books!=null) {
-            for (Object ob : books.values().toArray()) {
-                Map<String, String> book = (HashMap<String, String>) ob;
-                String title;
-                String bookPhoto;
-                title = book.get("title");
-                bookPhoto=book.get("image");
-                bookTitles.add(title);
-                bookPhotos.add(bookPhoto);
-            }
+        if(myBooks!=null) {
+
+            Log.d("books","myBooks onStart ShowBooks"+myBooks.toString());
 
             bookListView.setAdapter(new BaseAdapter() {
+
                 @Override
                 public int getCount() {
-                    return books.size();
+                    return myBooks.size();
                 }
 
                 @Override
                 public Object getItem(int i) {
-                    return bookTitles.get(i);
+                    return myBooks.get(i);
                 }
 
                 @Override
@@ -69,16 +77,14 @@ public class ShowBooks extends AppCompatActivity {
                 }
 
                 @Override
-                public View getView(int i, View view, ViewGroup viewGroup) {
+                public View getView(final int i, View view, ViewGroup viewGroup) {
                     if (view == null)
                         view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
                     TextView title = (TextView) view.findViewById(R.id.book_title);
                     ImageView photo=(ImageView) view.findViewById(R.id.book_photo);
-                    title.setText(bookTitles.get(i));
-                    Picasso.get().load(bookPhotos.get(i)).fit().centerCrop().into(photo);
-
-                    final int position = i;
+                    title.setText(myBooks.get(i).getTitle());
+                    Picasso.get().load(myBooks.get(i).getImage()).fit().centerCrop().into(photo);
 
                     // start the activity "Show Book" passing the current book in the Intent
 
@@ -88,29 +94,11 @@ public class ShowBooks extends AppCompatActivity {
 
                             Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
 
-                            Book book;
-                            for (Object ob : books.values().toArray()) {
-                                Map<String, String> bookVals = (HashMap<String, String>) ob;
+                            showBook.putExtra("book", myBooks.get(i));
+                            //showBook.putExtra("bookPhoto",bookVals.get("image"));
+                            startActivity(showBook);
 
-                                String isbn, title, author, publisher, editionYear, bookConditions, uid;
-                                title = bookVals.get("title");
 
-                                if (title.equalsIgnoreCase(bookTitles.get(position))) {
-
-                                    isbn = bookVals.get("isbn");
-                                    author = bookVals.get("author");
-                                    publisher = bookVals.get("publisher");
-                                    editionYear = bookVals.get("editionYear");
-                                    bookConditions = bookVals.get("bookConditions");
-                                    uid = bookVals.get("uid");
-                                    book = new Book(isbn, title, author, publisher, editionYear, bookConditions, uid);
-
-                                    showBook.putExtra("book", book);
-                                    showBook.putExtra("bookPhoto",bookVals.get("image"));
-                                    startActivity(showBook);
-                                }
-
-                            }
 
                         }
                     });

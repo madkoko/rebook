@@ -80,6 +80,7 @@
         <activity android:name="it.polito.mad.koko.kokolab3.books.InsertBook" />
         <activity android:name="it.polito.mad.koko.kokolab3.books.ShowBooks" />
         <activity android:name="it.polito.mad.koko.kokolab3.books.ShowBook" />
+        <activity android:name="it.polito.mad.koko.kokolab3.books.SearchBooks" />
         <activity android:name="it.polito.mad.koko.kokolab3.books.ScanISBNActivity"></activity>
     </application>
 

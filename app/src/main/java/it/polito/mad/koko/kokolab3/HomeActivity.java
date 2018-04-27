@@ -19,8 +19,10 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
+import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
+import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -48,6 +50,12 @@ public class HomeActivity extends AppCompatActivity
     private static final int    AUTH = 10;
 
     private int INSERT_BOOK = 1;
+    /**
+     * Request code for the activity "ShowBooks" to show only the current user's books
+     */
+    private int USER_BOOKS = 0;
+
+    private int SEARCH_BOOKS = 2;
 
 
     @Override
@@ -58,10 +66,10 @@ public class HomeActivity extends AppCompatActivity
 
         // UI
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,8 +77,10 @@ public class HomeActivity extends AppCompatActivity
                         .setAction("Action", null).show();*/
 
                 Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
-                insertBook.putExtra("uid",FirebaseAuth.getInstance().getCurrentUser().getUid());
-                startActivityForResult(insertBook,INSERT_BOOK);
+                insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                BookManager.removeUserBooksEventListener();
+                BookManager.removeSearchBooksEventListener();
+                startActivityForResult(insertBook, INSERT_BOOK);
             }
         });
 
@@ -85,18 +95,21 @@ public class HomeActivity extends AppCompatActivity
 
         authenticator.authUI();
 
+        new BookManager();
+
         // creation of the BookManager if the user is authenticated
-        if(authenticator.hasLoggedIn()) {
-            new BookManager();
+        if (authenticator.hasLoggedIn()) {
 
             // Retrieving the ProfileManager singleton
             profileManager = ProfileManager.getInstance();
             profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
+            BookManager.populateUserBookList();
         }
     }
 
     /**
      * When the sign-in flow is complete
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -105,6 +118,13 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
+
+            Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
+            showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
+            startActivity(showSearchBooks);
+        }
 
         // Debugging
         Log.d(TAG, "HomeActivity::onActivityResult() has been called");
@@ -117,23 +137,22 @@ public class HomeActivity extends AppCompatActivity
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
             // Inform the user of the successful authentication
-            Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
 
+            Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
             authenticator.instantiateUser();
 
             profileManager = ProfileManager.getInstance();
-            Log.d(TAG, String.valueOf(profileManager));
-            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
+            Log.d(TAG, String.valueOf(profileManager));            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
 
             // Creating the Firebase user entry in the database
             profileManager.addProfile(
                     authenticator.getUser().getEmail()
             );
 
-            /*if(authenticator.firstAccess()) {
-                startActivity(new Intent(getApplicationContext(), EditProfile.class));
-            }*/
+            BookManager.populateUserBookList();
         }
+
+
     }
 
     @Override
@@ -180,21 +199,25 @@ public class HomeActivity extends AppCompatActivity
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
-            Intent intent = new Intent(getApplicationContext(),EditProfile.class);
+            Intent intent = new Intent(getApplicationContext(), EditProfile.class);
             startActivity(intent);
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.my_books) {
 
-            Intent showBooks= new Intent(getApplicationContext(),ShowBooks.class);
+            Intent showBooks = new Intent(getApplicationContext(), ShowBooks.class);
+            showBooks.putExtra("request_code", USER_BOOKS);
             startActivity(showBooks);
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.search_books) {
+            Intent searchBooks = new Intent(getApplicationContext(), SearchBooks.class);
+            BookManager.removeUserBooksEventListener();
+            startActivityForResult(searchBooks, SEARCH_BOOKS);
 
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
-        } else if (id == R.id.sign_out){
+        } else if (id == R.id.sign_out) {
             authenticator.signOut();
         }
 

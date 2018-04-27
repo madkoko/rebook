@@ -41,7 +41,8 @@ public class ShowBook extends AppCompatActivity {
             if(book.getPublisher()!=null)publisher.setText(book.getPublisher());
             if(book.getEditionYear()!=null)editionYear.setText(book.getEditionYear());
             if(book.getBookConditions()!=null)conditions.setText(book.getBookConditions());
-            Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
+            Picasso.get().load(book.getImage()).into(bookImage);
+            //Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
         }
 
     }

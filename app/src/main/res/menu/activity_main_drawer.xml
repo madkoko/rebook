@@ -13,13 +13,13 @@
             android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/edit_profile" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/my_books"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="@string/my_books" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/search_books"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/search_books" />
     </group>
 
     <item android:title="Communicate">
