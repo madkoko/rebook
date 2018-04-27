@@ -16,19 +16,32 @@
 
 package it.polito.mad.koko.kokolab3.auth.custom;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.UI.BlurBuilder;
 import it.polito.mad.koko.kokolab3.auth.provider.EmailPasswordActivity;
 import it.polito.mad.koko.kokolab3.auth.provider.GoogleSignInActivity;
 import it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity;
@@ -60,6 +73,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.string.desc_emailpassword/*,
             R.string.desc_phone_auth*/
     };
+    private View linearLayout;
 
     /**
      * Disabling the back button.
@@ -69,10 +83,12 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chooser);
+
 
         // Set up ListView and Adapter
         ListView listView = findViewById(R.id.list_view);
@@ -82,6 +98,16 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
+        ///
+
+        Bitmap resultBmp = BlurBuilder.blur(this, BitmapFactory.decodeResource(getResources(), R.mipmap.koko));
+        Drawable drawable = new BitmapDrawable(getResources(), resultBmp);
+        linearLayout =findViewById(R.id.lay);
+        linearLayout.setBackground(drawable);
+
+
+        ImageView imageView = findViewById(R.id.koko_logo);
+        Picasso.get().load(R.mipmap.logo).into(imageView);
     }
 
     @Override
@@ -96,7 +122,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             finish();
     }
 
-    public static class MyArrayAdapter extends ArrayAdapter<Class> {
+    public class MyArrayAdapter extends ArrayAdapter<Class> {
 
         private Context mContext;
         private Class[] mClasses;
@@ -115,14 +141,24 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(android.R.layout.simple_list_item_2, null);
+                view = inflater.inflate(R.layout.chooser_adapter_layout, null);
             }
+            Button chooser_activity = view.findViewById(R.id.chooser_button);
+            chooser_activity.setText(mClasses[position].getSimpleName());
+            chooser_activity.setOnClickListener(v -> ChooserAc(position));
 
-            ((TextView) view.findViewById(android.R.id.text1)).setText(mClasses[position].getSimpleName());
-            ((TextView) view.findViewById(android.R.id.text2)).setText(mDescriptionIds[position]);
+            //((TextView) view.findViewById(android.R.id.text1)).setText(mClasses[position].getSimpleName());
+            //((TextView) view.findViewById(android.R.id.text2)).setText(mDescriptionIds[position]);
 
             return view;
         }
+
+
+        private void ChooserAc(int position) {
+            Class clicked = CLASSES[position];
+            startActivityForResult(new Intent(getApplicationContext(), clicked), 1);
+        }
+
 
         public void setDescriptionIds(int[] descriptionIds) {
             mDescriptionIds = descriptionIds;
