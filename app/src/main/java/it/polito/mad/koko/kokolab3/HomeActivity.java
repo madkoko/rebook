@@ -142,15 +142,17 @@ public class HomeActivity extends AppCompatActivity
             authenticator.instantiateUser();
 
             profileManager = ProfileManager.getInstance();
-            Log.d(TAG, String.valueOf(profileManager));            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
+            Log.d(TAG, String.valueOf(profileManager));
+            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
 
             // Creating the Firebase user entry in the database
             profileManager.addProfile(
                     authenticator.getUser().getEmail()
             );
 
-            BookManager.populateUserBookList();
+
         }
+        BookManager.populateUserBookList();
 
 
     }

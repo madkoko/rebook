@@ -67,9 +67,9 @@ public class BookManager {
         userBooksEventListener=new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("onChildAdded", "onChildAdded: " + s);
+                Log.d(TAG, "onChildAdded: " + s);
                 if (dataSnapshot.exists()) {
-                    Log.d("my_books", "datasnapshot: " + dataSnapshot.getValue().toString());
+                    Log.d(TAG, "datasnapshot: " + dataSnapshot.getValue().toString());
 
                     Book newBook = new Book();
                     newBook.setTitle(((HashMap<String, String>) dataSnapshot.getValue()).get("title"));
@@ -83,7 +83,7 @@ public class BookManager {
 
                     userBooks.add(newBook);
 
-                    Log.d("my_books", "My books are: " + userBooks.toString());
+                    Log.d(TAG, "My books are: " + userBooks.toString());
                 }
             }
 
@@ -133,9 +133,9 @@ public class BookManager {
         searchBooksEventListener=new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("onChildAdded", "onChildAdded: " + s);
+                Log.d(TAG, "onChildAdded: " + s);
                 if (dataSnapshot.exists()) {
-                    Log.d("search_books", "datasnapshot: " + dataSnapshot.getValue().toString());
+                    Log.d(TAG, "datasnapshot: " + dataSnapshot.getValue().toString());
 
                     Book newBook = new Book();
                     newBook.setTitle(((HashMap<String, String>) dataSnapshot.getValue()).get("title"));
@@ -149,7 +149,7 @@ public class BookManager {
 
                     searchBooks.add(newBook);
 
-                    Log.d("my_books", "My search books are: " + searchBooks.toString());
+                    Log.d(TAG, "My search books are: " + searchBooks.toString());
                 }
             }
 
@@ -219,18 +219,18 @@ public class BookManager {
      */
 
     public static void setBookInfo(Map<String,String> scanBookInfo){
-        Log.d("debug","setBookInfo");
+        Log.d(TAG,"setBookInfo");
         bookInfo=scanBookInfo;
     }
     public static Map<String,String> getBookInfo(){
-        Log.d("debug","getBookInfo");
+        Log.d(TAG,"getBookInfo");
         //Log.d("debug",bookInfo.toString());
         return bookInfo;
     }
 
     public static void retrieveBookInfo(String bookSearchString){
 
-        Log.d("debug","retrieveBookInfo");
+        Log.d(TAG,"retrieveBookInfo");
         try{
         bookInfo=new GetBookInfo().execute(bookSearchString).get();
         }
@@ -257,7 +257,7 @@ public class BookManager {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                //Log.d("image",downloadUrl);
+                //Log.d(TAG,downloadUrl);
                 book.setImage(downloadUrl);
                 //ref.child(bookKey).child("image").setValue(downloadUrl);
                 booksDatabaseRef.child(bookKey).setValue(book);
@@ -265,19 +265,14 @@ public class BookManager {
             }
         });
 
-        ref.child(bookKey).setValue(book);
-
         Log.d(TAG, book.toString());
-
-
-        //Log.d("image",book.toString());
 
 
     }
 
 
      /*public static void printBooks(){
-        Log.d("debug",books.size()+" "+books.toString());
+        Log.d(TAG,books.size()+" "+books.toString());
     }
 
     public static Map<String,String> getBooks(){

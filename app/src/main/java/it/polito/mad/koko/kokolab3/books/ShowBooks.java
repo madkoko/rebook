@@ -48,16 +48,13 @@ public class ShowBooks extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        final HashMap<String,Book> books=(HashMap<String, Book>) BookManager.getBooks();
-        final List<String> bookTitles = new ArrayList<>();
-        final List<String> bookPhotos=new ArrayList<>();
         ListView bookListView = findViewById(R.id.books_listview);
 
         // set the list view to show all the books
 
         if(myBooks!=null) {
 
-            Log.d("books","myBooks onStart ShowBooks"+myBooks.toString());
+            Log.d(TAG,"myBooks onStart ShowBooks"+myBooks.toString());
 
             bookListView.setAdapter(new BaseAdapter() {
 
