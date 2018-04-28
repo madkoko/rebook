@@ -17,6 +17,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.books.Book;
@@ -56,6 +60,8 @@ public class HomeActivity extends AppCompatActivity
     private int USER_BOOKS = 0;
 
     private int SEARCH_BOOKS = 2;
+    private ValueEventListener valueEventListener;
+    private DatabaseReference useRef;
 
 
     @Override
@@ -143,18 +149,30 @@ public class HomeActivity extends AppCompatActivity
 
             profileManager = ProfileManager.getInstance();
             Log.d(TAG, String.valueOf(profileManager));
-            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
+            useRef = authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid());
+            profileManager.loadProfile(useRef);
 
             // Creating the Firebase user entry in the database
             profileManager.addProfile(
                     authenticator.getUser().getEmail()
             );
+            BookManager.populateUserBookList();
+            valueEventListener = useRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String position = dataSnapshot.child("position").getValue(String.class);
+                    if (position == null || position == "") {
+                        Intent intent = new Intent(getApplicationContext(), EditProfile.class);
+                        startActivity(intent);
+                    }
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
+                }
+            });
         }
-        BookManager.populateUserBookList();
-
-
     }
 
     @Override
@@ -221,6 +239,7 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.sign_out) {
             authenticator.signOut();
+            useRef.removeEventListener(valueEventListener);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
