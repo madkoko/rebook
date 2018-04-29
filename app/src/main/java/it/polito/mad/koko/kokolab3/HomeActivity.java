@@ -162,22 +162,12 @@ public class HomeActivity extends AppCompatActivity
             //
             ProfileManager.getInstance();
             profileManager.populateUsersList();
-            DatabaseReference userRef = usersRef.child(authenticator.getAuth().getUid());
-            valueEventListener = userRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    String position = dataSnapshot.child("position").getValue(String.class);
-                    if (position == null || position == "") {
-                        Intent intent = new Intent(getApplicationContext(), EditProfile.class);
-                        startActivity(intent);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            //DatabaseReference userRef = usersRef.child(authenticator.getAuth().getUid());
+            String position = profileManager.getProfile(authenticator.getAuth().getUid()).getPosition();
+            if (position == null || position == "") {
+                Intent intent = new Intent(getApplicationContext(), EditProfile.class);
+                startActivity(intent);
+            }
         }
     }
 
