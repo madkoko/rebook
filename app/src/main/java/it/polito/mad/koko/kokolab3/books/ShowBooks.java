@@ -30,7 +30,7 @@ public class ShowBooks extends AppCompatActivity {
 
     private int USER_BOOKS =0,SEARCH_BOOKS=2,requestCode;
     private ArrayList<Book> myBooks;
-    private List<Profile> userProfiles;
+    private Map<String,Profile> userProfiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class ShowBooks extends AppCompatActivity {
         else if(requestCode==SEARCH_BOOKS) {
             myBooks = BookManager.getSearchBooks();
             ProfileManager pm=ProfileManager.getInstance();
-            userProfiles= pm.getBookProfiles();
+            userProfiles= pm.getAllUsers();
         }
 
     }
@@ -93,14 +93,14 @@ public class ShowBooks extends AppCompatActivity {
                     title.setText(myBooks.get(i).getTitle());
                     Picasso.get().load(myBooks.get(i).getImage()).fit().centerCrop().into(photo);
 
-                   /* if(userProfiles!=null){
+                   if(userProfiles!=null){
 
                         TextView sharingUser =(TextView) view.findViewById(R.id.sharing_user);
-                        for(Profile profile:userProfiles){
-                            if(profile.get)
-                        }
+                        Log.d("debug",userProfiles.toString());
+                        Map<String,String> userInfo=(Map<String, String>) userProfiles.get(myBooks.get(i).getUid());
+                        sharingUser.setText("Shared by: "+userInfo.get("name"));
 
-                    }*/
+                    }
 
                     // start the activity "Show Book" passing the current book in the Intent
 

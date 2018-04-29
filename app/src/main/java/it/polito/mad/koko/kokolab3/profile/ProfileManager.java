@@ -46,6 +46,8 @@ public class ProfileManager {
     private List<Profile> listAutProfile = Collections.synchronizedList(new ArrayList());
     private List<Profile> listForBook= Collections.synchronizedList(new ArrayList());
 
+    private static Map<String,Profile> allUsers;
+
     /**
      * synchronized method for different thread
      * @return ProfileManager instance
@@ -199,5 +201,33 @@ public class ProfileManager {
         );
         */
     }
+
+    /* METHOD TO RETRIEVE ALL THE USERS AND USE IT INTO SHOW SEARCHED BOOKS
+     * CREATED BY FRANCESCO PETRO
+      * */
+
+    public void populateUsersList(){
+        userRef=FirebaseDatabase.getInstance().getReference().child("users");
+
+        userRef.addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()) {
+                            allUsers = new HashMap<>();
+                            allUsers.clear();
+
+                            allUsers.putAll((Map<String,Profile>)dataSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+    }
+
+    public Map<String, Profile> getAllUsers(){return allUsers;}
+
 
 }

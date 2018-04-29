@@ -111,6 +111,7 @@ public class HomeActivity extends AppCompatActivity
             profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
+            profileManager.populateUsersList();
         }
     }
 
