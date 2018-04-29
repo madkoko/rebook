@@ -23,6 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.BookManager;
@@ -30,6 +33,7 @@ import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 
@@ -61,8 +65,6 @@ public class HomeActivity extends AppCompatActivity
     private int USER_BOOKS = 0;
 
     //private int SEARCH_BOOKS = 2;
-    private ValueEventListener valueEventListener;
-    private DatabaseReference usersRef;
 
 
     @Override
@@ -104,14 +106,14 @@ public class HomeActivity extends AppCompatActivity
 
         new BookManager();
 
+        profileManager = ProfileManager.getInstance();
+        profileManager.populateUsersList();
         // creation of the BookManager if the user is authenticated
         if (authenticator.hasLoggedIn()) {
-            usersRef= authenticator.getDatabase().getReference().child("users");
             // Retrieving the ProfileManager singleton
-            profileManager = ProfileManager.getInstance();
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
-            profileManager.populateUsersList();
+
         }
     }
 
@@ -149,27 +151,24 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
             authenticator.instantiateUser();
 
-            profileManager.reset();
 
             //profileManager = ProfileManager.getInstance();
 
             // Creating the Firebase user entry in the database
-            profileManager.addProfile(
-                    authenticator.getUser().getEmail()
-            );
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
             //
-            ProfileManager.getInstance();
+            profileManager.getInstance();
             profileManager.populateUsersList();
-            //DatabaseReference userRef = usersRef.child(authenticator.getAuth().getUid());
-            String position = profileManager.getProfile(authenticator.getAuth().getUid()).getPosition();
-            if (position == null || position == "") {
+            profileManager.addProfile(authenticator.getAuth().getUid(), authenticator.getAuth().getCurrentUser().getEmail());
+            //Control if profile is in the map
+            if (profileManager.profileIsNotPresent((authenticator.getAuth().getUid()))) {
                 Intent intent = new Intent(getApplicationContext(), EditProfile.class);
                 startActivity(intent);
+                }
+
             }
         }
-    }
 
     @Override
     public void onBackPressed() {
@@ -246,6 +245,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        profileManager.reset();
+
 
     }
 }

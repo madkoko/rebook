@@ -14,6 +14,7 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -109,7 +110,7 @@ public class ProfileManager {
      * @param email email of user
      */
     @SuppressLint("LongLogTag")
-    public void addProfile(String email){
+    public void addProfile(String uid, String email){
         //This is for future implementation of Auth
         /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
         usersRef.push().setValue(profile);*/
@@ -117,7 +118,7 @@ public class ProfileManager {
 
         //Profile profile = new Profile(name,email);
         //usersRef.setValue(profile);
-        usersRef.child("email").setValue(email);
+        usersRef.child(uid).child("email").setValue(email);
     }
 
 
@@ -154,4 +155,16 @@ public class ProfileManager {
     }
 
 
+    public boolean profileIsNotPresent(String uid) {
+        synchronized (allUsers){
+            Iterator it = allUsers.entrySet().iterator();
+            while (it.hasNext()){
+                Map.Entry entry = (Map.Entry)it.next();
+                if(entry.getKey().equals(uid)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
