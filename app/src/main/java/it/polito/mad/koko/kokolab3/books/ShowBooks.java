@@ -31,6 +31,7 @@ public class ShowBooks extends AppCompatActivity {
     private int USER_BOOKS =0,SEARCH_BOOKS=2,requestCode;
     private ArrayList<Book> myBooks;
     private Map<String,Profile> userProfiles;
+    private ProfileManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class ShowBooks extends AppCompatActivity {
             myBooks=BookManager.getUserBooks();
         else if(requestCode==SEARCH_BOOKS) {
             myBooks = BookManager.getSearchBooks();
-            ProfileManager pm=ProfileManager.getInstance();
+            pm=ProfileManager.getInstance();
             userProfiles= pm.getAllUsers();
         }
 
@@ -97,8 +98,8 @@ public class ShowBooks extends AppCompatActivity {
 
                         TextView sharingUser =(TextView) view.findViewById(R.id.sharing_user);
                         Log.d("debug",userProfiles.toString());
-                        Map<String,String> userInfo=(Map<String, String>) userProfiles.get(myBooks.get(i).getUid());
-                        sharingUser.setText("Shared by: "+userInfo.get("name"));
+                        String uid= myBooks.get(i).getUid();
+                        sharingUser.setText("Shared by: "+pm.getProfile(uid).getName());
 
                     }
 

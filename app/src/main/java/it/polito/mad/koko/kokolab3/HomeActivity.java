@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
@@ -61,7 +62,7 @@ public class HomeActivity extends AppCompatActivity
 
     //private int SEARCH_BOOKS = 2;
     private ValueEventListener valueEventListener;
-    private DatabaseReference useRef;
+    private DatabaseReference usersRef;
 
 
     @Override
@@ -105,10 +106,9 @@ public class HomeActivity extends AppCompatActivity
 
         // creation of the BookManager if the user is authenticated
         if (authenticator.hasLoggedIn()) {
-
+            usersRef= authenticator.getDatabase().getReference().child("users");
             // Retrieving the ProfileManager singleton
             profileManager = ProfileManager.getInstance();
-            profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
             profileManager.populateUsersList();
@@ -149,10 +149,9 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
             authenticator.instantiateUser();
 
-            profileManager = ProfileManager.getInstance();
-            Log.d(TAG, String.valueOf(profileManager));
-            useRef = authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid());
-            profileManager.loadProfile(useRef);
+            profileManager.reset();
+
+            //profileManager = ProfileManager.getInstance();
 
             // Creating the Firebase user entry in the database
             profileManager.addProfile(
@@ -160,7 +159,11 @@ public class HomeActivity extends AppCompatActivity
             );
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
-            valueEventListener = useRef.addValueEventListener(new ValueEventListener() {
+            //
+            ProfileManager.getInstance();
+            profileManager.populateUsersList();
+            DatabaseReference userRef = usersRef.child(authenticator.getAuth().getUid());
+            valueEventListener = userRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String position = dataSnapshot.child("position").getValue(String.class);
@@ -243,7 +246,6 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.sign_out) {
             authenticator.signOut();
-            useRef.removeEventListener(valueEventListener);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

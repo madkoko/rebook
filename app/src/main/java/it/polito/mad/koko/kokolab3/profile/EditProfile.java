@@ -109,7 +109,7 @@ public class EditProfile extends AppCompatActivity {
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
-        p= profileManager.getProfile();
+        p= profileManager.getProfile(authenticator.getUser().getUid());
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -167,6 +167,7 @@ public class EditProfile extends AppCompatActivity {
 
                 //Create a new profileManager
                 profileManager.editProfile(
+                        authenticator.getAuth().getUid(),
                         et_name.getText().toString(),
                         et_email.getText().toString(),
                         et_phone.getText().toString(),
@@ -174,7 +175,7 @@ public class EditProfile extends AppCompatActivity {
                         et_bio.getText().toString(),
                         shown_image,
                         latLng,
-                        authenticator.getStorage().getReference().child("users").child(authenticator.getUser().getUid())
+                        authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
                         );
                 // Terminating the activity
                 finish();

@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.auth.Authenticator;
 
 public class ShowProfile extends AppCompatActivity {
 
@@ -38,6 +39,7 @@ public class ShowProfile extends AppCompatActivity {
      * User profile information
      */
     private ProfileManager profileManager;
+    private Authenticator authenticator;
 
     /**
      * Instantiating the activity for the first time.
@@ -49,6 +51,9 @@ public class ShowProfile extends AppCompatActivity {
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
+
+        authenticator = new Authenticator(this);
+
 
         // Loading the XML layout file
         setContentView(R.layout.activity_show_profile);
@@ -114,7 +119,7 @@ public class ShowProfile extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Profile profile = profileManager.getProfile();
+        Profile profile = profileManager.getProfile(authenticator.getUser().getUid());
         tv_name.setText(profile.getName());
         tv_email.setText(profile.getEmail());
         tv_location.setText(profile.getLocation());

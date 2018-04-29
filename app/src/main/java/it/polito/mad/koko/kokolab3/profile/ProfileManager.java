@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Singleton profile manager class
@@ -30,23 +32,14 @@ public class ProfileManager {
     private static ProfileManager instance = null;
 
     /**
-     * User data
-     */
-    private Profile profile;
-    // private static Map<String,Profile> profileMap = null;
-
-    /**
      * Firebase objects
      */
-    private DatabaseReference userRef;
+    private DatabaseReference usersRef;
     private StorageReference storageRef;
     private Map<String, Object> childUpdates;
     private String downloadUrl;
 
-    private List<Profile> listAutProfile = Collections.synchronizedList(new ArrayList());
-    private List<Profile> listForBook= Collections.synchronizedList(new ArrayList());
-
-    private static Map<String,Profile> allUsers;
+    private static ConcurrentMap<String,Profile> allUsers=  new ConcurrentHashMap<String, Profile>();
 
     /**
      * synchronized method for different thread
@@ -58,102 +51,59 @@ public class ProfileManager {
         return instance;
     }
 
+    public static void reset() {
+        instance = new ProfileManager();
+    }
+
     protected ProfileManager() {
-        profile = new Profile();
+        usersRef = FirebaseDatabase.getInstance().getReference().child("users");
     }
 
-    public void loadProfile(DatabaseReference userRef){
-        this.userRef=userRef;
-        userRef.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        synchronized (listAutProfile) {
-                            profile.setName(dataSnapshot.child("name").getValue(String.class));
-                            profile.setEmail(dataSnapshot.child("email").getValue(String.class));
-                            profile.setBio(dataSnapshot.child("bio").getValue(String.class));
-                            profile.setLocation(dataSnapshot.child("location").getValue(String.class));
-                            profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
-                            profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
-                            profile.setPosition(dataSnapshot.child("position").getValue(String.class));
-                            listAutProfile.clear();
-                            listAutProfile.add(profile);
-                        }
-                    }
+    /* METHOD TO RETRIEVE ALL THE USERS AND USE IT INTO SHOW SEARCHED BOOKS
+     * CREATED BY FRANCESCO PETRO
+     * */
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-    }
-
-
-    public Profile getProfile(){
-        synchronized (listAutProfile) {
-            return listAutProfile.get(0);
-        }
-    }
-
-
-    /**
-     *  For implementation of listBooks
-     * @param usersStringRef List of String with userId
-     */
-
-    public void loadListForBook(List<String> usersStringRef){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        listForBook.clear();
-        for (int i = 0; i<usersStringRef.size(); i++){
-            DatabaseReference usersRef = database.getReference().child("users").child(usersStringRef.get(i));
+    public void populateUsersList(){
+        synchronized (allUsers) {
             usersRef.addValueEventListener(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            synchronized (listForBook) {
-                                profile.setName(dataSnapshot.child("name").getValue(String.class));
-                                profile.setEmail(dataSnapshot.child("email").getValue(String.class));
-                                profile.setBio(dataSnapshot.child("bio").getValue(String.class));
-                                profile.setLocation(dataSnapshot.child("location").getValue(String.class));
-                                profile.setPhone(dataSnapshot.child("phone").getValue(String.class));
-                                profile.setImgUrl(dataSnapshot.child("image").getValue(String.class));
-                                profile.setPosition(dataSnapshot.child("position").getValue(String.class));
-                                listForBook.add(profile);
+                            if (dataSnapshot.exists()) {
+                                allUsers = new ConcurrentHashMap<>();
+                                allUsers.clear();
+
+                                allUsers.putAll((Map<String, Profile>) dataSnapshot.getValue());
                             }
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
                         }
                     });
         }
-
     }
 
-    /**
-     *
-     * @return list of profile for each book
-     */
-
-    public List<Profile> getBookProfiles(){
-        synchronized (listForBook){
-            return listForBook;
+    public ConcurrentMap<String, Profile> getAllUsers(){
+        synchronized (allUsers) {
+            return allUsers;
         }
     }
 
-    /**
-     *
-     * @param i list position of profile
-     * @return one profile from position i
-     */
-
-    public Profile getBookProfile(int i){
-        synchronized (listForBook){
-            return listForBook.get(i);
+    public Profile getProfile(String Uid) {
+        synchronized (allUsers) {
+            Map<String, String> userInfo = (Map<String, String>) allUsers.get(Uid);
+            Profile profile = new Profile(
+                    userInfo.get("name"),
+                    userInfo.get("email"),
+                    userInfo.get("phone"),
+                    userInfo.get("location"),
+                    userInfo.get("bio"),
+                    userInfo.get("image"),
+                    userInfo.get("position"));
+            return profile;
         }
     }
-
-
     /**
      * Manager for add Profile on Firebase
      * @param email email of user
@@ -167,11 +117,12 @@ public class ProfileManager {
 
         //Profile profile = new Profile(name,email);
         //usersRef.setValue(profile);
-        userRef.child("email").setValue(email);
+        usersRef.child("email").setValue(email);
     }
 
 
-    public void editProfile(String name, String email, String phone, String location, String bio, byte[] data, String latLng, StorageReference storageRef) {
+    public void editProfile(String id, String name, String email, String phone, String location, String bio, byte[] data, String latLng, StorageReference storageRef) {
+        DatabaseReference Ref = usersRef.child(id);
         this.storageRef=storageRef;
         childUpdates = new HashMap<>();
         /*
@@ -184,7 +135,7 @@ public class ProfileManager {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                userRef.child("image").setValue(downloadUrl);
+                Ref.child("image").setValue(downloadUrl);
             }
         });
         childUpdates.put("name", name);
@@ -193,7 +144,7 @@ public class ProfileManager {
         childUpdates.put("location", location);
         childUpdates.put("bio", bio);
         if(latLng!=null)childUpdates.put("position",latLng);
-        userRef.updateChildren(childUpdates);
+        Ref.updateChildren(childUpdates);
         /*firebaseUser.updateProfile(new UserProfileChangeRequest
                 .Builder()
                 .setDisplayName(name)
@@ -201,33 +152,6 @@ public class ProfileManager {
         );
         */
     }
-
-    /* METHOD TO RETRIEVE ALL THE USERS AND USE IT INTO SHOW SEARCHED BOOKS
-     * CREATED BY FRANCESCO PETRO
-      * */
-
-    public void populateUsersList(){
-        userRef=FirebaseDatabase.getInstance().getReference().child("users");
-
-        userRef.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()) {
-                            allUsers = new HashMap<>();
-                            allUsers.clear();
-
-                            allUsers.putAll((Map<String,Profile>)dataSnapshot.getValue());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-    }
-
-    public Map<String, Profile> getAllUsers(){return allUsers;}
 
 
 }
