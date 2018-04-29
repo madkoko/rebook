@@ -28,9 +28,6 @@ public class BookManager {
 
     private static final String TAG = "BookManager";
 
-    private static DatabaseReference ref;
-    private static Map<String,Book> books=null;
-    private static StorageReference storageRef;
     /**
      * Firebase instance
      */
@@ -41,18 +38,19 @@ public class BookManager {
      * Books managing
      */
     private static String downloadUrl;
-    private static Map<String,String> bookInfo;
+    private static Map<String, String> bookInfo;
+    private static ArrayList<Book> allBooks;
     private static ArrayList<Book> userBooks;
     private static ArrayList<Book> searchBooks;
     private static ChildEventListener userBooksEventListener;
     private static ChildEventListener searchBooksEventListener;
+    //private static Map<String,String> searchKeywords;
 
+    public BookManager() {
 
-    public BookManager(){
-
-        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         booksDatabaseRef = database.getReference().child("books");
-        FirebaseStorage storage=FirebaseStorage.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
         booksStorageRef = storage.getReference().child("books");
 
         setUserBooksEventListener();
@@ -63,8 +61,8 @@ public class BookManager {
      * Methods to manage the current user books
      */
 
-    private void setUserBooksEventListener(){
-        userBooksEventListener=new ChildEventListener() {
+    private void setUserBooksEventListener() {
+        userBooksEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded: " + s);
@@ -110,30 +108,34 @@ public class BookManager {
         };
     }
 
-    public static void removeUserBooksEventListener(){
+    public static void removeUserBooksEventListener() {
 
         booksDatabaseRef.orderByChild("uid").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeEventListener(userBooksEventListener);
 
     }
 
-    public static void populateUserBookList(){
-        userBooks=new ArrayList<>();
+    public static void populateUserBookList() {
+        userBooks = new ArrayList<>();
         userBooks.clear();
         booksDatabaseRef.orderByChild("uid").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid()).addChildEventListener(userBooksEventListener);
 
     }
 
-    public static ArrayList<Book> getUserBooks(){return userBooks;}
+    public static ArrayList<Book> getUserBooks() {
+        return userBooks;
+    }
 
 
     /**
      * Methods to manage the book searching
      */
-    private void setSearchBooksEventListener(){
-        searchBooksEventListener=new ChildEventListener() {
+    private void setSearchBooksEventListener() {
+
+        searchBooksEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded: " + s);
+
                 if (dataSnapshot.exists()) {
                     Log.d(TAG, "datasnapshot: " + dataSnapshot.getValue().toString());
 
@@ -147,10 +149,11 @@ public class BookManager {
                     newBook.setAuthor(((HashMap<String, String>) dataSnapshot.getValue()).get("author"));
                     newBook.setImage(((HashMap<String, String>) dataSnapshot.getValue()).get("image"));
 
-                    searchBooks.add(newBook);
+                    allBooks.add(newBook);
 
-                    Log.d(TAG, "My search books are: " + searchBooks.toString());
+                    //Log.d(TAG, "My search books are: " + searchBooks.toString());
                 }
+
             }
 
             @Override
@@ -173,82 +176,105 @@ public class BookManager {
 
             }
         };
+
     }
 
-    public static void populateSearchBooks(Book book){
+    public static void populateSearchBooks(
+            //Book book
+    ) {
+        allBooks = new ArrayList<>();
+        allBooks.clear();
 
-        searchBooks=new ArrayList<>();
+        booksDatabaseRef.addChildEventListener(searchBooksEventListener);
+    }
+
+    public static void setSearchKeywords(String title, String author, String publisher, String editionYear, String conditions) {
+
+        searchBooks = new ArrayList<>();
         searchBooks.clear();
-        String title,author,publisher,editionYear,conditions;
-        title=book.getTitle();
-        author=book.getAuthor();
-        publisher=book.getPublisher();
-        editionYear=book.getEditionYear();
-        conditions=book.getBookConditions();
 
-        Query searchBooksDatabaseRef=booksDatabaseRef;
+        boolean checkKeyword=false;
+        for (Book book : allBooks) {
+            if (title != null && author != null && publisher != null && editionYear != null && conditions != null) {
+                if (title.length() != 0) {
+                    checkKeyword=false;
+                    if (book.getTitle().equalsIgnoreCase(title)) {
+                        checkKeyword = true;
+                    } else continue;
+                }
+                if (author.length()!=0) {
+                    checkKeyword=false;
+                    if (book.getAuthor().equalsIgnoreCase(author)) {
+                        checkKeyword = true;
+                    }else continue;
+                }
+                if(publisher.length()!=0) {
+                    checkKeyword=false;
+                    if (book.getPublisher().equalsIgnoreCase(publisher)) {
+                        checkKeyword = true;
 
+                    }else continue;
+                }
+                if(editionYear.length()!=0) {
+                    checkKeyword=false;
+                    if (book.getEditionYear().equalsIgnoreCase(editionYear)) {
+                        checkKeyword = true;
+                    }else continue;
+                }
+                if(conditions.length()!=0) {
+                    checkKeyword=false;
+                    if (book.getBookConditions().equalsIgnoreCase(conditions)) {
+                        checkKeyword = true;
+                    }else continue;
+                }
+                if(checkKeyword)
+                    searchBooks.add(book);
+            }
+        }
 
-
-        if(title.length()!=0)
-            searchBooksDatabaseRef=searchBooksDatabaseRef.orderByChild("title").equalTo(title);
-        if(author.length()!=0)
-            searchBooksDatabaseRef=searchBooksDatabaseRef.orderByChild("author").equalTo(author);
-        if(publisher.length()!=0)
-            searchBooksDatabaseRef=searchBooksDatabaseRef.orderByChild("publisher").equalTo(publisher);
-        if(editionYear.length()!=0)
-            searchBooksDatabaseRef=searchBooksDatabaseRef.orderByChild("editionYear").equalTo(editionYear);
-        if(conditions.length()!=0)
-            searchBooksDatabaseRef=searchBooksDatabaseRef.orderByChild("conditions").equalTo(conditions);
-
-        searchBooksDatabaseRef.addChildEventListener(searchBooksEventListener);
     }
 
-    public static void removeSearchBooksEventListener(){
+    public static void removeSearchBooksEventListener() {
         booksDatabaseRef.removeEventListener(searchBooksEventListener);
     }
 
-    public static ArrayList<Book> getSearchBooks(){ return searchBooks; }
-
+    public static ArrayList<Book> getSearchBooks() {
+        return searchBooks;
+    }
 
     /**
-     *
-     * @param scanBookInfo
-     *
-     * Get Book info after scanning or inserting the ISBN code
+     * @param scanBookInfo Get Book info after scanning or inserting the ISBN code
      */
 
-    public static void setBookInfo(Map<String,String> scanBookInfo){
-        Log.d(TAG,"setBookInfo");
-        bookInfo=scanBookInfo;
+    public static void setBookInfo(Map<String, String> scanBookInfo) {
+        Log.d(TAG, "setBookInfo");
+        bookInfo = scanBookInfo;
     }
-    public static Map<String,String> getBookInfo(){
-        Log.d(TAG,"getBookInfo");
+
+    public static Map<String, String> getBookInfo() {
+        Log.d(TAG, "getBookInfo");
         //Log.d("debug",bookInfo.toString());
         return bookInfo;
     }
 
-    public static void retrieveBookInfo(String bookSearchString){
+    public static void retrieveBookInfo(String bookSearchString) {
 
-        Log.d(TAG,"retrieveBookInfo");
-        try{
-        bookInfo=new GetBookInfo().execute(bookSearchString).get();
+        Log.d(TAG, "retrieveBookInfo");
+        try {
+            bookInfo = new GetBookInfo().execute(bookSearchString).get();
+        } catch (Exception e) {
         }
-        catch (Exception e){}
 
     }
 
     /**
-     *
      * @param book
-     * @param data
-     *
-     * Insert new Book into Firebase
+     * @param data Insert new Book into Firebase
      */
 
-    public static void insertBook(final Book book,byte[] data){
+    public static void insertBook(final Book book, byte[] data) {
 
-        final String bookKey=booksDatabaseRef.push().getKey();
+        final String bookKey = booksDatabaseRef.push().getKey();
         /*StorageMetadata metadata = new StorageMetadata.Builder()
                 .setCustomMetadata("text", bookKey)
                 .build();*/

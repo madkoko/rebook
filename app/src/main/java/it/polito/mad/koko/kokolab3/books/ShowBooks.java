@@ -21,33 +21,43 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBooks extends AppCompatActivity {
 
     private static final String TAG = "ShowBooks";
 
-    private int USER_BOOKS =0,SEARCH_BOOKS=2;
+    private int USER_BOOKS =0,SEARCH_BOOKS=2,requestCode;
     private ArrayList<Book> myBooks;
+    private List<Profile> userProfiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_books);
 
-
-        int requestCode=getIntent().getIntExtra("request_code",-1);
+        requestCode=getIntent().getIntExtra("request_code",-1);
 
         if(requestCode==USER_BOOKS)
             myBooks=BookManager.getUserBooks();
-        else if(requestCode==SEARCH_BOOKS)
-            myBooks=BookManager.getSearchBooks();
+        else if(requestCode==SEARCH_BOOKS) {
+            myBooks = BookManager.getSearchBooks();
+            ProfileManager pm=ProfileManager.getInstance();
+            userProfiles= pm.getBookProfiles();
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         ListView bookListView = findViewById(R.id.books_listview);
 
         // set the list view to show all the books
@@ -83,6 +93,15 @@ public class ShowBooks extends AppCompatActivity {
                     title.setText(myBooks.get(i).getTitle());
                     Picasso.get().load(myBooks.get(i).getImage()).fit().centerCrop().into(photo);
 
+                   /* if(userProfiles!=null){
+
+                        TextView sharingUser =(TextView) view.findViewById(R.id.sharing_user);
+                        for(Profile profile:userProfiles){
+                            if(profile.get)
+                        }
+
+                    }*/
+
                     // start the activity "Show Book" passing the current book in the Intent
 
                     view.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +122,8 @@ public class ShowBooks extends AppCompatActivity {
                 }
             });
         }
+
+
     }
 
 }

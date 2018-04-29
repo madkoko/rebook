@@ -59,7 +59,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private int USER_BOOKS = 0;
 
-    private int SEARCH_BOOKS = 2;
+    //private int SEARCH_BOOKS = 2;
     private ValueEventListener valueEventListener;
     private DatabaseReference useRef;
 
@@ -110,6 +110,7 @@ public class HomeActivity extends AppCompatActivity
             profileManager = ProfileManager.getInstance();
             profileManager.loadProfile(authenticator.getDatabase().getReference().child("users").child(authenticator.getUser().getUid()));
             BookManager.populateUserBookList();
+            BookManager.populateSearchBooks();
         }
     }
 
@@ -125,12 +126,12 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
+        /*if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
 
             Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
             showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
             startActivity(showSearchBooks);
-        }
+        }*/
 
         // Debugging
         Log.d(TAG, "HomeActivity::onActivityResult() has been called");
@@ -157,6 +158,7 @@ public class HomeActivity extends AppCompatActivity
                     authenticator.getUser().getEmail()
             );
             BookManager.populateUserBookList();
+            BookManager.populateSearchBooks();
             valueEventListener = useRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -231,7 +233,8 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.search_books) {
             Intent searchBooks = new Intent(getApplicationContext(), SearchBooks.class);
             BookManager.removeUserBooksEventListener();
-            startActivityForResult(searchBooks, SEARCH_BOOKS);
+            //startActivityForResult(searchBooks, SEARCH_BOOKS);
+            startActivity(searchBooks);
 
         } else if (id == R.id.nav_share) {
 

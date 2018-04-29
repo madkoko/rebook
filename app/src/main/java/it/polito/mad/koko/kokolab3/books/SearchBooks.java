@@ -19,7 +19,7 @@ public class SearchBooks extends AppCompatActivity {
     private EditText editionYear;
     private EditText conditions;
 
-    private int SEARCH_BOOK=2;
+    private int SEARCH_BOOKS=2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,19 +44,20 @@ public class SearchBooks extends AppCompatActivity {
 
     public void searchBooks(){
 
-        Book book=new Book();
-        book.setTitle(title.getText().toString());
-        book.setAuthor(author.getText().toString());
-        book.setPublisher(publisher.getText().toString());
-        book.setEditionYear(editionYear.getText().toString());
-        book.setBookConditions(conditions.getText().toString());
+        //BookManager.removeSearchBooksEventListener();
 
-        Intent searchBooks=new Intent();
+        BookManager.setSearchKeywords(title.getText().toString(),author.getText().toString(),publisher.getText().toString(),editionYear.getText().toString(),conditions.getText().toString());
 
-        BookManager.populateSearchBooks(book);
+        Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
+        showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
+        startActivity(showSearchBooks);
 
-        setResult(SEARCH_BOOK,searchBooks);
-        finish();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //BookManager.populateSearchBooks();
     }
 }

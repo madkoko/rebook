@@ -57,6 +57,7 @@
     <string name="book_publisher">Publisher</string>
     <string name="book_edition_year">Edition Year</string>
     <string name="book_conditions">Conditions</string>
+    <string name="sharing_user">Shared by: Username</string>
 
     <!-- Buttons -->
     <string name="edit_button_label">Edit</string>
