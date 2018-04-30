@@ -100,10 +100,7 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         authenticator = new Authenticator(this);
-
 
         // TODO Debugging
         Log.d(TAG, "onCreate");
@@ -159,7 +156,7 @@ public class EditProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // If the user has selected a location
-                if(!locationIsMissing()) {
+                if(!locationIsMissingFromUI()) {
                     // Get the data from an ImageView as bytes
                     user_photo.setDrawingCacheEnabled(true);
                     user_photo.buildDrawingCache();
@@ -191,10 +188,30 @@ public class EditProfile extends AppCompatActivity {
         });
     }
 
-    private boolean locationIsMissing() {
+    /**
+     * Tests whether the location info is in the user profile (in Firebase) or not.
+     * @return  true if the user has a location associated with him/her yet.
+     *          false otherwise.
+     */
+    private boolean locationIsMissingFromUserInfo() {
+        String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
+
+        return userLocation != null && (userLocation.isEmpty() || userLocation.equals(""));
+    }
+
+    /**
+     * Tests whether the location info has been specified or not via the
+     * corresponding UI item.
+     * @return  true if the user has not specified the location yet.
+     *          false otherwise.
+     */
+    private boolean locationIsMissingFromUI() {
         return et_location != null && et_location.getText().equals("");
     }
 
+    /**
+     * Displays an error message whenever an user has not specified a location yet.
+     */
     private void missingLocationError() {
         et_location.setError("Please select a location");
         //Toast.makeText(getApplicationContext(), "Please select a location", Toast.LENGTH_LONG).show();
@@ -206,7 +223,10 @@ public class EditProfile extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if(locationIsMissing())
+        Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
+        Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
+
+        if(locationIsMissingFromUI() || locationIsMissingFromUserInfo())
             missingLocationError();
         else
             finish();
