@@ -153,12 +153,13 @@ public class EditProfile extends AppCompatActivity {
 
         // Save button
         Button save_button = findViewById(R.id.save_button);
+
         save_button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // If the user has selected a location
-                if(et_location != null && !et_location.getText().equals("")) {
+                if(!locationIsMissing()) {
                     // Get the data from an ImageView as bytes
                     user_photo.setDrawingCacheEnabled(true);
                     user_photo.buildDrawingCache();
@@ -184,10 +185,31 @@ public class EditProfile extends AppCompatActivity {
                 }
                 // If the user has not selected a location yet
                 else {
-                    Toast.makeText(getApplicationContext(), "Please select a location", Toast.LENGTH_LONG).show();
+                    missingLocationError();
                 }
             }
         });
+    }
+
+    private boolean locationIsMissing() {
+        return et_location != null && et_location.getText().equals("");
+    }
+
+    private void missingLocationError() {
+        et_location.setError("Please select a location");
+        //Toast.makeText(getApplicationContext(), "Please select a location", Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        if(locationIsMissing())
+            missingLocationError();
+        else
+            finish();
     }
 
     private void PlaceApi() {
