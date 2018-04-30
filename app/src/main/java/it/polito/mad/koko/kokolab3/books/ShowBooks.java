@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
+import android.service.autofill.SaveCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,13 +31,14 @@ public class ShowBooks extends AppCompatActivity {
 
     private int USER_BOOKS =0,SEARCH_BOOKS=2,requestCode;
     private ArrayList<Book> myBooks;
-    private Map<String,Profile> userProfiles;
     private ProfileManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_books);
+        pm=ProfileManager.getInstance();
+
 
         requestCode=getIntent().getIntExtra("request_code",-1);
 
@@ -44,8 +46,6 @@ public class ShowBooks extends AppCompatActivity {
             myBooks=BookManager.getUserBooks();
         else if(requestCode==SEARCH_BOOKS) {
             myBooks = BookManager.getSearchBooks();
-            pm=ProfileManager.getInstance();
-            userProfiles= pm.getAllUsers();
         }
 
     }
@@ -94,10 +94,9 @@ public class ShowBooks extends AppCompatActivity {
                     title.setText(myBooks.get(i).getTitle());
                     Picasso.get().load(myBooks.get(i).getImage()).fit().centerCrop().into(photo);
 
-                   if(userProfiles!=null){
+                   if(requestCode==SEARCH_BOOKS){
 
                         TextView sharingUser =(TextView) view.findViewById(R.id.sharing_user);
-                        Log.d("debug",userProfiles.toString());
                         String uid= myBooks.get(i).getUid();
                         sharingUser.setText("Shared by: "+pm.getProfile(uid).getName());
 

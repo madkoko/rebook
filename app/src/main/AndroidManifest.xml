@@ -49,6 +49,7 @@
 
 
 
+
         <!-- Auth activities -->
         <activity
             android:name="it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity"
