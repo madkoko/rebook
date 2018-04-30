@@ -5,4 +5,22 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorRed">#ff0011</color>
 
+
+    <!-- MATERIAL COLOR LIME-->
+    <color name="f50">#F9FBE7</color>
+    <color name="f100">#F0F4C3</color>
+    <color name="f200">#E6EE9C</color>
+    <color name="f300">#DCE775</color>
+    <color name="f400">#D4E157</color>
+    <color name="f500">#CDDC39</color>
+    <color name="f600">#C0CA33</color>
+    <color name="f700">#AFB42B</color>
+    <color name="f800">#9E9D24</color>
+    <color name="f900">#827717</color>
+    <color name="A100">#F4FF81</color>
+    <color name="A200">#EEFF41</color>
+    <color name="A400">#C6FF00</color>
+    <color name="A700">#AEEA00</color>
+
+
 </resources>
