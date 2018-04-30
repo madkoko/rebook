@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Created by Francesco on 13/04/2018.
@@ -198,32 +199,32 @@ public class BookManager {
             if (title != null && author != null && publisher != null && editionYear != null && conditions != null) {
                 if (title.length() != 0) {
                     checkKeyword=false;
-                    if (book.getTitle().equalsIgnoreCase(title)) {
+                    if(containsCaseInsensitive(book.getTitle(), title)) {
                         checkKeyword = true;
                     } else continue;
                 }
                 if (author.length()!=0) {
                     checkKeyword=false;
-                    if (book.getAuthor().equalsIgnoreCase(author)) {
+                    if(containsCaseInsensitive(book.getAuthor(), author)) {
                         checkKeyword = true;
                     }else continue;
                 }
                 if(publisher.length()!=0) {
                     checkKeyword=false;
-                    if (book.getPublisher().equalsIgnoreCase(publisher)) {
+                    if(containsCaseInsensitive(book.getPublisher(), publisher)) {
                         checkKeyword = true;
 
                     }else continue;
                 }
                 if(editionYear.length()!=0) {
                     checkKeyword=false;
-                    if (book.getEditionYear().equalsIgnoreCase(editionYear)) {
+                    if(containsCaseInsensitive(book.getEditionYear(), editionYear)) {
                         checkKeyword = true;
                     }else continue;
                 }
                 if(conditions.length()!=0) {
                     checkKeyword=false;
-                    if (book.getBookConditions().equalsIgnoreCase(conditions)) {
+                    if(containsCaseInsensitive(book.getBookConditions(), conditions)) {
                         checkKeyword = true;
                     }else continue;
                 }
@@ -232,6 +233,24 @@ public class BookManager {
             }
         }
 
+    }
+
+    /**
+     * Returns true when {@code source} contains at least a case-insensitive
+     * occurrence of {@code pattern}
+     * @param source        the string that has to be tested.
+     * @param pattern       the pattern that is looked for.
+     * @return              true when an occurrence is found.
+     */
+    private static boolean containsCaseInsensitive(String source, String pattern) {
+        return
+            Pattern.compile(
+                Pattern.quote(pattern),
+                Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+            )
+            .matcher(source)
+            .find()
+        ;
     }
 
     public static void removeSearchBooksEventListener() {

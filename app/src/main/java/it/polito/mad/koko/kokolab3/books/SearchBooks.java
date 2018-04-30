@@ -46,7 +46,13 @@ public class SearchBooks extends AppCompatActivity {
 
         //BookManager.removeSearchBooksEventListener();
 
-        BookManager.setSearchKeywords(title.getText().toString(),author.getText().toString(),publisher.getText().toString(),editionYear.getText().toString(),conditions.getText().toString());
+        BookManager.setSearchKeywords(
+            title.getText().toString(),
+            author.getText().toString(),
+            publisher.getText().toString(),
+            editionYear.getText().toString(),
+            conditions.getText().toString())
+        ;
 
         Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
         showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
