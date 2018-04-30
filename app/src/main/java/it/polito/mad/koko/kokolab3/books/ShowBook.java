@@ -1,9 +1,15 @@
 package it.polito.mad.koko.kokolab3.books;
 
+import android.annotation.SuppressLint;
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +28,7 @@ import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBook extends AppCompatActivity
-        implements OnMapReadyCallback {
+        implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
 
     private static final String TAG = "ShowBook";
     private ProfileManager profileManager;
@@ -83,7 +89,12 @@ public class ShowBook extends AppCompatActivity
             googleMap.addMarker(new MarkerOptions()
                     .position(position));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+
         }
+
+    }
+    @Override
+    public void onMapClick(LatLng latLng) {
 
     }
 }
