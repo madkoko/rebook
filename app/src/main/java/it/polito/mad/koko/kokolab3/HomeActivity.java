@@ -159,7 +159,7 @@ public class HomeActivity extends AppCompatActivity
             BookManager.populateSearchBooks();
             //
             profileManager.getInstance();
-            profileManager.populateUsersList();
+            //profileManager.populateUsersList();
             profileManager.addProfile(authenticator.getAuth().getUid(), authenticator.getAuth().getCurrentUser().getEmail());
             //Control if profile is in the map
             if (profileManager.profileIsNotPresent((authenticator.getAuth().getUid()))) {

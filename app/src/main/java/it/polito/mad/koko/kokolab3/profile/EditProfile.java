@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -59,7 +60,7 @@ public class EditProfile extends AppCompatActivity {
     private EditText et_name;
     private EditText et_email;
     private EditText et_phone;
-    private EditText et_location;
+    private TextView et_location;
     private EditText et_bio;
     private ImageView user_photo;
 
@@ -99,10 +100,7 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         authenticator = new Authenticator(this);
-
 
         // TODO Debugging
         Log.d(TAG, "onCreate");
@@ -152,35 +150,86 @@ public class EditProfile extends AppCompatActivity {
 
         // Save button
         Button save_button = findViewById(R.id.save_button);
+
         save_button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                // If the user has selected a location
+                if(!locationIsMissingFromUI()) {
+                    // Get the data from an ImageView as bytes
+                    user_photo.setDrawingCacheEnabled(true);
+                    user_photo.buildDrawingCache();
+                    Bitmap bitmap = user_photo.getDrawingCache();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] shown_image = baos.toByteArray();
 
-                // Get the data from an ImageView as bytes
-                user_photo.setDrawingCacheEnabled(true);
-                user_photo.buildDrawingCache();
-                Bitmap bitmap = user_photo.getDrawingCache();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] shown_image = baos.toByteArray();
-
-                //Create a new profileManager
-                profileManager.editProfile(
-                        authenticator.getAuth().getUid(),
-                        et_name.getText().toString(),
-                        et_email.getText().toString(),
-                        et_phone.getText().toString(),
-                        et_location.getText().toString(),
-                        et_bio.getText().toString(),
-                        shown_image,
-                        latLng,
-                        authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
-                        );
-                // Terminating the activity
-                finish();
+                    //Create a new profileManager
+                    profileManager.editProfile(
+                            authenticator.getAuth().getUid(),
+                            et_name.getText().toString(),
+                            et_email.getText().toString(),
+                            et_phone.getText().toString(),
+                            et_location.getText().toString(),
+                            et_bio.getText().toString(),
+                            shown_image,
+                            latLng,
+                            authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
+                    );
+                    // Terminating the activity
+                    finish();
+                }
+                // If the user has not selected a location yet
+                else {
+                    missingLocationError();
+                }
             }
         });
+    }
+
+    /**
+     * Tests whether the location info is in the user profile (in Firebase) or not.
+     * @return  true if the user has a location associated with him/her yet.
+     *          false otherwise.
+     */
+    private boolean locationIsMissingFromUserInfo() {
+        String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
+
+        return userLocation != null && (userLocation.isEmpty() || userLocation.equals(""));
+    }
+
+    /**
+     * Tests whether the location info has been specified or not via the
+     * corresponding UI item.
+     * @return  true if the user has not specified the location yet.
+     *          false otherwise.
+     */
+    private boolean locationIsMissingFromUI() {
+        return et_location != null && et_location.getText().equals("");
+    }
+
+    /**
+     * Displays an error message whenever an user has not specified a location yet.
+     */
+    private void missingLocationError() {
+        et_location.setError("Please select a location");
+        //Toast.makeText(getApplicationContext(), "Please select a location", Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
+        Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
+
+        if(locationIsMissingFromUI() || locationIsMissingFromUserInfo())
+            missingLocationError();
+        else
+            finish();
     }
 
     private void PlaceApi() {
