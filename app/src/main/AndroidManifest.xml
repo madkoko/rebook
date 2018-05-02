@@ -59,6 +59,7 @@
             android:label="@string/label_google_sign_in"/>
         <activity
             android:name="it.polito.mad.koko.kokolab3.auth.provider.EmailPasswordActivity"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/label_emailpassword"/>
         <activity
             android:name="it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity"

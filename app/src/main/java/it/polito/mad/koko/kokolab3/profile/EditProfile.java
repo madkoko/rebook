@@ -40,6 +40,7 @@ import java.util.HashMap;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
+import it.polito.mad.koko.kokolab3.ui.ProfileBackgroundImage;
 
 
 public class EditProfile extends AppCompatActivity {
@@ -177,6 +178,7 @@ public class EditProfile extends AppCompatActivity {
                             latLng,
                             authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
                     );
+
                     // Terminating the activity
                     finish();
                 }
@@ -223,8 +225,8 @@ public class EditProfile extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
-        Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
+        //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
+        //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
 
         if(locationIsMissingFromUI() || locationIsMissingFromUserInfo())
             missingLocationError();
@@ -274,18 +276,15 @@ public class EditProfile extends AppCompatActivity {
 
         // 'From gallery' option
         myAlertDialog.setPositiveButton("Gallery",
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface arg0, int arg1) {
+                (arg0, arg1) -> {
                 Intent pictureActionIntent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 // Launching the gallery app
                 startActivityForResult(pictureActionIntent, GALLERY);
-            }
-                });
+            });
 
         // 'From camera' option
         myAlertDialog.setNegativeButton("Camera",
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface arg0, int arg1) {
+                (arg0, arg1) -> {
                     // Requested from Android 7.0 Nougat
                     StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                     StrictMode.setVmPolicy(builder.build());
@@ -294,8 +293,7 @@ public class EditProfile extends AppCompatActivity {
                             // Launching the camera app
                             startActivityForResult(takePictureIntent, CAMERA_REQUEST);
                         }
-                }
-            });
+                });
 
         // Showing the alert dialog
         myAlertDialog.show();

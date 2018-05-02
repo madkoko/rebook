@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import it.polito.mad.koko.kokolab3.ui.ProfileBackgroundImage;
+
 /**
  * Singleton profile manager class
  */
@@ -132,12 +134,10 @@ public class ProfileManager {
                 .build();
                 */
         UploadTask uploadTask = storageRef.putBytes(data);
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                Ref.child("image").setValue(downloadUrl);
-            }
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            downloadUrl = taskSnapshot.getDownloadUrl().toString();
+            Ref.child("image").setValue(downloadUrl);
+            if(downloadUrl!=null)new ProfileBackgroundImage(downloadUrl);
         });
         childUpdates.put("name", name);
         childUpdates.put("email", email);

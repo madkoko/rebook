@@ -17,17 +17,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
-import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
@@ -36,6 +27,7 @@ import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
+import it.polito.mad.koko.kokolab3.ui.ProfileBackgroundImage;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,18 +71,15 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+        fab.setOnClickListener(view -> {
+            /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();*/
 
-                Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
-                insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                BookManager.removeUserBooksEventListener();
-                BookManager.removeSearchBooksEventListener();
-                startActivityForResult(insertBook, INSERT_BOOK);
-            }
+            Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
+            insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+            BookManager.removeUserBooksEventListener();
+            BookManager.removeSearchBooksEventListener();
+            startActivityForResult(insertBook, INSERT_BOOK);
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -165,10 +154,14 @@ public class HomeActivity extends AppCompatActivity
             if (profileManager.profileIsNotPresent((authenticator.getAuth().getUid()))) {
                 Intent intent = new Intent(getApplicationContext(), EditProfile.class);
                 startActivity(intent);
+            }else {
+                if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImgUrl() != null) {
+                    Profile p = profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid());
+                    new ProfileBackgroundImage(p.getImgUrl());
                 }
-
             }
         }
+    }
 
     @Override
     public void onBackPressed() {
@@ -247,6 +240,10 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
         profileManager.reset();
 
-
     }
+
+
+
+
+
 }
