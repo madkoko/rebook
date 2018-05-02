@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -15,6 +16,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,14 +58,15 @@ public class ShowProfile extends AppCompatActivity {
      */
     private ProfileManager profileManager;
     private Authenticator authenticator;
-    private CardView card_view;
-    private Target loadtarget;
     private Bitmap bmp;
+    private Profile profile;
+    private FloatingActionButton edit;
 
     /**
      * Instantiating the activity for the first time.
      * @param savedInstanceState    activity's previously saved state.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +75,18 @@ public class ShowProfile extends AppCompatActivity {
         profileManager = ProfileManager.getInstance();
 
         authenticator = new Authenticator(this);
+
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+
+        setContentView(R.layout.activity_chooser);
 
 
         // Loading the XML layout file
@@ -87,7 +103,24 @@ public class ShowProfile extends AppCompatActivity {
         tv_location=findViewById(R.id.user_location);
         tv_bio=findViewById(R.id.user_bio);
         user_photo=findViewById(R.id.user_photo);
-        card_view=findViewById(R.id.cv);
+
+
+
+        profile = profileManager.getProfile(authenticator.getUser().getUid());
+        tv_name.setText(profile.getName());
+        tv_email.setText(profile.getEmail());
+        tv_location.setText(profile.getLocation());
+        tv_bio.setText(profile.getBio());
+
+        if(mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            edit = findViewById(R.id.fab);
+            edit.setOnClickListener(v -> {
+                //Only if Auth user is equal to user from intent, we can use this menu
+                Intent i = new Intent(getApplicationContext(), EditProfile.class);
+                startActivity(i);
+                finish();
+            });
+        }
     }
 
     /**
@@ -140,12 +173,6 @@ public class ShowProfile extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Profile profile = profileManager.getProfile(authenticator.getUser().getUid());
-        tv_name.setText(profile.getName());
-        tv_email.setText(profile.getEmail());
-        tv_location.setText(profile.getLocation());
-        tv_bio.setText(profile.getBio());
-
 
         try {
             FileInputStream in = new FileInputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp_profile");
@@ -155,7 +182,7 @@ public class ShowProfile extends AppCompatActivity {
         }
         Bitmap bitmap = BlurBuilder.blur(this, bmp);
         Drawable drawable = new BitmapDrawable(getResources(),bitmap);
-        card_view.setBackground(drawable);
+        user_photo.setBackground(drawable);
         //
 
 

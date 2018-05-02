@@ -152,40 +152,36 @@ public class EditProfile extends AppCompatActivity {
         // Save button
         Button save_button = findViewById(R.id.save_button);
 
-        save_button.setOnClickListener(new View.OnClickListener() {
+        save_button.setOnClickListener(v -> {
+            // If the user has selected a location
+            if(!locationIsMissingFromUI()) {
+                // Get the data from an ImageView as bytes
+                user_photo.setDrawingCacheEnabled(true);
+                user_photo.buildDrawingCache();
+                Bitmap bitmap = user_photo.getDrawingCache();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] shown_image = baos.toByteArray();
 
-            @Override
-            public void onClick(View v) {
-                // If the user has selected a location
-                if(!locationIsMissingFromUI()) {
-                    // Get the data from an ImageView as bytes
-                    user_photo.setDrawingCacheEnabled(true);
-                    user_photo.buildDrawingCache();
-                    Bitmap bitmap = user_photo.getDrawingCache();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] shown_image = baos.toByteArray();
+                //Create a new profileManager
+                profileManager.editProfile(
+                        authenticator.getAuth().getUid(),
+                        et_name.getText().toString(),
+                        et_email.getText().toString(),
+                        et_phone.getText().toString(),
+                        et_location.getText().toString(),
+                        et_bio.getText().toString(),
+                        shown_image,
+                        latLng,
+                        authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
+                );
 
-                    //Create a new profileManager
-                    profileManager.editProfile(
-                            authenticator.getAuth().getUid(),
-                            et_name.getText().toString(),
-                            et_email.getText().toString(),
-                            et_phone.getText().toString(),
-                            et_location.getText().toString(),
-                            et_bio.getText().toString(),
-                            shown_image,
-                            latLng,
-                            authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
-                    );
-
-                    // Terminating the activity
-                    finish();
-                }
-                // If the user has not selected a location yet
-                else {
-                    missingLocationError();
-                }
+                // Terminating the activity
+                finish();
+            }
+            // If the user has not selected a location yet
+            else {
+                missingLocationError();
             }
         });
     }
