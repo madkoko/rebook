@@ -1,30 +1,36 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
-import com.squareup.picasso.Target;
 
 
 import java.io.FileInputStream;
@@ -38,14 +44,6 @@ public class ShowProfile extends AppCompatActivity {
 
     private static final String TAG = "ShowProfile";
 
-    /**
-     * Profile profile data.
-     */
-    private TextView tv_name;
-    private TextView tv_email;
-    private TextView tv_location;
-    private TextView tv_bio;
-    private ImageView user_photo;
     private Intent i;
 
     /**
@@ -61,6 +59,9 @@ public class ShowProfile extends AppCompatActivity {
     private Bitmap bmp;
     private Profile profile;
     private FloatingActionButton edit;
+    private Toolbar toolbar;
+    private TabLayout tabs;
+    private ImageView user_photo;
 
     /**
      * Instantiating the activity for the first time.
@@ -70,6 +71,7 @@ public class ShowProfile extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
@@ -86,47 +88,79 @@ public class ShowProfile extends AppCompatActivity {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-        setContentView(R.layout.activity_chooser);
 
 
         // Loading the XML layout file
         setContentView(R.layout.activity_show_profile);
+        user_photo=findViewById(R.id.user_photo);
+
+
 
         //Loading UserID from intent
         i = getIntent();
         mFirebaseUser= i.getExtras().getString("UserID");
 
-
-        // Restoring UI fields containing user info
-        tv_name=findViewById(R.id.user_name);
-        tv_email=findViewById(R.id.user_email);
-        tv_location=findViewById(R.id.user_location);
-        tv_bio=findViewById(R.id.user_bio);
-        user_photo=findViewById(R.id.user_photo);
-
-
-
         profile = profileManager.getProfile(authenticator.getUser().getUid());
-        tv_name.setText(profile.getName());
-        tv_email.setText(profile.getEmail());
-        tv_location.setText(profile.getLocation());
-        tv_bio.setText(profile.getBio());
 
-        if(mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-            edit = findViewById(R.id.fab);
-            edit.setOnClickListener(v -> {
-                //Only if Auth user is equal to user from intent, we can use this menu
-                Intent i = new Intent(getApplicationContext(), EditProfile.class);
-                startActivity(i);
-                finish();
-            });
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            toolbar = findViewById(R.id.technique_three_toolbar);
+            toolbar.setTitle(profile.getName());
+
+            if (mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                edit = findViewById(R.id.fab);
+                edit.setOnClickListener(v -> {
+                    //Only if Auth user is equal to user from intent, we can use this menu
+                    Intent i = new Intent(getApplicationContext(), EditProfile.class);
+                    startActivity(i);
+                    finish();
+                });
+            }
         }
+
+
+
+
+        tabs = (TabLayout) findViewById(R.id.tabs);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+
+        tabs.setTabMode(TabLayout.MODE_FIXED);
+        tabs.addTab(tabs.newTab().setText(R.string.show_profile));
+        tabs.addTab(tabs.newTab().setText(R.string.books));
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabs.getTabCount());
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
+        tabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+
+
     }
 
     /**
      *
      * Setting the edit profile button in the title bar.
-     * @param menu      menu object to be instantiated.
+     * @param menu menu object to be instantiated.
      * @return true, whether the menu object has been inserted or not.
      * @return false, Auth user != user from intent
      */
@@ -185,16 +219,10 @@ public class ShowProfile extends AppCompatActivity {
         user_photo.setBackground(drawable);
         //
 
-
-
         if(profile.getImgUrl()!=null) {
             //Picasso.get().load(profile.getImgUrl()).into(user_photo);
             // Get the data from an ImageView and apply blur effect
             Picasso.get().load(profile.getImgUrl()).transform(new CircleTransform()).into(user_photo);
-
-
-
-
         }
     }
 }
