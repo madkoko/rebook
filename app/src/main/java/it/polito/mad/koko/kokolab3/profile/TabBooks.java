@@ -25,7 +25,7 @@ public class TabBooks extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_show_books, container, false);
+        View view = inflater.inflate(R.layout.tab_books, container, false);
 
         pm = ProfileManager.getInstance();
         myBooks = BookManager.getUserBooks();
