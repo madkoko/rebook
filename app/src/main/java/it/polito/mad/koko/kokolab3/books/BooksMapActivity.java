@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab3.books;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -9,8 +10,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -19,7 +22,7 @@ import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
-public class BooksMapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class BooksMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
 
@@ -36,40 +39,53 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
-
+    /** Called when the map is ready. */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // ******************* Google *********************
         mMap = googleMap;
 
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
         // ******************* Davide **********************
         profileManager = ProfileManager.getInstance();
-        if(profileManager.getProfile(book.getUid()).getPosition() != null) {
-            String pos = profileManager.getProfile(book.getUid()).getPosition();
-            Log.d(TAG, pos);
-            String lat= pos.substring(pos.indexOf("(")+1,pos.indexOf(","));
-            String lng= pos.substring(pos.indexOf(",")+1, pos.indexOf(")"));
-            Log.d(TAG, lat+" "+lng);
-            double latitude = Double.parseDouble(lat);
-            double longitude= Double.parseDouble(lng);
+        Intent in = getIntent();
+        //ArrayList of key
+        ArrayList<String> list = (ArrayList<String>) in.getSerializableExtra("key");
 
-            LatLng position = new LatLng(latitude, longitude);
-            googleMap.addMarker(new MarkerOptions()
-                    .position(position));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-
-        }
 
         // ********************** Io ************************
-        ConcurrentMap<String, Profile> users = profileManager.getAllUsers();
-        for(Map.Entry<String, Profile> user: users.entrySet()) {
-            if(getIntent().getStringExtra(user.getKey()) != null);
-                // TODO continue here
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) != null) {
+                if (profileManager.getProfile(list.get(i)) != null) {
+                    Profile user = profileManager.getProfile(list.get(i));
+                    String pos = user.getPosition();
+                    String nameUser = user.getName();
+
+                    //Transform String into a LetLng object
+                    String lat = pos.substring(pos.indexOf("(") + 1, pos.indexOf(","));
+                    String lng = pos.substring(pos.indexOf(",") + 1, pos.indexOf(")"));
+                    double latitude = Double.parseDouble(lat);
+                    double longitude = Double.parseDouble(lng);
+                    LatLng position = new LatLng(latitude, longitude);
+
+
+                    // Add some markers to the map, and add a data title (name of users) to each marker.
+                    googleMap.addMarker(new MarkerOptions()
+                            .title(nameUser)
+                            .position(position));
+
+                    // Set a listener for marker click.
+                    mMap.setOnMarkerClickListener(this);
+                }
+            }
         }
+    }
+
+        /** Called when the user clicks a marker. */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        String g=marker.getTitle();
+        // Quando avremo più utenti si aprirà un utente
+        return false;
     }
 }

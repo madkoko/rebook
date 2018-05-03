@@ -66,18 +66,16 @@ public class ShowBooks extends AppCompatActivity
 
         // Retrieving all users IDs
         ProfileManager profileManager = ProfileManager.getInstance();
+        ArrayList<String> userId = new ArrayList<String>();
         for(Book book: book_list) {
             if( book.getUid() != null &&
                 !book.getUid().isEmpty() &&
                 book.getUid() != "" &&
-                profileManager.getProfile(book.getUid()).getPosition() != null
-            ) {
-                mapsIntent.putExtra(
-                    book.getUid(),
-                    book.getISBN() // TODO put Firebase book id here
-                );
+                profileManager.getProfile(book.getUid()).getPosition() != null) {
+                    userId.add(book.getUid());
             }
         }
+        mapsIntent.putExtra("key", userId);
 
         // Launching the Maps with the right markers
         startActivity(mapsIntent);
