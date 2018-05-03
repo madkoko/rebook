@@ -70,6 +70,7 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
 
 
                     // Add some markers to the map, and add a data title (name of users) to each marker.
+                    //Add only one time for point, if we have two equals point it marks only one time
                     googleMap.addMarker(new MarkerOptions()
                             .title(nameUser)
                             .position(position));
