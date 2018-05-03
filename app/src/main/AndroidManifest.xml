@@ -47,23 +47,35 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-
-
-
         <!-- Auth activities -->
         <activity
             android:name="it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity"
             android:label="@string/chooser_activity_title"/>
         <activity
-            android:name="it.polito.mad.koko.kokolab3.auth.provider.GoogleSignInActivity"
-            android:label="@string/label_google_sign_in"/>
+            android:name="it.polito.mad.koko.kokolab3.auth.provider.AnonymousAuthActivity"
+            android:label="@string/label_anonymous_auth"/>
+        <activity
+            android:name="it.polito.mad.koko.kokolab3.auth.provider.CustomAuthActivity"
+            android:label="@string/label_custom_auth"/>
         <activity
             android:name="it.polito.mad.koko.kokolab3.auth.provider.EmailPasswordActivity"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/label_emailpassword"/>
         <activity
+            android:name="it.polito.mad.koko.kokolab3.auth.provider.FacebookLoginActivity"
+            android:label="@string/label_facebook_login"/>
+        <activity
+            android:name="it.polito.mad.koko.kokolab3.auth.provider.FirebaseUIActivity"
+            android:label="@string/label_firebase_ui"/>
+        <activity
+            android:name="it.polito.mad.koko.kokolab3.auth.provider.GoogleSignInActivity"
+            android:label="@string/label_google_sign_in"/>
+        <activity
             android:name="it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity"
             android:label="@string/label_phone_auth"/>
+        <activity
+            android:name="it.polito.mad.koko.kokolab3.auth.provider.TwitterLoginActivity"
+            android:label="@string/label_twitter_login"/>
 
         <activity
             android:name="it.polito.mad.koko.kokolab3.HomeActivity"

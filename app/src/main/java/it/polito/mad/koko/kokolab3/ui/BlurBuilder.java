@@ -18,6 +18,9 @@ public class BlurBuilder {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static Bitmap blur(Context context, Bitmap image) {
+        if(context == null || image == null)
+            throw new IllegalArgumentException();
+
         int width = Math.round(image.getWidth() * BITMAP_SCALE);
         int height = Math.round(image.getHeight() * BITMAP_SCALE);
 
@@ -36,6 +39,5 @@ public class BlurBuilder {
         tmpOut.copyTo(outputBitmap);
 
         return outputBitmap;
-
     }
 }

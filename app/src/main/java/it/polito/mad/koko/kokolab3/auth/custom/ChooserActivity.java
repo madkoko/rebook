@@ -41,6 +41,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.auth.provider.AnonymousAuthActivity;
+import it.polito.mad.koko.kokolab3.auth.provider.CustomAuthActivity;
+import it.polito.mad.koko.kokolab3.auth.provider.FacebookLoginActivity;
+import it.polito.mad.koko.kokolab3.auth.provider.FirebaseUIActivity;
+// import it.polito.mad.koko.kokolab3.auth.provider.PasswordlessActivity;
+import it.polito.mad.koko.kokolab3.auth.provider.TwitterLoginActivity;
 import it.polito.mad.koko.kokolab3.ui.BlurBuilder;
 import it.polito.mad.koko.kokolab3.auth.provider.EmailPasswordActivity;
 import it.polito.mad.koko.kokolab3.auth.provider.GoogleSignInActivity;
@@ -70,16 +76,89 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
     private static final int    AUTH = 10;
 
     private static final Class[] CLASSES = new Class[]{
+            // Basic
             GoogleSignInActivity.class,
-            EmailPasswordActivity.class/*,
-            PhoneAuthActivity.class*/
+            EmailPasswordActivity.class,
+
+            // Not included in the free Spark plan
+            // PhoneAuthActivity.class,
+
+            // Social
+            /*FacebookLoginActivity.class,
+            TwitterLoginActivity.class,*/
+
+            // Useless
+            /*AnonymousAuthActivity.class,
+            FirebaseUIActivity.class,
+            CustomAuthActivity.class,*/
+
+            // Does not work with firebase-auth:15.0.0
+            // PasswordlessActivity.class
+    };
+
+    private static final int[] LABEL_IDS = new int[] {
+            // Basic
+            R.string.label_google_sign_in,
+            R.string.label_emailpassword,
+
+            // Not included in the free Spark plan
+            // R.string.label_phone_auth,
+
+            // Social
+            R.string.label_facebook_login,
+            R.string.label_twitter_login,
+
+            // Useless
+            /*R.string.label_anonymous_auth,
+            R.string.label_firebase_ui,
+            R.string.label_custom_auth,*/
+
+            // Does not work with firebase-auth:15.0.0
+            // R.string.label_passwordless
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {
+            // Basic
             R.string.desc_google_sign_in,
-            R.string.desc_emailpassword/*,
-            R.string.desc_phone_auth*/
+            R.string.desc_emailpassword,
+
+            // Not included in the free Spark plan
+            // R.string.desc_phone_auth,
+
+            // Social
+            R.string.desc_facebook_login,
+            R.string.desc_twitter_login,
+
+            // Useless
+            /*R.string.desc_anonymous_auth,
+            R.string.desc_firebase_ui,
+            R.string.desc_custom_auth,*/
+
+            // Does not work with firebase-auth:15.0.0
+            // R.string.desc_passwordless
     };
+
+    private static final int[] ICON_IDS = new int[] {
+            // Basic
+            R.drawable.fui_ic_googleg_color_24dp,
+            R.drawable.fui_ic_mail_white_24dp,
+
+            // Not included in the free Spark plan
+            // R.drawable.fui_ic_phone_white_24dp,
+
+            // Social
+            R.drawable.fui_ic_facebook_white_22dp,
+            R.drawable.fui_ic_twitter_bird_white_24dp,
+
+            // Useless
+            /*R.drawable.fui_ic_phone_white_24dp,
+            R.drawable.fui_ic_mail_white_24dp,
+            R.drawable.fui_ic_mail_white_24dp,*/
+
+            // Does not work with firebase-auth:15.0.0
+            // R.drawable.fui_ic_phone_white_24dp
+    };
+
     private View linearLayout;
 
     /**
@@ -168,21 +247,16 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.chooser_adapter_layout, null);
             }
+
             Button chooser_activity = view.findViewById(R.id.chooser_button);
             //chooser_activity.setText(mClasses[position].getSimpleName());
 
             ImageView imageView = view.findViewById(R.id.chooser_imageView);
-            if(position==0){
-                imageView.setImageResource(R.drawable.fui_ic_googleg_color_24dp);
-                chooser_activity.setText(R.string.label_google_sign_in);
-            }else if(position==1){
-                imageView.setImageResource(R.drawable.fui_ic_mail_white_24dp);
-                chooser_activity.setText(R.string.label_emailpassword);
-            }
-            chooser_activity.setOnClickListener(v -> ChooserAc(position));
 
-            //((TextView) view.findViewById(android.R.id.text1)).setText(mClasses[position].getSimpleName());
-            //((TextView) view.findViewById(android.R.id.text2)).setText(mDescriptionIds[position]);
+            imageView.setImageResource(ICON_IDS[position]);
+            chooser_activity.setText(LABEL_IDS[position]);
+
+            chooser_activity.setOnClickListener(v -> ChooserAc(position));
 
             return view;
         }
@@ -192,7 +266,6 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             Class clicked = CLASSES[position];
             startActivityForResult(new Intent(getApplicationContext(), clicked), 1);
         }
-
 
         public void setDescriptionIds(int[] descriptionIds) {
             mDescriptionIds = descriptionIds;

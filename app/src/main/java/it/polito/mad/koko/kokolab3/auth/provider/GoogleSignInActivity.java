@@ -46,12 +46,6 @@ import it.polito.mad.koko.kokolab3.auth.custom.BaseActivity;
 public class GoogleSignInActivity extends BaseActivity implements
         View.OnClickListener {
 
-    /**
-     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
-     */
-    private static final int    AUTH_SUCCESS = 0,
-                                AUTH_FAIL = -1;
-
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -101,15 +95,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         updateUI(currentUser);
     }
     // [END on_start_check_user]
-
-    /**
-     * Pressing the back button makes the authentication fail.
-     */
-    @Override
-    public void onBackPressed() {
-        setResult(AUTH_FAIL);
-        finish();
-    }
 
     // [START onactivityresult]
     @Override

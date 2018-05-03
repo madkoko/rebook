@@ -1,6 +1,5 @@
 package it.polito.mad.koko.kokolab3.auth;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -8,20 +7,13 @@ import android.util.Log;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Arrays;
 import java.util.List;
 
 import it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity;
-import it.polito.mad.koko.kokolab3.profile.EditProfile;
-import it.polito.mad.koko.kokolab3.profile.Profile;
 
 public class Authenticator {
 

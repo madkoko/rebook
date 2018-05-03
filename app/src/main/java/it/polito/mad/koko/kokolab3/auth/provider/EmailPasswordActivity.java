@@ -37,12 +37,6 @@ import it.polito.mad.koko.kokolab3.auth.custom.BaseActivity;
 public class EmailPasswordActivity extends BaseActivity implements
         View.OnClickListener {
 
-    /**
-     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
-     */
-    private static final int AUTH_SUCCESS = 0,
-            AUTH_FAIL = -1;
-
     private static final String TAG = "EmailPasswordActivity";
 
     private TextView mStatusTextView;
@@ -95,15 +89,6 @@ public class EmailPasswordActivity extends BaseActivity implements
         updateUI(currentUser);
     }
     // [END on_start_check_user]
-
-    /**
-     * Pressing the back button makes the authentication fail.
-     */
-    @Override
-    public void onBackPressed() {
-        setResult(AUTH_FAIL);
-        finish();
-    }
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);

@@ -27,8 +27,14 @@ import java.util.concurrent.TimeUnit;
 
 import it.polito.mad.koko.kokolab3.R;
 
-public class PhoneAuthActivity extends AppCompatActivity implements
+public class PhoneAuthActivity extends it.polito.mad.koko.kokolab3.auth.custom.BaseActivity implements
         View.OnClickListener {
+
+    /**
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
+     */
+    private static final int    AUTH_SUCCESS = 0,
+                                AUTH_FAIL = -1;
 
     private static final String TAG = "PhoneAuthActivity";
 
@@ -187,6 +193,15 @@ public class PhoneAuthActivity extends AppCompatActivity implements
         // [END_EXCLUDE]
     }
     // [END on_start_check_user]
+
+    /**
+     * Pressing the back button makes the authentication fail.
+     */
+    @Override
+    public void onBackPressed() {
+        setResult(AUTH_FAIL);
+        finish();
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

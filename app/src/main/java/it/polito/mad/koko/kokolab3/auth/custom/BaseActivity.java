@@ -11,6 +11,12 @@ import it.polito.mad.koko.kokolab3.R;
 
 public class BaseActivity extends AppCompatActivity {
 
+    /**
+     * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
+     */
+    protected static final int    AUTH_SUCCESS = 0,
+                                AUTH_FAIL = -1;
+
     private static final String TAG = "BaseActivity";
 
     @VisibleForTesting
@@ -45,4 +51,12 @@ public class BaseActivity extends AppCompatActivity {
         hideProgressDialog();
     }
 
+    /**
+     * Pressing the back button makes the authentication fail.
+     */
+    @Override
+    public void onBackPressed() {
+        setResult(AUTH_FAIL);
+        finish();
+    }
 }

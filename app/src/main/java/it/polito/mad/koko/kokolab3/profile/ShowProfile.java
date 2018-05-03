@@ -207,16 +207,19 @@ public class ShowProfile extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
         try {
             FileInputStream in = new FileInputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp_profile");
             bmp = BitmapFactory.decodeStream(in);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        Bitmap bitmap = BlurBuilder.blur(this, bmp);
-        Drawable drawable = new BitmapDrawable(getResources(),bitmap);
-        user_photo.setBackground(drawable);
+
+        if(bmp != null) {
+            Bitmap bitmap = BlurBuilder.blur(this, bmp);
+            Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+            user_photo.setBackground(drawable);
+        }
+
         //
 
         if(profile.getImgUrl()!=null) {
