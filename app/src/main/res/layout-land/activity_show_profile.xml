@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
 
@@ -9,9 +11,6 @@
             android:id="@+id/user_photo"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingTop="25dp"
-            android:paddingBottom="25dp"
-            android:layout_margin="50dp"
             android:layout_gravity="center"
             android:contentDescription="@string/user_profile_pic"
             android:src="@mipmap/ic_launcher_round"/>
@@ -25,86 +24,36 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary"
+                app:tabGravity="center"
+                app:tabTextColor="@color/primary_text" />
+
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:layout_below="@id/tabs">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:orientation="vertical">
 
 
-                    <TextView
-                        android:id="@+id/text_name"
-                        android:layout_marginTop="8dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:hint="@string/user_name"
-                        android:textSize="10sp" />
 
-                    <TextView
-                        android:id="@+id/user_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_name"
-                        android:layout_gravity="bottom"
-                        android:hint="@string/user_name"
-                        android:textSize="20sp" />
 
-                    <TextView
-                        android:id="@+id/text_email"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/user_name"
-                        android:layout_gravity="bottom"
-                        android:hint="@string/user_email"
-                        android:textSize="10sp" />
 
-                    <TextView
-                        android:id="@+id/user_email"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_email"
-                        android:hint="@string/user_email"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:id="@+id/text_location"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/user_email"
-                        android:layout_gravity="bottom"
-                        android:hint="@string/user_location"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:id="@+id/user_location"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_location"
-                        android:hint="@string/user_location"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:id="@+id/text_bio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/user_location"
-                        android:layout_gravity="bottom"
-                        android:hint="@string/user_bio"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:id="@+id/user_bio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/text_bio"
-                        android:hint="@string/user_bio"
-                        android:textSize="20sp" />
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="1000dp"
+                        android:layout_below="@id/tabs"
+                        android:layout_gravity="center"
+                        android:visibility="visible" />
 
 
                 </RelativeLayout>
