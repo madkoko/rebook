@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab3.profile;
+package it.polito.mad.koko.kokolab3.profile.Tab_Profile_Show;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,13 +20,13 @@ import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.ShowBook;
 
-public class ProfileBookAdapter extends BaseAdapter {
+public class BookTabAdapter extends BaseAdapter {
 
 
     private final ArrayList<Book> myBooks;
     private Context context;
 
-    public ProfileBookAdapter(ArrayList<Book> myBooks, Context context){
+    public BookTabAdapter(ArrayList<Book> myBooks, Context context){
         this.myBooks=myBooks;
         this.context=context;
 

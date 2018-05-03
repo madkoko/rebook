@@ -9,25 +9,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
@@ -38,6 +33,7 @@ import java.io.FileNotFoundException;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
+import it.polito.mad.koko.kokolab3.profile.Tab_Profile_Show.PagerAdapter;
 import it.polito.mad.koko.kokolab3.ui.*;
 
 public class ShowProfile extends AppCompatActivity {
@@ -121,15 +117,11 @@ public class ShowProfile extends AppCompatActivity {
 
 
         tabs = (TabLayout) findViewById(R.id.tabs);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
 
-        tabs.setTabMode(TabLayout.MODE_FIXED);
+
         tabs.addTab(tabs.newTab().setText(R.string.show_profile));
         tabs.addTab(tabs.newTab().setText(R.string.books));
+
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabs.getTabCount());
         viewPager.setAdapter(adapter);
