@@ -51,6 +51,9 @@
     <string name="save_button_label">Save</string>
     <string name="user_born_name">Name</string>
 
+    <!-- Strings related to ShowBooks -->
+    <!-- UI -->
+    <string name="books_map_button_label">Map</string>
 
     <!-- Strings related to BookManager -->
     <!-- UI -->

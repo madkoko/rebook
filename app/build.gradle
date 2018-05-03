@@ -46,7 +46,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:4.27.0'
     // Twitter login
     implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true }
-    //google places
+    // Google Places API
     implementation 'com.google.android.gms:play-services-places:11.8.0'
     // Important - the CameraSource implementation in this project requires version 8.1 or higher.
     //implementation 'com.google.android.gms:play-services-vision:15.0.0'

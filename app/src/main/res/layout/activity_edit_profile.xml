@@ -42,7 +42,6 @@
                     android:scaleType="fitCenter"
                     android:src="@android:drawable/ic_menu_camera" />
 
-
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/text_input_name"
                     android:layout_below="@id/user_photo_button"

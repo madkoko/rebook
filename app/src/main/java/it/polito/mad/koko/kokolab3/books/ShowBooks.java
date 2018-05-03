@@ -1,7 +1,6 @@
 package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
-import android.service.autofill.SaveCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,48 +11,81 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
-public class ShowBooks extends AppCompatActivity {
+public class ShowBooks extends AppCompatActivity
+        implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
 
     private static final String TAG = "ShowBooks";
 
-    private int USER_BOOKS =0,SEARCH_BOOKS=2,requestCode;
-    private ArrayList<Book> myBooks;
+    private int USER_BOOKS = 0, SEARCH_BOOKS = 2, requestCode;
+
+    /**
+     * Books retrieved from a Firebase query.
+     * It can contain the user's books or a simple
+     * query result.
+     */
+    private ArrayList<Book> book_list;
+
     private ProfileManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_books);
-        pm=ProfileManager.getInstance();
+        pm = ProfileManager.getInstance();
 
+        requestCode = getIntent().getIntExtra("request_code", -1);
 
-        requestCode=getIntent().getIntExtra("request_code",-1);
-
-        if(requestCode==USER_BOOKS)
-            myBooks=BookManager.getUserBooks();
-        else if(requestCode==SEARCH_BOOKS) {
-            myBooks = BookManager.getSearchBooks();
+        if (requestCode == USER_BOOKS)
+            book_list = BookManager.getUserBooks();
+        else if (requestCode == SEARCH_BOOKS) {
+            book_list = BookManager.getSearchBooks();
         }
 
+        // Map button click listener
+        findViewById(R.id.books_map_button).setOnClickListener(v -> showMap());
+    }
+
+    /**
+     * Displaying books' position on a map
+     */
+    private void showMap() {
+        Intent mapsIntent = new Intent(getApplicationContext(), BooksMapActivity.class);
+
+        // Retrieving all users IDs
+        ProfileManager profileManager = ProfileManager.getInstance();
+        for(Book book: book_list) {
+            if( book.getUid() != null &&
+                !book.getUid().isEmpty() &&
+                book.getUid() != "" &&
+                profileManager.getProfile(book.getUid()).getPosition() != null
+            ) {
+                mapsIntent.putExtra(
+                    book.getUid(),
+                    book.getISBN() // TODO put Firebase book id here
+                );
+            }
+        }
+
+        // Launching the Maps with the right markers
+        startActivity(mapsIntent);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -63,20 +95,20 @@ public class ShowBooks extends AppCompatActivity {
 
         // set the list view to show all the books
 
-        if(myBooks!=null) {
+        if (book_list != null) {
 
-            Log.d(TAG,"myBooks onStart ShowBooks"+myBooks.toString());
+            Log.d(TAG, "book_list onStart ShowBooks" + book_list.toString());
 
             bookListView.setAdapter(new BaseAdapter() {
 
                 @Override
                 public int getCount() {
-                    return myBooks.size();
+                    return book_list.size();
                 }
 
                 @Override
                 public Object getItem(int i) {
-                    return myBooks.get(i);
+                    return book_list.get(i);
                 }
 
                 @Override
@@ -90,15 +122,15 @@ public class ShowBooks extends AppCompatActivity {
                         view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
                     TextView title = (TextView) view.findViewById(R.id.book_title);
-                    ImageView photo=(ImageView) view.findViewById(R.id.book_photo);
-                    title.setText(myBooks.get(i).getTitle());
-                    Picasso.get().load(myBooks.get(i).getImage()).fit().centerCrop().into(photo);
+                    ImageView photo = (ImageView) view.findViewById(R.id.book_photo);
+                    title.setText(book_list.get(i).getTitle());
+                    Picasso.get().load(book_list.get(i).getImage()).fit().centerCrop().into(photo);
 
-                   if(requestCode==SEARCH_BOOKS){
+                    if (requestCode == SEARCH_BOOKS) {
 
-                        TextView sharingUser =(TextView) view.findViewById(R.id.sharing_user);
-                        String uid= myBooks.get(i).getUid();
-                        sharingUser.setText("Shared by: "+pm.getProfile(uid).getName());
+                        TextView sharingUser = (TextView) view.findViewById(R.id.sharing_user);
+                        String uid = book_list.get(i).getUid();
+                        sharingUser.setText("Shared by: " + pm.getProfile(uid).getName());
 
                     }
 
@@ -110,10 +142,9 @@ public class ShowBooks extends AppCompatActivity {
 
                             Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
 
-                            showBook.putExtra("book", myBooks.get(i));
+                            showBook.putExtra("book", book_list.get(i));
                             //showBook.putExtra("bookPhoto",bookVals.get("image"));
                             startActivity(showBook);
-
 
 
                         }
@@ -126,4 +157,13 @@ public class ShowBooks extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
 }

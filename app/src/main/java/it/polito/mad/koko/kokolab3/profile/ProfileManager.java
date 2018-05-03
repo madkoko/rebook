@@ -42,7 +42,7 @@ public class ProfileManager {
     private Map<String, Object> childUpdates;
     private String downloadUrl;
 
-    private static ConcurrentMap<String,Profile> allUsers=  new ConcurrentHashMap<String, Profile>();
+    private static ConcurrentMap<String,Profile> allUsers = new ConcurrentHashMap<String, Profile>();
 
     /**
      * synchronized method for different thread
