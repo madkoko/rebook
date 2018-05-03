@@ -10,7 +10,8 @@
         <ImageView
             android:id="@+id/user_photo"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="35dp"
             android:layout_gravity="center"
             android:contentDescription="@string/user_profile_pic"
             android:src="@mipmap/ic_launcher_round"/>
@@ -28,6 +29,7 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="35dp"
                 android:background="@color/primary"
                 app:tabGravity="center"
                 app:tabTextColor="@color/primary_text" />
@@ -44,14 +46,10 @@
                     android:orientation="vertical">
 
 
-
-
-
                     <android.support.v4.view.ViewPager
                         android:id="@+id/pager"
                         android:layout_width="match_parent"
-                        android:layout_height="1000dp"
-                        android:layout_below="@id/tabs"
+                        android:layout_height="500dp"
                         android:layout_gravity="center"
                         android:visibility="visible" />
 
