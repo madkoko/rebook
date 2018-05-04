@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -30,6 +32,16 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
     private ProfileManager profileManager;
     private Book book;
 
+    /**
+     * Whether the map zooming should be animated or not.
+     */
+    private static final boolean ANIMATION = false;
+
+    /**
+     * Map zoom padding.
+     */
+    private static final int PADDING = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,21 +51,22 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
     /** Called when the map is ready. */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // ******************* Google *********************
+        // Map
         mMap = googleMap;
 
-        // ******************* Davide **********************
+        // Retrieving user IDs
         profileManager = ProfileManager.getInstance();
         Intent in = getIntent();
-        //ArrayList of key
-        ArrayList<String> list = (ArrayList<String>) in.getSerializableExtra("key");
+        ArrayList<String> list = (ArrayList<String>)in.getSerializableExtra("key");
 
+        // Collecting markers in order to zoom automatically
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        // ********************** Io ************************
-
+        // For each user ID
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) != null) {
                 if (profileManager.getProfile(list.get(i)) != null) {
@@ -68,18 +81,33 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
                     double longitude = Double.parseDouble(lng);
                     LatLng position = new LatLng(latitude, longitude);
 
-
                     // Add some markers to the map, and add a data title (name of users) to each marker.
                     //Add only one time for point, if we have two equals point it marks only one time
-                    googleMap.addMarker(new MarkerOptions()
+                    Marker marker = googleMap.addMarker(new MarkerOptions()
                             .title(nameUser)
                             .position(position));
+
+                    // Adding the marker to the set of markers in order to zoom automatically
+                    builder.include(marker.getPosition());
 
                     // Set a listener for marker click.
                     mMap.setOnMarkerClickListener(this);
                 }
             }
         }
+
+        // Building zoom bounds
+        LatLngBounds bounds = builder.build();
+
+        // Obtaining a movement description object by using the factory: CameraUpdateFactory
+        int padding = PADDING; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        // Map automatic zoom
+        if(ANIMATION)
+            googleMap.animateCamera(cu);
+        else
+            googleMap.moveCamera(cu);
     }
 
         /** Called when the user clicks a marker. */
