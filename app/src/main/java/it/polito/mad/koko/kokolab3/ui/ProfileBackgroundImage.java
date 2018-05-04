@@ -21,10 +21,7 @@ public class ProfileBackgroundImage {
         this.url=url;
         loadBitmap(url);
         loadtarget=null;
-
     }
-
-
 
     private void loadBitmap(String url) {
 
@@ -47,7 +44,6 @@ public class ProfileBackgroundImage {
 
         Picasso.get().load(url).into(loadtarget);
     }
-
 
     private void createImageFile(Bitmap imageBitmap){
         FileOutputStream out = null;

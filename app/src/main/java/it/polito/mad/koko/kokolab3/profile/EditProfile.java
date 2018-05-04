@@ -71,7 +71,7 @@ public class EditProfile extends AppCompatActivity {
     private ProfileManager profileManager;
 
     /**
-     *  Firebase login profile, firebase database
+     * Firebase login profile, firebase database
      */
     private FirebaseUser mFirebaseUser;
     private FirebaseDatabase mDatabase;
@@ -95,7 +95,8 @@ public class EditProfile extends AppCompatActivity {
      * previous values shown in the ShowProfile activity.
      * It also adds an edit profile pic button and the save button to save
      * the current modifications in the sharedPreferences XML file.
-     * @param savedInstanceState    activity's previously saved state.
+     *
+     * @param savedInstanceState activity's previously saved state.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,33 +109,33 @@ public class EditProfile extends AppCompatActivity {
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
-        p= profileManager.getProfile(authenticator.getUser().getUid());
+        p = profileManager.getProfile(authenticator.getUser().getUid());
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
         // Restoring UI fields containing profile info
-        et_name=findViewById(R.id.edit_user_name);
+        et_name = findViewById(R.id.edit_user_name);
         //et_password=findViewById(R.id.edit_user_password);
-        et_email=findViewById(R.id.edit_user_email);
-        et_phone=findViewById(R.id.edit_user_phone);
-        et_location=findViewById(R.id.edit_user_location);
-        et_bio=findViewById(R.id.edit_user_bio);
-        user_photo= findViewById(R.id.user_photo);
+        et_email = findViewById(R.id.edit_user_email);
+        et_phone = findViewById(R.id.edit_user_phone);
+        et_location = findViewById(R.id.edit_user_location);
+        et_bio = findViewById(R.id.edit_user_bio);
+        user_photo = findViewById(R.id.user_photo);
 
         et_name.setText(p.getName());
         et_email.setText(p.getEmail());
         et_bio.setText(p.getBio());
         et_location.setText(p.getLocation());
         et_phone.setText(p.getPhone());
-        latLng=p.getPosition();
+        latLng = p.getPosition();
 
 
         // Restoring from past instanceState
-        if(savedInstanceState!= null) {
+        if (savedInstanceState != null) {
             flagCamera = savedInstanceState.getBoolean("flagCamera");
             flagGallery = savedInstanceState.getBoolean("flagGallery");
-            if(flagGallery)
-                imageRef= Uri.parse(savedInstanceState.getString("imageRef"));
+            if (flagGallery)
+                imageRef = Uri.parse(savedInstanceState.getString("imageRef"));
         }
 
         map_button = findViewById(R.id.button_map);
@@ -154,7 +155,7 @@ public class EditProfile extends AppCompatActivity {
 
         save_button.setOnClickListener(v -> {
             // If the user has selected a location
-            if(!locationIsMissingFromUI()) {
+            if (!locationIsMissingFromUI()) {
                 // Get the data from an ImageView as bytes
                 user_photo.setDrawingCacheEnabled(true);
                 user_photo.buildDrawingCache();
@@ -188,8 +189,9 @@ public class EditProfile extends AppCompatActivity {
 
     /**
      * Tests whether the location info is in the user profile (in Firebase) or not.
-     * @return  true if the user has a location associated with him/her yet.
-     *          false otherwise.
+     *
+     * @return true if the user has a location associated with him/her yet.
+     * false otherwise.
      */
     private boolean locationIsMissingFromUserInfo() {
         String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
@@ -200,8 +202,9 @@ public class EditProfile extends AppCompatActivity {
     /**
      * Tests whether the location info has been specified or not via the
      * corresponding UI item.
-     * @return  true if the user has not specified the location yet.
-     *          false otherwise.
+     *
+     * @return true if the user has not specified the location yet.
+     * false otherwise.
      */
     private boolean locationIsMissingFromUI() {
         return et_location != null && et_location.getText().equals("");
@@ -224,7 +227,7 @@ public class EditProfile extends AppCompatActivity {
         //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
         //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
 
-        if(locationIsMissingFromUI() || locationIsMissingFromUserInfo())
+        if (locationIsMissingFromUI() || locationIsMissingFromUserInfo())
             missingLocationError();
         else
             finish();
@@ -243,16 +246,15 @@ public class EditProfile extends AppCompatActivity {
     }
 
     /**
-     *
      * @param savedInstanceState flag if we have selected camera or gallery
      *                           imageRef is uri of image gallery
      */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean("flagCamera",flagCamera);
-        savedInstanceState.putBoolean("flagGallery",flagGallery);
-        if(flagGallery) {
+        savedInstanceState.putBoolean("flagCamera", flagCamera);
+        savedInstanceState.putBoolean("flagGallery", flagGallery);
+        if (flagGallery) {
             savedInstanceState.putString("imageRef", imageRef.toString());
         }
     }
@@ -273,10 +275,10 @@ public class EditProfile extends AppCompatActivity {
         // 'From gallery' option
         myAlertDialog.setPositiveButton("Gallery",
                 (arg0, arg1) -> {
-                Intent pictureActionIntent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                // Launching the gallery app
-                startActivityForResult(pictureActionIntent, GALLERY);
-            });
+                    Intent pictureActionIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                    // Launching the gallery app
+                    startActivityForResult(pictureActionIntent, GALLERY);
+                });
 
         // 'From camera' option
         myAlertDialog.setNegativeButton("Camera",
@@ -284,11 +286,11 @@ public class EditProfile extends AppCompatActivity {
                     // Requested from Android 7.0 Nougat
                     StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                     StrictMode.setVmPolicy(builder.build());
-                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
-                            // Launching the camera app
-                            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-                        }
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
+                        // Launching the camera app
+                        startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                    }
                 });
 
         // Showing the alert dialog
@@ -297,36 +299,38 @@ public class EditProfile extends AppCompatActivity {
 
     /**
      * Upon taking a picture with the camera, it saves the Bitmap image.
+     *
      * @param extras bundle with data from startDialog intent
      */
     private void createImageFile(Bundle extras) {
         imageBitmap = (Bitmap) extras.get("data");
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
         }// The image cannot be created
-        catch(IOException e) {
+        catch (IOException e) {
             // Creating an alert dialog indicating all possible causes
             AlertDialog.Builder builder = new AlertDialog.Builder(EditProfile.this);
-            builder .setMessage(R.string.image_file_creation_error_message)
+            builder.setMessage(R.string.image_file_creation_error_message)
                     .setTitle(R.string.image_file_creation_error_title)
                     .setIcon(android.R.drawable.ic_dialog_alert);
 
             // Showing the dialog to the screen
             AlertDialog dialog = builder.create();
             dialog.show();
-            }
+        }
     }
 
     /**
      * Called as a result of the new profile picture activity, whether it is taken from
      * the camera or from the gallery.
-     * @param requestCode   where the profile pic has been acquired.
-     * @param resultCode    whether the operation has been performed successfully or not.
-     * @param data          an Intent that carries the result data.
+     *
+     * @param requestCode where the profile pic has been acquired.
+     * @param resultCode  whether the operation has been performed successfully or not.
+     * @param data        an Intent that carries the result data.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -339,8 +343,8 @@ public class EditProfile extends AppCompatActivity {
             Log.d(TAG, "gallery");
 
             // crete a reference from uri gallery
-                imageRef = data.getData();
-                Log.d(TAG, "onActivityResult imageRef: " + imageRef.toString());
+            imageRef = data.getData();
+            Log.d(TAG, "onActivityResult imageRef: " + imageRef.toString());
 
 
             // set flags for future state
@@ -348,29 +352,29 @@ public class EditProfile extends AppCompatActivity {
             flagCamera = false;
         }
 
-            // If the photo has been taken with the camera
-            if (requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
-                //Return uri from intent
-                Bundle extras = data.getExtras();
-                // TODO debugging
-                Log.d(TAG, "camera");
-                //create a new BitMap
-                createImageFile(extras);
-                // set flags for future state
-                flagCamera = true;
-                flagGallery = false;
+        // If the photo has been taken with the camera
+        if (requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
+            //Return uri from intent
+            Bundle extras = data.getExtras();
+            // TODO debugging
+            Log.d(TAG, "camera");
+            //create a new BitMap
+            createImageFile(extras);
+            // set flags for future state
+            flagCamera = true;
+            flagGallery = false;
 
-            }
+        }
 
-            if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
-                latLng = place.getLatLng().toString();
-                final CharSequence address = place.getAddress();
-                et_location.setText(address);
+        if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+            Place place = PlacePicker.getPlace(data, this);
+            latLng = place.getLatLng().toString();
+            final CharSequence address = place.getAddress();
+            et_location.setText(address);
 
-                String toastMsg = String.format("Place: %s", place.getName());
-                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
-            }
+            String toastMsg = String.format("Place: %s", place.getName());
+            Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+        }
 
 
     }
@@ -384,12 +388,12 @@ public class EditProfile extends AppCompatActivity {
         super.onResume();
 
 
-        if(flagCamera) {
-            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+        if (flagCamera) {
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
             user_photo.setImageBitmap(tmp);
-        }else if (flagGallery){
+        } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
-        }else if(p.getImgUrl()!=null){
+        } else if (p.getImgUrl() != null) {
             Picasso.get().load(p.getImgUrl()).fit().centerCrop().into(user_photo);
         }
     }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,9 +56,8 @@ import it.polito.mad.koko.kokolab3.auth.provider.PhoneAuthActivity;
  * Simple list-based Activity to redirect to one of the other Activities. This Activity does not
  * contain any useful code related to Firebase Authentication. You may want to start with
  * one of the following Files:
- *     {@link GoogleSignInActivity}
- *     {@link EmailPasswordActivity}
- *     {@link PhoneAuthActivity}
+ * {@link GoogleSignInActivity}
+ * {@link EmailPasswordActivity}
  */
 public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -67,13 +66,13 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
     /**
      * Authentication code needed from provider classes.
      */
-    private static final int    AUTH_SUCCESS = 0,
-                                AUTH_FAIL = -1;
+    private static final int AUTH_SUCCESS = 0,
+            AUTH_FAIL = -1;
 
     /**
      * Authentication code needed to {@link it.polito.mad.koko.kokolab3.HomeActivity}
      */
-    private static final int    AUTH = 10;
+    private static final int AUTH = 10;
 
     private static final Class[] CLASSES = new Class[]{
             // Basic
@@ -96,7 +95,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             // PasswordlessActivity.class
     };
 
-    private static final int[] LABEL_IDS = new int[] {
+    private static final int[] LABEL_IDS = new int[]{
             // Basic
             R.string.label_google_sign_in,
             R.string.label_emailpassword,
@@ -117,7 +116,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             // R.string.label_passwordless
     };
 
-    private static final int[] DESCRIPTION_IDS = new int[] {
+    private static final int[] DESCRIPTION_IDS = new int[]{
             // Basic
             R.string.desc_google_sign_in,
             R.string.desc_emailpassword,
@@ -138,7 +137,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             // R.string.desc_passwordless
     };
 
-    private static final int[] ICON_IDS = new int[] {
+    private static final int[] ICON_IDS = new int[]{
             // Basic
             R.drawable.fui_ic_googleg_color_24dp,
             R.drawable.fui_ic_mail_white_24dp,
@@ -198,7 +197,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
         Bitmap resultBmp = BlurBuilder.blur(this, BitmapFactory.decodeResource(getResources(), R.mipmap.koko));
         Drawable drawable = new BitmapDrawable(getResources(), resultBmp);
-        linearLayout =findViewById(R.id.lay);
+        linearLayout = findViewById(R.id.lay);
         linearLayout.setBackground(drawable);
 
 
@@ -207,7 +206,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
 
     }
@@ -220,7 +219,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == AUTH_SUCCESS) {
+        if (resultCode == AUTH_SUCCESS) {
             setResult(AUTH);
             finish();
         }
