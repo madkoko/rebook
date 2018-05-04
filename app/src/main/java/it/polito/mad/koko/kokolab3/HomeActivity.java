@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private static final int    AUTH = 10;
 
-    private int INSERT_BOOK = 1;
+    private int INSERT_BOOK = 20;
     /**
      * Request code for the activity "ShowBooks" to show only the current user's books
      */
@@ -130,8 +130,12 @@ public class HomeActivity extends AppCompatActivity
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
+        if(requestCode==INSERT_BOOK)
+            // Retrieving all user's books
+            BookManager.populateUserBookList();
+
         // Returning in HomeActivity from an Authentication procedure
-        if(resultCode == AUTH) {
+        else if(resultCode == AUTH) {
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
@@ -144,6 +148,7 @@ public class HomeActivity extends AppCompatActivity
             //profileManager = ProfileManager.getInstance();
 
             // Creating the Firebase user entry in the database
+
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
             //
@@ -218,8 +223,8 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.search_books) {
             Intent searchBooks = new Intent(getApplicationContext(), SearchBooks.class);
-            BookManager.removeUserBooksEventListener();
-            //startActivityForResult(searchBooks, SEARCH_BOOKS);
+            // BookManager.removeUserBooksEventListener();
+            // startActivityForResult(searchBooks, SEARCH_BOOKS);
             startActivity(searchBooks);
 
         } else if (id == R.id.nav_share) {
