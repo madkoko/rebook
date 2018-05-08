@@ -167,4 +167,8 @@ public class ProfileManager {
         }
         return true;
     }
+
+    public void addToken(String token, String uid) {
+        usersRef.child(uid).child("tokenMessage").setValue(token);
+    }
 }

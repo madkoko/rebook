@@ -18,8 +18,12 @@ package it.polito.mad.koko.kokolab3.messaging;
 
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
@@ -55,5 +59,8 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
+        String uid = FirebaseAuth.getInstance().getUid();
+        ProfileManager profileManager= ProfileManager.getInstance();
+        profileManager.addToken(token, uid);
     }
 }
