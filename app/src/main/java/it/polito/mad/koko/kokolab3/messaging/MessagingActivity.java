@@ -18,7 +18,6 @@ package it.polito.mad.koko.kokolab3.messaging;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,14 +30,14 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import it.polito.mad.koko.kokolab3.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MessagingActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MessagingActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_messaging);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
@@ -68,32 +67,26 @@ public class MainActivity extends AppCompatActivity {
         // [END handle_data_extras]
 
         Button subscribeButton = findViewById(R.id.subscribeButton);
-        subscribeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // [START subscribe_topics]
-                FirebaseMessaging.getInstance().subscribeToTopic("news");
-                // [END subscribe_topics]
+        subscribeButton.setOnClickListener(v -> {
+            // [START subscribe_topics]
+            FirebaseMessaging.getInstance().subscribeToTopic("news");
+            // [END subscribe_topics]
 
-                // Log and toast
-                String msg = getString(R.string.msg_subscribed);
-                Log.d(TAG, msg);
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-            }
+            // Log and toast
+            String msg = getString(R.string.msg_subscribed);
+            Log.d(TAG, msg);
+            Toast.makeText(MessagingActivity.this, msg, Toast.LENGTH_SHORT).show();
         });
 
         Button logTokenButton = findViewById(R.id.logTokenButton);
-        logTokenButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get token
-                String token = FirebaseInstanceId.getInstance().getToken();
+        logTokenButton.setOnClickListener(v -> {
+            // Get token
+            String token = FirebaseInstanceId.getInstance().getToken();
 
-                // Log and toast
-                String msg = getString(R.string.msg_token_fmt, token);
-                Log.d(TAG, msg);
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-            }
+            // Log and toast
+            String msg = getString(R.string.msg_token_fmt, token);
+            Log.d(TAG, msg);
+            Toast.makeText(MessagingActivity.this, msg, Toast.LENGTH_SHORT).show();
         });
     }
 

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,6 +22,7 @@ import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
+import it.polito.mad.koko.kokolab3.messaging.MessagingActivity;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -48,9 +48,10 @@ public class HomeActivity extends AppCompatActivity
      * Result codes needed to distinguish among all possible activities launched
      * by this one.
      */
-    private static final int    AUTH = 10;
+    private static final int AUTH = 10;
 
     private int INSERT_BOOK = 20;
+
     /**
      * Request code for the activity "ShowBooks" to show only the current user's books
      */
@@ -102,7 +103,6 @@ public class HomeActivity extends AppCompatActivity
             // Retrieving the ProfileManager singleton
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
-
         }
     }
 
@@ -130,12 +130,12 @@ public class HomeActivity extends AppCompatActivity
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
-        if(requestCode==INSERT_BOOK)
+        if (requestCode == INSERT_BOOK)
             // Retrieving all user's books
             BookManager.populateUserBookList();
 
-        // Returning in HomeActivity from an Authentication procedure
-        else if(resultCode == AUTH) {
+            // Returning in HomeActivity from an Authentication procedure
+        else if (resultCode == AUTH) {
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
@@ -159,7 +159,7 @@ public class HomeActivity extends AppCompatActivity
             if (profileManager.profileIsNotPresent((authenticator.getAuth().getUid()))) {
                 Intent intent = new Intent(getApplicationContext(), EditProfile.class);
                 startActivity(intent);
-            }else {
+            } else {
                 if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImgUrl() != null) {
                     Profile p = profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid());
                     new ProfileBackgroundImage(p.getImgUrl());
@@ -228,7 +228,9 @@ public class HomeActivity extends AppCompatActivity
             startActivity(searchBooks);
 
         } else if (id == R.id.nav_share) {
-
+            // TODO just for testing
+            Intent chat = new Intent(getApplicationContext(), MessagingActivity.class);
+            startActivity(chat);
         } else if (id == R.id.nav_send) {
 
         } else if (id == R.id.sign_out) {
@@ -246,9 +248,5 @@ public class HomeActivity extends AppCompatActivity
         profileManager.reset();
 
     }
-
-
-
-
 
 }
