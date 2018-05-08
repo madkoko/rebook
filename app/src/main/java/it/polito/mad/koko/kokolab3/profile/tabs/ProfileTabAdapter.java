@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab3.profile.Tab_Profile_Show;
+package it.polito.mad.koko.kokolab3.profile.tabs;
 
 import android.app.Activity;
 import android.content.Context;

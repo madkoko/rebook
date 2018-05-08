@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.support.v7.widget.Toolbar;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,7 +31,7 @@ import java.io.FileNotFoundException;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
-import it.polito.mad.koko.kokolab3.profile.Tab_Profile_Show.PagerAdapter;
+import it.polito.mad.koko.kokolab3.profile.tabs.PagerAdapter;
 import it.polito.mad.koko.kokolab3.ui.*;
 
 public class ShowProfile extends AppCompatActivity {

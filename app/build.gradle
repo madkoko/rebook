@@ -35,34 +35,36 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.google.firebase:firebase-storage:11.8.0'
+
+    // Authentication
     implementation 'com.google.firebase:firebase-auth:11.8.0'
+    implementation 'com.firebaseui:firebase-ui:3.2.2' // FirebaseUI
+    implementation 'com.facebook.android:facebook-android-sdk:4.27.0' // Facebook
+    implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true } // Twitter
+
+    // Firebase storage and database
+    implementation 'com.google.firebase:firebase-storage:11.8.0'
     implementation 'com.google.firebase:firebase-database:11.8.0'
+    
+    // Messaging
+    implementation 'com.google.firebase:firebase-messaging:11.8.0'
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    
+    //
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    // FirebaseUI login
-    implementation 'com.firebaseui:firebase-ui:3.2.2'
-    // Facebook login
-    implementation 'com.facebook.android:facebook-android-sdk:4.27.0'
-    // Twitter login
-    implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true }
+
     // Google Places API
     implementation 'com.google.android.gms:play-services-places:11.8.0'
-    // Important - the CameraSource implementation in this project requires version 8.1 or higher.
-    //implementation 'com.google.android.gms:play-services-vision:15.0.0'
-    /*androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })*/
+
+    // Book info retrieving
     api 'me.dm7.barcodescanner:zxing:1.9'
     testImplementation 'junit:junit:4.12'
     api 'org.apache.httpcomponents:httpcore:4.4.1'
-
-
 }
 
 ext {
     supportlib_version = '27.1.1'
 }
-
 
 apply plugin: 'com.google.gms.google-services'

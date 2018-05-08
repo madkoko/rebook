@@ -1,4 +1,4 @@
-package it.polito.mad.koko.kokolab3.profile.Tab_Profile_Show;
+package it.polito.mad.koko.kokolab3.profile.tabs;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

@@ -1,10 +1,8 @@
-package it.polito.mad.koko.kokolab3.profile.Tab_Profile_Show;
+package it.polito.mad.koko.kokolab3.profile.tabs;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
