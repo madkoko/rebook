@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +16,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.messaging.SendToAnotherUser;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBook extends AppCompatActivity
@@ -24,14 +29,20 @@ public class ShowBook extends AppCompatActivity
     private static final String TAG = "ShowBook";
     private ProfileManager profileManager;
     private Book book;
+    private Button sendRrequet;
+    private String tokenId;
+    private JSONArray regArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_book);
+        profileManager=ProfileManager.getInstance();
+
 
         TextView isbn,title,author,publisher,editionYear,conditions;
         ImageView bookImage;
+
         
 
         isbn=findViewById(R.id.show_book_isbn);
@@ -41,6 +52,7 @@ public class ShowBook extends AppCompatActivity
         editionYear=findViewById(R.id.show_book_edition_year);
         conditions=findViewById(R.id.show_book_conditions);
         bookImage=findViewById(R.id.show_book_photo);
+        sendRrequet=findViewById(R.id.send_request);
 
         Intent i=getIntent();
         if(i.getExtras().get("book")!=null) {
@@ -58,6 +70,12 @@ public class ShowBook extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        if (profileManager.getProfile(book.getUid()).getTokenMessage() != null) {
+            tokenId = profileManager.getProfile(book.getUid()).getTokenMessage();
+            sendRrequet.setOnClickListener(v -> SendToAnotherUser.sendNotification(tokenId));
+        }
+
+
 
 
     }
@@ -66,7 +84,6 @@ public class ShowBook extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         // Add a marker in Sydney, Australia,
         // and move the map's camera to the same location.
-        profileManager=ProfileManager.getInstance();
         if(profileManager.getProfile(book.getUid()).getPosition()!=null) {
             String pos = profileManager.getProfile(book.getUid()).getPosition();
             Log.d(TAG, pos);

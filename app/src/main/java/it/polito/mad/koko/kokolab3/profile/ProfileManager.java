@@ -103,7 +103,8 @@ public class ProfileManager {
                     userInfo.get("location"),
                     userInfo.get("bio"),
                     userInfo.get("image"),
-                    userInfo.get("position"));
+                    userInfo.get("position"),
+                    userInfo.get("tokenMessage"));
             return profile;
         }
     }
