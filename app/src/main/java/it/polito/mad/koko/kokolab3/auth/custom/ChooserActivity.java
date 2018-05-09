@@ -101,19 +101,19 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.string.label_emailpassword,
 
             // Not included in the free Spark plan
-            // R.string.label_phone_auth,
+            R.string.label_phone_auth,
 
             // Social
             R.string.label_facebook_login,
             R.string.label_twitter_login,
 
             // Useless
-            /*R.string.label_anonymous_auth,
+            R.string.label_anonymous_auth,
             R.string.label_firebase_ui,
-            R.string.label_custom_auth,*/
+            R.string.label_custom_auth,
 
             // Does not work with firebase-auth:15.0.0
-            // R.string.label_passwordless
+            R.string.label_passwordless
     };
 
     private static final int[] DESCRIPTION_IDS = new int[]{
@@ -122,19 +122,19 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.string.desc_emailpassword,
 
             // Not included in the free Spark plan
-            // R.string.desc_phone_auth,
+            R.string.desc_phone_auth,
 
             // Social
             R.string.desc_facebook_login,
             R.string.desc_twitter_login,
 
             // Useless
-            /*R.string.desc_anonymous_auth,
+            R.string.desc_anonymous_auth,
             R.string.desc_firebase_ui,
-            R.string.desc_custom_auth,*/
+            R.string.desc_custom_auth,
 
             // Does not work with firebase-auth:15.0.0
-            // R.string.desc_passwordless
+            R.string.desc_passwordless
     };
 
     private static final int[] ICON_IDS = new int[]{
@@ -143,19 +143,19 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.drawable.fui_ic_mail_white_24dp,
 
             // Not included in the free Spark plan
-            // R.drawable.fui_ic_phone_white_24dp,
+            R.drawable.fui_ic_phone_white_24dp,
 
             // Social
             R.drawable.fui_ic_facebook_white_22dp,
             R.drawable.fui_ic_twitter_bird_white_24dp,
 
             // Useless
-            /*R.drawable.fui_ic_phone_white_24dp,
+            R.drawable.fui_ic_phone_white_24dp,
             R.drawable.fui_ic_mail_white_24dp,
-            R.drawable.fui_ic_mail_white_24dp,*/
+            R.drawable.fui_ic_mail_white_24dp,
 
             // Does not work with firebase-auth:15.0.0
-            // R.drawable.fui_ic_phone_white_24dp
+            R.drawable.fui_ic_phone_white_24dp
     };
 
     private View linearLayout;
