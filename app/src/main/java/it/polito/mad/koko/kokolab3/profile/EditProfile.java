@@ -213,7 +213,7 @@ public class EditProfile extends AppCompatActivity {
     /**
      * Tests whether the location and username info is in the user profile (in Firebase) or not.
      *
-     * @return true if the user has a location and username associated with him/her yet.
+     * @return true if the user hasn't a location and username associated with him/her yet.
      * false otherwise.
      */
 
@@ -221,12 +221,16 @@ public class EditProfile extends AppCompatActivity {
         String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
         String username = profileManager.getProfile(authenticator.getUser().getUid()).getName();
 
-        boolean checkUserMandatoryInfo = false;
+        boolean infoIsMissing = false;
 
-        if ((userLocation != null && (userLocation.isEmpty() || userLocation.equals(""))) || (username != null && (username.isEmpty() || username.equals(""))))
-            checkUserMandatoryInfo = true;
+        if(
+            (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
+                ||
+            (username == null || (username.isEmpty() || username.equals("")))
+        )
+            infoIsMissing = true;
 
-        return checkUserMandatoryInfo;
+        return infoIsMissing;
     }
 
 
@@ -239,7 +243,7 @@ public class EditProfile extends AppCompatActivity {
         //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
         //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
 
-        if (!infoIsMissingFromUser() || !infoIsMissingFromUI())
+        if (!infoIsMissingFromUser() && !infoIsMissingFromUI())
             finish();
     }
 

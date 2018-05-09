@@ -49,16 +49,16 @@ public class InsertBook extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_book);
 
-        bookIsbn=findViewById(R.id.edit_book_ISBN);
-        bookTitle=findViewById(R.id.edit_book_title);
-        bookAuthor=findViewById(R.id.edit_book_author);
-        bookPublisher=findViewById(R.id.edit_book_publisher);
-        bookEditionYear=findViewById(R.id.edit_book_edition_year);
-        bookConditions=findViewById(R.id.edit_book_conditions);
-        bookPhoto=findViewById(R.id.insert_book_photo);
+        bookIsbn = findViewById(R.id.edit_book_ISBN);
+        bookTitle = findViewById(R.id.edit_book_title);
+        bookAuthor = findViewById(R.id.edit_book_author);
+        bookPublisher = findViewById(R.id.edit_book_publisher);
+        bookEditionYear = findViewById(R.id.edit_book_edition_year);
+        bookConditions = findViewById(R.id.edit_book_conditions);
+        bookPhoto = findViewById(R.id.insert_book_photo);
 
 
-        ImageButton photoButton=findViewById(R.id.book_photo_button);
+        ImageButton photoButton = findViewById(R.id.book_photo_button);
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,64 +72,63 @@ public class InsertBook extends AppCompatActivity {
             }
         });
 
-        Button addButton=findViewById(R.id.add_button);
+        Button addButton = findViewById(R.id.add_button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createBook(getIntent().getStringExtra("uid"));
+                if (!bookTitleIsMissingFromUI())
+                    createBook(getIntent().getStringExtra("uid"));
             }
         });
 
-        Button scanButton=findViewById(R.id.scan_button);
+        Button scanButton = findViewById(R.id.scan_button);
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent scanIntent= new Intent(getApplicationContext(),ScanISBNActivity.class);
+                Intent scanIntent = new Intent(getApplicationContext(), ScanISBNActivity.class);
 
                 Log.d(TAG, "scan button pressed");
-                startActivityForResult(scanIntent,SCAN_BOOK_INFO);
+                startActivityForResult(scanIntent, SCAN_BOOK_INFO);
             }
         });
 
-        Button searchButton=findViewById(R.id.search_button);
+        Button searchButton = findViewById(R.id.search_button);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, String.valueOf(bookIsbn.getText().length()));
-                if(bookIsbn.getText().length()!=0) {
-                    Log.d(TAG, "isbn: "+bookIsbn.getText().toString());
-                    String bookSearchString = "https://www.googleapis.com/books/v1/volumes?q=isbn:"+bookIsbn.getText().toString();
+                if (bookIsbn.getText().length() != 0) {
+                    Log.d(TAG, "isbn: " + bookIsbn.getText().toString());
+                    String bookSearchString = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + bookIsbn.getText().toString();
                     BookManager.retrieveBookInfo(bookSearchString);
 
-                    Map<String,String> bookInfo=BookManager.getBookInfo();
+                    Map<String, String> bookInfo = BookManager.getBookInfo();
 
-                    if(bookInfo==null){
-                        Toast.makeText(getApplicationContext(),"Insert a valid ISBN",Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    if (bookInfo == null) {
+                        Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
+                    } else {
                         //bookIsbn.setText(bookInfo.get("isbn"));
                         bookTitle.setText(bookInfo.get("title"));
                         bookAuthor.setText(bookInfo.get("authors"));
                         bookPublisher.setText((bookInfo.get("publisher")));
                         bookEditionYear.setText(bookInfo.get("editionYear"));
                     }
-                }
-                else{
-                    Toast.makeText(getApplicationContext(),"Insert a valid ISBN",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
     }
 
-    public void createBook(String uid){
+    public void createBook(String uid) {
 
-        String isbn=bookIsbn.getText().toString();
-        String title=bookTitle.getText().toString();
-        String author=bookAuthor.getText().toString();
-        String publisher=bookPublisher.getText().toString();
-        String editionYear=bookEditionYear.getText().toString();
-        String conditions=bookConditions.getText().toString();
+        String isbn = bookIsbn.getText().toString();
+        String title = bookTitle.getText().toString();
+        String author = bookAuthor.getText().toString();
+        String publisher = bookPublisher.getText().toString();
+        String editionYear = bookEditionYear.getText().toString();
+        String conditions = bookConditions.getText().toString();
 
         bookPhoto.setDrawingCacheEnabled(true);
         bookPhoto.buildDrawingCache();
@@ -138,9 +137,9 @@ public class InsertBook extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] shown_image = baos.toByteArray();
 
-        Book book=new Book(isbn,title,author,publisher,editionYear,conditions,uid,null);
+        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, uid, null);
 
-        BookManager.insertBook(book,shown_image);
+        BookManager.insertBook(book, shown_image);
 
         finish();
 
@@ -152,7 +151,7 @@ public class InsertBook extends AppCompatActivity {
         Log.d(TAG, "onActivityResult");
 
         // If the photo has been taken with the camera
-        if(requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
+        if (requestCode == CAMERA_REQUEST && resultCode != RESULT_CANCELED) {
             //Return uri from intent
             Bundle extras = data.getExtras();
             // TODO debugging
@@ -160,31 +159,30 @@ public class InsertBook extends AppCompatActivity {
             //create a new BitMap
             createImageFile(extras);
             // set flags for future state
-            flagCamera=true;
+            flagCamera = true;
 
-            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"temp");
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
             bookPhoto.setImageBitmap(tmp);
 
         }
 
-        if(requestCode==SCAN_BOOK_INFO&&resultCode==RESULT_OK){
+        if (requestCode == SCAN_BOOK_INFO && resultCode == RESULT_OK) {
 
             Log.d(TAG, "onActivityResult: scan_book_info");
 
-            String bookSearchString=data.getStringExtra("bookSearchString");
+            String bookSearchString = data.getStringExtra("bookSearchString");
 
             BookManager.retrieveBookInfo(bookSearchString);
 
-            Map<String,String> bookInfo=BookManager.getBookInfo();
-            if(bookInfo!=null) {
+            Map<String, String> bookInfo = BookManager.getBookInfo();
+            if (bookInfo != null) {
                 bookIsbn.setText(bookInfo.get("isbn"));
                 bookTitle.setText(bookInfo.get("title"));
                 bookAuthor.setText(bookInfo.get("authors"));
                 bookPublisher.setText((bookInfo.get("publisher")));
                 bookEditionYear.setText(bookInfo.get("editionYear"));
-            }
-            else{
-                Toast.makeText(getApplicationContext(),"Insert a valid ISBN",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -210,4 +208,19 @@ public class InsertBook extends AppCompatActivity {
             dialog.show();
         }
     }
+
+    /**
+     * Tests whether the book title has been specified or not via the
+     * corresponding UI item.
+     *
+     * @return true if the user has not specified the title yet.
+     * false otherwise.
+     */
+
+    private boolean bookTitleIsMissingFromUI() {
+        if (bookTitle != null && bookTitle.getText().toString().equals(""))
+            bookTitle.setError("please insert a valid title");
+        return bookTitle != null && bookTitle.getText().toString().equals("");
+    }
+
 }
