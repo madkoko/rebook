@@ -14,7 +14,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * Authentication code needed to {@link it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity}
      */
-    protected static final int    AUTH_SUCCESS = 0,
+    protected static final int  AUTH_SUCCESS = 0,
                                 AUTH_FAIL = -1;
 
     private static final String TAG = "BaseActivity";

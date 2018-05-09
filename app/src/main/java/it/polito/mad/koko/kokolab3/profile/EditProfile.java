@@ -155,7 +155,9 @@ public class EditProfile extends AppCompatActivity {
 
         save_button.setOnClickListener(v -> {
             // If the user has selected a location
-            if (!locationIsMissingFromUI()) {
+
+
+            if (!infoIsMissingFromUI()) {
                 // Get the data from an ImageView as bytes
                 user_photo.setDrawingCacheEnabled(true);
                 user_photo.buildDrawingCache();
@@ -180,43 +182,57 @@ public class EditProfile extends AppCompatActivity {
                 // Terminating the activity
                 finish();
             }
-            // If the user has not selected a location yet
-            else {
-                missingLocationError();
-            }
         });
     }
 
     /**
-     * Tests whether the location info is in the user profile (in Firebase) or not.
-     *
-     * @return true if the user has a location associated with him/her yet.
-     * false otherwise.
-     */
-    private boolean locationIsMissingFromUserInfo() {
-        String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
-
-        return userLocation != null && (userLocation.isEmpty() || userLocation.equals(""));
-    }
-
-    /**
-     * Tests whether the location info has been specified or not via the
+     * Tests whether the location info and username have been specified or not via the
      * corresponding UI item.
      *
-     * @return true if the user has not specified the location yet.
+     * @return true if the user has not specified the location or username yet.
      * false otherwise.
      */
-    private boolean locationIsMissingFromUI() {
-        return et_location != null && et_location.getText().equals("");
+
+    private boolean infoIsMissingFromUI() {
+
+        boolean checkUIMandatoryInfo = false;
+
+        if (et_name != null && et_name.getText().toString().equals("")) {
+            checkUIMandatoryInfo = true;
+            et_name.setError("Please insert a valid username");
+        }
+        if (et_location != null && et_location.getText().equals("")) {
+            checkUIMandatoryInfo = true;
+            et_location.setError("Please insert a valid location");
+        }
+
+        return checkUIMandatoryInfo;
     }
 
+
     /**
-     * Displays an error message whenever an user has not specified a location yet.
+     * Tests whether the location and username info is in the user profile (in Firebase) or not.
+     *
+     * @return true if the user hasn't a location and username associated with him/her yet.
+     * false otherwise.
      */
-    private void missingLocationError() {
-        et_location.setError("Please select a location");
-        //Toast.makeText(getApplicationContext(), "Please select a location", Toast.LENGTH_LONG).show();
+
+    private boolean infoIsMissingFromUser() {
+        String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
+        String username = profileManager.getProfile(authenticator.getUser().getUid()).getName();
+
+        boolean infoIsMissing = false;
+
+        if(
+            (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
+                ||
+            (username == null || (username.isEmpty() || username.equals("")))
+        )
+            infoIsMissing = true;
+
+        return infoIsMissing;
     }
+
 
     /**
      * Take care of popping the fragment back stack or finishing the activity
@@ -227,9 +243,7 @@ public class EditProfile extends AppCompatActivity {
         //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
         //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
 
-        if (locationIsMissingFromUI() || locationIsMissingFromUserInfo())
-            missingLocationError();
-        else
+        if (!infoIsMissingFromUser() && !infoIsMissingFromUI())
             finish();
     }
 

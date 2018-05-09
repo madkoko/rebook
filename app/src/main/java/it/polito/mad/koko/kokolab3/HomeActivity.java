@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.books.BookManager;
@@ -29,6 +30,7 @@ import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.ui.ProfileBackgroundImage;
+import it.polito.mad.koko.kokolab3.ui.chat.DefaultDialogsActivity;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -231,11 +233,9 @@ public class HomeActivity extends AppCompatActivity
             startActivity(searchBooks);
 
         } else if (id == R.id.nav_share) {
-            // TODO just for testing
-            Intent chat = new Intent(getApplicationContext(), MessagingActivity.class);
-            startActivity(chat);
-        } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_send) {
+            DefaultDialogsActivity.open(this);
         } else if (id == R.id.sign_out) {
             authenticator.signOut();
         }

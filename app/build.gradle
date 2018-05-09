@@ -57,6 +57,9 @@ dependencies {
     // Google Places API
     implementation 'com.google.android.gms:play-services-places:11.8.0'
 
+    // Chat UI
+    implementation 'com.github.stfalcon:chatkit:0.2.2'
+
     // Book info retrieving
     api 'me.dm7.barcodescanner:zxing:1.9'
     testImplementation 'junit:junit:4.12'
