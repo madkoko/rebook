@@ -12,13 +12,13 @@ public class Profile implements Serializable {
                     email,
                     phone,
                     location,
-                    bio,imgUrl, latLng;
+                    bio,imgUrl, latLng, tokenMessage;
 
     public Profile() {
     }
 
 
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String latLng) {
+    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage) {
         this.name=name;
         this.email=email;
         this.phone=phone;
@@ -26,6 +26,7 @@ public class Profile implements Serializable {
         this.bio=bio;
         this.imgUrl=imgUrl;
         this.latLng = latLng;
+        this.tokenMessage=tokenMessage;
     }
 
 
@@ -55,6 +56,8 @@ public class Profile implements Serializable {
         return imgUrl;
     }
 
+    public String getTokenMessage() { return tokenMessage; }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -81,6 +84,10 @@ public class Profile implements Serializable {
         this.imgUrl = imgUrl;
     }
 
+    public void setTokenMessage(String tokenMessage) { this.tokenMessage = tokenMessage; }
+
+
+
     @Override
     public String toString() {
         return "Profile{" +
@@ -93,4 +100,6 @@ public class Profile implements Serializable {
                 ", position='" + latLng + '\'' +
                 '}';
     }
+
+
 }

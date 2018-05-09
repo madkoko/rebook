@@ -62,6 +62,8 @@
     <string name="book_conditions">Conditions</string>
     <string name="sharing_user">Shared by: Username</string>
     <string name="books_map_button_label">Map</string>
+    <string name="send_request">Send Request</string>
+
 
     <!-- Authentication -->
     <string name="chooser_activity_title">Sign In</string>
