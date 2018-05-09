@@ -96,12 +96,13 @@ public class SendToAnotherUser {
             protected String doInBackground(String... params) {
                 try {
                     JSONObject root = new JSONObject();
-                    JSONObject notification = new JSONObject();
 
                     JSONObject data = new JSONObject();
-                    root.put("notification", notification);
+                    data.put("title", "ciao cacca");
+                    data.put("text", "sei davvero una cacca");
+                    root.put("notification", data);
                     root.put("to", recipient);
-
+                    Log.d(TAG, "root: "+ root.toString());
                     String result = postToFCM(root.toString());
                     return result;
                 } catch (Exception ex) {
@@ -131,11 +132,15 @@ public class SendToAnotherUser {
      */
     static String postToFCM(String bodyString) throws IOException {
         RequestBody body = RequestBody.create(JSON, bodyString);
+        Log.d(TAG, "body: "+String.valueOf(body));
         Request request = new Request.Builder()
                 .url(FCM_MESSAGE_URL)
                 .post(body)
                 .addHeader("Authorization", "key=AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJKTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD")
                 .build();
+
+        Log.d(TAG, "request: "+String.valueOf(request));
+
         Response response = mClient.newCall(request).execute();
         return response.body().string();
     }
