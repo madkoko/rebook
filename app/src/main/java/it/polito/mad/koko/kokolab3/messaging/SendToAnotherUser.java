@@ -119,6 +119,7 @@ public class SendToAnotherUser {
                     JSONObject data = new JSONObject();
                     data.put("title", "ciao cacca");
                     data.put("text", "sei davvero una cacca");
+                    root.put("priority","high");
                     root.put("notification", data);
                     root.put("to", recipient);
                     Log.d(TAG, "root: "+ root.toString());
