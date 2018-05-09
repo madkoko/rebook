@@ -20,7 +20,7 @@ public class SendToAnotherUser {
 
 
     private static final MediaType JSON = null;
-    private String TAG = "SendToAnotherUser";
+    private static String TAG = "SendToAnotherUser";
     public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
     // Iniziate Library OkHttpClient
     static OkHttpClient mClient = new OkHttpClient();
@@ -59,7 +59,7 @@ public class SendToAnotherUser {
                     root.put("registration_ids", recipients);
 
                     String result = postToFCM(root.toString());
-                    Log.d("SendToAnotherUser", "Result: " + result);
+                    Log.d(TAG, "Result: " + result);
                     return result;
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -82,7 +82,7 @@ public class SendToAnotherUser {
                     Log.d("SendToAnotherUser", "succes is: " + String.valueOf(success));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d("SendToAnotherUser", "failure is: " + String.valueOf(failure));
+                    Log.d(TAG, "failure is: " + String.valueOf(failure));
 
                 }
             }
@@ -100,8 +100,7 @@ public class SendToAnotherUser {
 
                     JSONObject data = new JSONObject();
                     root.put("notification", notification);
-                    root.put("data", data);
-                    root.put("registration_ids", recipient);
+                    root.put("to", recipient);
 
                     String result = postToFCM(root.toString());
                     return result;
