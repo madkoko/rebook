@@ -125,7 +125,9 @@ public class MessageManager {
      * Similar to sendMessage but to send first notifications
      * @param recipient is string with token id
      */
-    public static void sendNotification(final String recipient) {
+    public static void sendNotification(final String recipient,
+                                        final String senderName,
+                                        final String bookName) {
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
@@ -133,8 +135,8 @@ public class MessageManager {
                     JSONObject root = new JSONObject();
 
                     JSONObject data = new JSONObject();
-                    data.put("title", "ciao cacca");
-                    data.put("text", "sei davvero una cacca");
+                    data.put("title", "New notification");
+                    data.put("text", "from "+senderName+" for "+bookName);
                     root.put("priority","high");
                     root.put("notification", data);
                     root.put("to", recipient);

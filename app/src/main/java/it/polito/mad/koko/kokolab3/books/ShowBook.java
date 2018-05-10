@@ -14,12 +14,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBook extends AppCompatActivity
@@ -69,12 +71,16 @@ public class ShowBook extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         if (profileManager.getProfile(book.getUid()).getTokenMessage() != null) {
-            tokenId = profileManager.getProfile(book.getUid()).getTokenMessage();
+            Profile profileAuth = profileManager.getProfile(FirebaseAuth.getInstance().getUid());
+            Profile profile = profileManager.getProfile(book.getUid());
+            tokenId = profile.getTokenMessage();
 
             // TODO debugging
             Log.d("device_token", "Token is: " + tokenId);
 
-            sendRequest.setOnClickListener(v -> MessageManager.sendNotification(tokenId));
+            sendRequest.setOnClickListener(v -> MessageManager.sendNotification(tokenId,
+                    profileAuth.getName(),
+                    book.getTitle()));
         }
     }
 
