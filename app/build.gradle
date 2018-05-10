@@ -9,7 +9,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -66,8 +65,8 @@ dependencies {
     api 'org.apache.httpcomponents:httpcore:4.4.1'
 }
 
+apply plugin: 'com.google.gms.google-services'
+
 ext {
     supportlib_version = '27.1.1'
 }
-
-apply plugin: 'com.google.gms.google-services'
