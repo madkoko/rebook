@@ -30,13 +30,37 @@ import android.util.Log;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.ShowProfile;
+import it.polito.mad.koko.kokolab3.ui.chat.DefaultDialogsActivity;
+import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+
+    /**
+     * Notification properties
+     */
+    private static final Class NOTIFICATION_ACTION = ShowProfile.class;
+    private static final int    NOTIFICATION_ICON = R.mipmap.icon,
+                                NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX;
+    /**
+     * Accepting a book exchange request actions and properties
+     */
+    private static final Class ACCEPT_ACTION = DefaultMessagesActivity.class;
+    private static final String ACCEPT_BUTTON_STRING = "Accept";
+    private static final int ACCEPT_ICON = R.mipmap.icon;
+
+    /**
+     * Denying a book exchange request actions and properties
+     */
+    private static final Class DECLINE_ACTION = DefaultMessagesActivity.class;
+    private static final String DECLINE_BUTTON_STRING = "Decline";
+    private static final int DECLINE_ICON = R.mipmap.icon;
 
     /**
      * Called when message is received.
@@ -117,21 +141,48 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param body      FCM message body received.
      */
     private void sendNotification(String title, String body) {
-        Intent intent = new Intent(this, MessagingActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        // Tapping the notification
+        Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_ACTION);
+        showSenderProfileIntent.putExtra("UserID", /*TODO put sender UID here*/ FirebaseAuth.getInstance().getUid());
+        showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent showSenderProfilePendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, showSenderProfileIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+        // Accepting the book exchange request
+        Intent acceptIntent = new Intent(this, ACCEPT_ACTION);
+        showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent acceptPendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, acceptIntent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        // Declining the book exchange request
+
+
+        // Creating the notification
         String channelId = getString(R.string.default_notification_channel_id);
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.mipmap.icon)
+                        // Notification's icon
+                        .setSmallIcon(NOTIFICATION_ICON)
+
+                        // Title and expandable subtitle
                         .setContentTitle(title)
                         .setContentText(body)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
+                        // .setSubText() // TODO cumulative number of requests
+
+                        // Tapping the notification
+                        .setContentIntent(showSenderProfilePendingIntent)
+
+                        // Notification action buttons
+                        .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
+
+                        // Priorities, sound and style
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+                        .setPriority(NOTIFICATION_PRIORITY)
+                        .setOnlyAlertOnce(false)
+                        .setColorized(true);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

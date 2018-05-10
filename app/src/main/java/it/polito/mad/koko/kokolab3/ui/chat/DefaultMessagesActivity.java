@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.ui.chat;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.stfalcon.chatkit.messages.MessageInput;
@@ -18,6 +19,8 @@ public class DefaultMessagesActivity extends DemoMessagesActivity
         implements MessageInput.InputListener,
         MessageInput.AttachmentsListener {
 
+    private static final String TAG = "DefaultMessagesActivity";
+
     public static void open(Context context) {
         context.startActivity(new Intent(context, DefaultMessagesActivity.class));
     }
@@ -27,6 +30,9 @@ public class DefaultMessagesActivity extends DemoMessagesActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, TAG + " has been called.");
+
         setContentView(R.layout.activity_default_messages);
 
         this.messagesList = (MessagesList) findViewById(R.id.messagesList);

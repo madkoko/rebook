@@ -31,9 +31,21 @@ public class MessageManager {
     private static final MediaType CONTENT_TYPE = null;
 
     /**
-     * URL target of message requests.
+     * Book requests strings
      */
-    public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+    public static final String
+        // Message request target URL
+        FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send",
+
+        SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",
+
+        BOOK_EXCHANGE_MESSAGE_TITLE =   "Book exchange request from " +
+                                        SENDER_USERNAME_PLACEHOLDER + "!",
+
+        BOOK_EXCHANGE_MESSAGE_TEXT =    "You can accept/deny immediately or check " +
+                                        SENDER_USERNAME_PLACEHOLDER +
+                                        "'s profile by clicking this notification"
+    ;
 
     /**
      * Firebase server's key access
@@ -134,9 +146,12 @@ public class MessageManager {
                 try {
                     JSONObject root = new JSONObject();
 
+                    String title = BOOK_EXCHANGE_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderName);
+                    String text = BOOK_EXCHANGE_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderName);
+
                     JSONObject data = new JSONObject();
-                    data.put("title", "New notification");
-                    data.put("text", "from "+senderName+" for "+bookName);
+                    data.put("title", title);
+                    data.put("text", text);
                     root.put("priority","high");
                     root.put("notification", data);
                     root.put("to", recipient);
