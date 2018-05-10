@@ -17,10 +17,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.messaging.SendToAnotherUser;
+import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBook extends AppCompatActivity
@@ -29,7 +28,7 @@ public class ShowBook extends AppCompatActivity
     private static final String TAG = "ShowBook";
     private ProfileManager profileManager;
     private Book book;
-    private Button sendRrequet;
+    private Button sendRequest;
     private String tokenId;
     private JSONArray regArray;
 
@@ -39,11 +38,8 @@ public class ShowBook extends AppCompatActivity
         setContentView(R.layout.activity_show_book);
         profileManager=ProfileManager.getInstance();
 
-
         TextView isbn,title,author,publisher,editionYear,conditions;
         ImageView bookImage;
-
-        
 
         isbn=findViewById(R.id.show_book_isbn);
         title=findViewById(R.id.show_book_title);
@@ -52,7 +48,7 @@ public class ShowBook extends AppCompatActivity
         editionYear=findViewById(R.id.show_book_edition_year);
         conditions=findViewById(R.id.show_book_conditions);
         bookImage=findViewById(R.id.show_book_photo);
-        sendRrequet=findViewById(R.id.send_request);
+        sendRequest =findViewById(R.id.send_request);
 
         Intent i=getIntent();
         if(i.getExtras().get("book")!=null) {
@@ -67,17 +63,19 @@ public class ShowBook extends AppCompatActivity
             Picasso.get().load(book.getImage()).into(bookImage);
             //Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
         }
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         if (profileManager.getProfile(book.getUid()).getTokenMessage() != null) {
             tokenId = profileManager.getProfile(book.getUid()).getTokenMessage();
-            sendRrequet.setOnClickListener(v -> SendToAnotherUser.sendNotification(tokenId));
+
+            // TODO debugging
+            Log.d("device_token", "Token is: " + tokenId);
+
+            sendRequest.setOnClickListener(v -> MessageManager.sendNotification(tokenId));
         }
-
-
-
-
     }
 
     @Override
@@ -99,10 +97,9 @@ public class ShowBook extends AppCompatActivity
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
 
         }
-
     }
+
     @Override
     public void onMapClick(LatLng latLng) {
-
     }
 }

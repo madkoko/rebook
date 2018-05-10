@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,41 +15,59 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class SendToAnotherUser {
+public class MessageManager {
 
-    private static String TAG = "SendToAnotherUser";
-
-    // Iniziate Library OkHttpClient
-    static OkHttpClient mClient = new OkHttpClient();
-    //HTTP POST request url
-    public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
-    //key to access to Firebase as server
-    private static String SERVER_KEY = "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJKTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD";
-    //JSON for send http request to Firebase
-    private static final MediaType JSON = null;
-
+    private static String TAG = "MessageManager";
 
     /**
-     * AsyncTask that send a message from AuthUser to another user
+     * HTTP client
+     */
+    static OkHttpClient mClient = new OkHttpClient();
+
+    /**
+     * MediaType of the RequestBody.
+     * If null, UTF-8 will be used.
+     */
+    private static final MediaType CONTENT_TYPE = null;
+
+    /**
+     * URL target of message requests.
+     */
+    public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+
+    /**
+     * Firebase server's key access
+     */
+    private static String SERVER_KEY =
+        "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJ" +
+        "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD"
+    ;
+
+    /**
+     * AsyncTask that sends a message from AuthUser to another user.
+     * I am not sure if this is the right way to send messages, please check the following:
+     *      https://firebase.google.com/docs/cloud-messaging/server
      *
+     * @param recipient    Token of user that receive the message
+     * @param title         of the message
+     * @param body          of the message
+     * @param message       is text of message
+     *                      The JSON form of message is
+     *                      {
+     *                          "notification": {
+     *                              "title": title,
+     *                              "body": body
+     *                          },
      *
-     * @param recipients Token of user that recive the message
-     * @param title      of message
-     * @param body       of message
-     * @param message    is text of message
-     *                   The JSON form of message is
-     *                   {"notification": {
-     *                      "title": title,
-     *                      "body": body},
-     *                   "data":{
-     *                      "message":message},
-     *                   "to" : "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1..."
-     *                   }
-     *  I do not sure if the right way for send messages check on:
-     *  https://firebase.google.com/docs/cloud-messaging/server
+     *                          "data": {
+     *                              "message": message
+     *                          },
+     *
+     *                          "to" : "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1..."
+     *                      }
      */
     @SuppressLint("StaticFieldLeak")
-    public static void sendMessage(final String recipients, final String title, final String body, final String message) {
+    public static void sendMessage(final String recipient, final String title, final String body, final String message) {
 
         new AsyncTask<String, String, String>() {
             /**
@@ -71,7 +88,7 @@ public class SendToAnotherUser {
                     data.put("message", message);
                     root.put("notification", notification);
                     root.put("data", data);
-                    root.put("to", recipients);
+                    root.put("to", recipient);
                     // String that returns the result of HTTP request
                     String result = postToFCM(root.toString());
                     Log.d(TAG, "Result: " + result);
@@ -94,7 +111,7 @@ public class SendToAnotherUser {
                     JSONObject resultJson = new JSONObject(result);
                     success = resultJson.getInt("success");
                     failure = resultJson.getInt("failure");
-                    Log.d("SendToAnotherUser", "succes is: " + String.valueOf(success));
+                    Log.d("MessageManager", "success is: " + String.valueOf(success));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d(TAG, "failure is: " + String.valueOf(failure));
@@ -108,7 +125,6 @@ public class SendToAnotherUser {
      * Similar to sendMessage but to send first notifications
      * @param recipient is string with token id
      */
-
     public static void sendNotification(final String recipient) {
         new AsyncTask<String, Void, String>() {
             @Override
@@ -138,7 +154,7 @@ public class SendToAnotherUser {
 
             @Override
             protected void onPostExecute(String result) {
-                    Log.d("SendToAnotherUser", result);
+                    Log.d("MessageManager", result);
 
             }
         }.execute();
@@ -150,9 +166,9 @@ public class SendToAnotherUser {
      * @return response of request
      * @throws IOException
      */
-    static String postToFCM(String bodyString) throws IOException {
+    private static String postToFCM(String bodyString) throws IOException {
         // Create a request body with json create in sendNotification or sendMessage
-        RequestBody body = RequestBody.create(JSON, bodyString);
+        RequestBody body = RequestBody.create(CONTENT_TYPE, bodyString);
         Log.d(TAG, "body: "+String.valueOf(body));
         // Create a http request
         Request request = new Request.Builder()
@@ -166,6 +182,4 @@ public class SendToAnotherUser {
         Response response = mClient.newCall(request).execute();
         return response.body().string();
     }
-
-
 }

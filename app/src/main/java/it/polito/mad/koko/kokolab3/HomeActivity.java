@@ -25,6 +25,7 @@ import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.messaging.MessagingActivity;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
+import it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
