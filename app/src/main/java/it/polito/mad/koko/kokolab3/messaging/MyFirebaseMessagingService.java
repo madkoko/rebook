@@ -47,20 +47,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private static final Class NOTIFICATION_ACTION = ShowProfile.class;
     private static final int    NOTIFICATION_ICON = R.mipmap.icon,
-                                NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX;
+                                NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX,
+                                NOTIFICATION_REQUEST_CODE = 1;
     /**
      * Accepting a book exchange request actions and properties
      */
     private static final Class ACCEPT_ACTION = DefaultMessagesActivity.class;
     private static final String ACCEPT_BUTTON_STRING = "Accept";
-    private static final int ACCEPT_ICON = R.mipmap.icon;
+    private static final int    ACCEPT_ICON = R.mipmap.icon,
+                                ACCEPT_REQUEST_CODE = 2;
 
     /**
      * Denying a book exchange request actions and properties
      */
     private static final Class DECLINE_ACTION = DefaultMessagesActivity.class;
     private static final String DECLINE_BUTTON_STRING = "Decline";
-    private static final int DECLINE_ICON = R.mipmap.icon;
+    private static final int    DECLINE_ICON = R.mipmap.icon,
+                                DECLINE_REQUEST_CODE = 3;
 
     /**
      * Called when message is received.
@@ -145,13 +148,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_ACTION);
         showSenderProfileIntent.putExtra("UserID", /*TODO put sender UID here*/ FirebaseAuth.getInstance().getUid());
         showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent showSenderProfilePendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, showSenderProfileIntent,
+        PendingIntent showSenderProfilePendingIntent = PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, showSenderProfileIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         // Accepting the book exchange request
         Intent acceptIntent = new Intent(this, ACCEPT_ACTION);
         showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent acceptPendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, acceptIntent,
+        PendingIntent acceptPendingIntent = PendingIntent.getActivity(this, ACCEPT_REQUEST_CODE, acceptIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         // Declining the book exchange request

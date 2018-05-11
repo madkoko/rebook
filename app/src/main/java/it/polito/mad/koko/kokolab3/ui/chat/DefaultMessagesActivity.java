@@ -27,6 +27,8 @@ public class DefaultMessagesActivity extends DemoMessagesActivity
 
     private MessagesList messagesList;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

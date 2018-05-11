@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
+import it.polito.mad.koko.kokolab3.auth.provider.FirebaseUIActivity;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -198,5 +201,14 @@ public class MessageManager {
         // Use post http method to make a request
         Response response = mClient.newCall(request).execute();
         return response.body().string();
+    }
+
+    /**
+     * It creates a chat entry in Firebase including the two specified users.
+     * @param sender        the first user belonging to the conversation.
+     * @param receiver     the second user belonging to the conversation.
+     */
+    public static void createChat(String sender, String receiver) {
+
     }
 }
