@@ -1,17 +1,29 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.sql.Array;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.auth.provider.FirebaseUIActivity;
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,6 +33,23 @@ import okhttp3.Response;
 public class MessageManager {
 
     private static String TAG = "MessageManager";
+
+    /*
+    * All the messages of the current user
+    */
+    private static ArrayList<Message> userMessages;
+
+    /*
+    * All the chats of the current user
+    */
+
+    private static ArrayList<Chat> userChats;
+
+    /*
+     * Listener to all the current user's chats
+     */
+
+    private static ValueEventListener userChatListener;
 
     /**
      * HTTP client
@@ -203,12 +232,85 @@ public class MessageManager {
         return response.body().string();
     }
 
+    /*
+     * Create the listener to populate the chat list with all the current user's chat from Firebase
+     */
+
+    public static void populateUserChatList(){
+        userChatListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
     /**
-     * It creates a chat entry in Firebase including the two specified users.
-     * @param sender        the first user belonging to the conversation.
-     * @param receiver     the second user belonging to the conversation.
+     * It creates a chat entry in Firebase and a reference in both users involved.
+     *  @param sender: sender side of the chat (current logged user)
+     *         receiver: receiver side of the chat (value of "chatID")
      */
     public static void createChat(String sender, String receiver) {
 
+
+        DatabaseReference messagesRef= DatabaseManager.get("chats");
+
+        String chatID=messagesRef.push().getKey();
+        messagesRef.child(chatID).child("messages");
+
+        DatabaseReference usersRef=DatabaseManager.get("users").child(sender);
+
+        usersRef.child("chats").child(chatID).setValue(receiver);
+
+        createMessage(chatID,sender,"ciao");
+
     }
+
+    /*
+     * Creates a message entry in Firebase
+     * @param chatID: id of the chat which the message belongs to
+     *        sender: id of the sender of the message
+     *        messageText: content of the message
+     */
+
+    public static void createMessage(String chatID,String sender,String messageText){
+
+        DatabaseReference messagesRef=DatabaseManager.get("chats").child(chatID).child("messages");
+
+        String messageID=messagesRef.push().getKey();
+
+        Message message=new Message();
+        message.setSender(sender);
+        message.setText(messageText);
+        String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
+        message.setTimestamp(timeStamp);
+
+        messagesRef.child(messageID).setValue(message);
+
+    }
+
+    /*
+     * Return all user's messages from Firebase
+     */
+
+    public static ArrayList<Message> getUserMessages(){
+
+        return userMessages;
+    }
+
+    /*
+     * Return all user's chat from Firebase
+     */
+    public static ArrayList<Chat> getUserChats(){
+
+        return userChats;
+    }
+
 }
