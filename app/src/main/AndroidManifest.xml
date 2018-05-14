@@ -99,7 +99,18 @@
             android:label="@string/show_profile" />
         <activity android:name="it.polito.mad.koko.kokolab3.profile.EditProfile" />
 
-        <!-- Messsaging activities -->
+        <!-- Exchange requests receivers -->
+        <receiver
+            android:name=".messaging.NotificationReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ACCEPT_ACTION"/>
+                <action android:name="DECLINE_ACTION"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Messaging activities -->
         <activity android:name="it.polito.mad.koko.kokolab3.ui.chat.DefaultDialogsActivity" />
         <activity android:name="it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity" />
         <service android:name=".messaging.MyFirebaseMessagingService">

@@ -35,7 +35,6 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
-import it.polito.mad.koko.kokolab3.ui.chat.DefaultDialogsActivity;
 import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -45,25 +44,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Notification properties
      */
-    private static final Class NOTIFICATION_ACTION = ShowProfile.class;
+    private static final Class  NOTIFICATION_CALLBACK = ShowProfile.class;
     private static final int    NOTIFICATION_ICON = R.mipmap.icon,
                                 NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX,
                                 NOTIFICATION_REQUEST_CODE = 1;
     /**
      * Accepting a book exchange request actions and properties
      */
-    private static final Class ACCEPT_ACTION = DefaultMessagesActivity.class;
+    private static final Class  ACCEPT_CALLBACK = DefaultMessagesActivity.class;
     private static final String ACCEPT_BUTTON_STRING = "Accept";
     private static final int    ACCEPT_ICON = R.mipmap.icon,
                                 ACCEPT_REQUEST_CODE = 2;
+    protected static final String ACCEPT_ACTION = "accept";
 
     /**
      * Denying a book exchange request actions and properties
      */
-    private static final Class DECLINE_ACTION = DefaultMessagesActivity.class;
+    private static final Class  DECLINE_CALLBACK = DefaultMessagesActivity.class;
     private static final String DECLINE_BUTTON_STRING = "Decline";
     private static final int    DECLINE_ICON = R.mipmap.icon,
                                 DECLINE_REQUEST_CODE = 3;
+    protected static final String DECLINE_ACTION = "decline";
 
     /**
      * Called when message is received.
@@ -145,20 +146,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void sendNotification(String title, String body) {
         // Tapping the notification
-        Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_ACTION);
+        Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_CALLBACK);
         showSenderProfileIntent.putExtra("UserID", /*TODO put sender UID here*/ FirebaseAuth.getInstance().getUid());
         showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent showSenderProfilePendingIntent = PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, showSenderProfileIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         // Accepting the book exchange request
-        Intent acceptIntent = new Intent(this, ACCEPT_ACTION);
-        showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent acceptPendingIntent = PendingIntent.getActivity(this, ACCEPT_REQUEST_CODE, acceptIntent,
-                PendingIntent.FLAG_ONE_SHOT);
+        Intent acceptIntent = new Intent(this, NotificationReceiver.class);
+        acceptIntent.setAction(ACCEPT_ACTION);
+        acceptIntent.putExtra("accepter", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Declining the book exchange request
-
+        Intent declineIntent = new Intent(this, NotificationReceiver.class);
+        declineIntent.setAction(DECLINE_ACTION);
+        declineIntent.putExtra("decliner", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Creating the notification
         String channelId = getString(R.string.default_notification_channel_id);
@@ -179,6 +183,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         // Notification action buttons
                         .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
+                        .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent)
 
                         // Priorities, sound and style
                         .setAutoCancel(true)
