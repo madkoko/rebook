@@ -23,6 +23,7 @@ import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.messaging.Message;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
@@ -106,6 +107,10 @@ public class HomeActivity extends AppCompatActivity
             // Retrieving the ProfileManager singleton
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
+
+            // Retrieve all current user's chats
+            MessageManager.setUserChatsIDListener();
+            MessageManager.populateUserChatsID();
         }
     }
 
@@ -234,6 +239,7 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
             MessageManager.createChat(authenticator.getAuth().getCurrentUser().getUid(),"here goes the receiver");
+            //MessageManager.createMessage("-LCTZnxijv9XtYMlBaCX",authenticator.getAuth().getCurrentUser().getUid(),"nuovo messaggio");
         } else if (id == R.id.nav_send) {
             DefaultDialogsActivity.open(this);
         } else if (id == R.id.sign_out) {

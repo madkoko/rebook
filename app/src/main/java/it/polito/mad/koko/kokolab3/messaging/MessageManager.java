@@ -1,28 +1,26 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.polito.mad.koko.kokolab3.auth.provider.FirebaseUIActivity;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -46,10 +44,26 @@ public class MessageManager {
     private static ArrayList<Chat> userChats;
 
     /*
-     * Listener to all the current user's chats
+     * All the chats' ID of the current user
+     */
+    private static Map<String,String> userChatIDs;
+
+    /*
+     * All the messages corresponding to a chat ID
+     */
+    private static Map<String,Message> chatsMessages;
+
+    /*
+     * Listener to all the current user's chats ID
      */
 
-    private static ValueEventListener userChatListener;
+    private static ValueEventListener userChatIDsListener;
+
+    /*
+     * Listener to all the current user's chats
+     */
+    private static ChildEventListener userChatsMessagesListener;
+
 
     /**
      * HTTP client
@@ -236,12 +250,14 @@ public class MessageManager {
      * Create the listener to populate the chat list with all the current user's chat from Firebase
      */
 
-    public static void populateUserChatList(){
-        userChatListener=new ValueEventListener() {
+    public static void setUserChatsIDListener(){
+        userChatIDs =new HashMap<>();
+        userChatIDsListener =new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-
+                    userChatIDs.putAll((Map<String,String>)dataSnapshot.getValue());
+                    MessageManager.populateUserMessages();
                 }
             }
 
@@ -250,6 +266,76 @@ public class MessageManager {
 
             }
         };
+    }
+
+    /**
+     * Attach the listener to the chats of the current user
+     */
+
+    public static void populateUserChatsID(){
+        DatabaseManager.get("users",FirebaseAuth.getInstance().getCurrentUser().getUid(),"chats").addValueEventListener(userChatIDsListener);
+
+    }
+
+    /**
+     * set the listener to retrieve all the messages of a chat
+     * @param chatID ID of the chat which the listener is attached to
+     */
+
+    public static void setUserMessagesListener(String chatID){
+
+        chatsMessages=new HashMap<>();
+        userChatsMessagesListener =new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.exists()){
+                    Message message= new Message();
+                    message.setSender((String)dataSnapshot.child("sender").getValue());
+                    message.setText((String)dataSnapshot.child("text").getValue());
+                    message.setTimestamp((String)dataSnapshot.child("timestamp").getValue());
+                    Log.d(TAG,message.toString());
+
+                    /**
+                     * populate the Map with key: chatID and value:message
+                     */
+                    chatsMessages.put(chatID,message);
+
+                    Log.d(TAG,chatsMessages.toString());
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    /**
+     * For each chatID in the current user creates and attaches the Child listener to retrieve all the chat messages
+     */
+    public static void populateUserMessages(){
+        for(String chatID: userChatIDs.keySet()){
+            MessageManager.setUserMessagesListener(chatID);
+            DatabaseManager.get("chats",chatID,"messages").addChildEventListener(userChatsMessagesListener);
+        }
     }
 
     /**
@@ -273,11 +359,12 @@ public class MessageManager {
 
     }
 
-    /*
+
+    /**
      * Creates a message entry in Firebase
-     * @param chatID: id of the chat which the message belongs to
-     *        sender: id of the sender of the message
-     *        messageText: content of the message
+     * @param chatID id of the chat which the message belongs to
+     * @param sender id of the sender of the message
+     * @param messageText content of the message
      */
 
     public static void createMessage(String chatID,String sender,String messageText){
