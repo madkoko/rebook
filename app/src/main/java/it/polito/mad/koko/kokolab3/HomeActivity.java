@@ -241,7 +241,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(searchBooks);
 
         } else if (id == R.id.nav_share) {
-            MessageManager.createChat(authenticator.getAuth().getCurrentUser().getUid(),"here goes the receiver");
+            //MessageManager.createChat(authenticator.getAuth().getCurrentUser().getUid(),"here goes the receiver");
 
             // ricreate HomeActivity ---- MODIFY!!!!
             recreate();

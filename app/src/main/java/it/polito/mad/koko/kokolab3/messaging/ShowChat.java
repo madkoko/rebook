@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.text.Editable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -26,15 +29,32 @@ public class ShowChat extends AppCompatActivity {
      * All the messages of the selected chat
      */
     private ArrayList<Message> messages;
+    private String chatId;
+    private String currentUserID;
+    private BaseAdapter baseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chat);
 
+        //https://github.com/firebase/FirebaseUI-Android/blob/master/database/README.md#using-firebaseui-to-populate-a-listview
+
+
         messages=(ArrayList<Message>) getIntent().getExtras().get("messages");
+        chatId= getIntent().getStringExtra("chatId");
+        currentUserID= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         ListView chatsListView = findViewById(R.id.chat_listview);
+        EditText editText = findViewById(R.id.send_message);
+        Button send= findViewById(R.id.send);
+        send.setOnClickListener(v -> {
+            if(editText.getText().toString()!=null && editText.getText().toString()!=""){
+                MessageManager.createMessage(chatId, currentUserID, editText.getText().toString());
+                editText.setText("");
+                //((BaseAdapter) chatsListView.getAdapter()).notifyDataSetChanged();
+            }
+        });
 
         // set the list view to show all the books
 
@@ -42,7 +62,8 @@ public class ShowChat extends AppCompatActivity {
 
             //Log.d(TAG, "book_list onStart ShowBooks" + book_list.toString());
 
-            chatsListView.setAdapter(new BaseAdapter() {
+
+            baseAdapter = new BaseAdapter() {
 
                 @Override
                 public int getCount() {
@@ -64,11 +85,8 @@ public class ShowChat extends AppCompatActivity {
                     if (view == null)
                         view = getLayoutInflater().inflate(R.layout.adapter_show_chat, viewGroup, false);
 
-
                     TextView messageText = (TextView) view.findViewById(R.id.message_text);
                     messageText.setText(messages.get(i).getText());
-
-                    String currentUserID= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                     if(messages.get(i).getSender().equalsIgnoreCase(currentUserID))
                         messageText.setGravity(Gravity.RIGHT);
@@ -77,7 +95,8 @@ public class ShowChat extends AppCompatActivity {
 
                     return view;
                 }
-            });
+            };
+            chatsListView.setAdapter(baseAdapter);
         }
     }
 }

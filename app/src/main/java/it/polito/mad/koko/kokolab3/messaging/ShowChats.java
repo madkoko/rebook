@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
@@ -27,7 +28,7 @@ public class ShowChats extends AppCompatActivity {
      */
     private Map<String,String> userChatIDs;
 
-    private static final String TAG = "HomeActivity";
+    private static final String TAG = "ShowChats";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,11 @@ public class ShowChats extends AppCompatActivity {
                     TextView chatDest = (TextView) view.findViewById(R.id.chat_dest);
                     TextView lastMessageText = (TextView) view.findViewById(R.id.last_message);
                     String chatID=(String)userChatIDs.keySet().toArray()[i];
-                    String dest=userChatIDs.get(chatID);
-                    chatDest.setText(dest);
+
+                   //String dest=userChatIDs.get(chatID);
+
+
+                    //chatDest.setText(dest);
 
                     ArrayList<Message> messages=new ArrayList<>();
                     for(Chat chat:userChats){
@@ -83,13 +87,11 @@ public class ShowChats extends AppCompatActivity {
                         }
                     }
                     final ArrayList<Message>chatMessages=messages;
-                    view.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent showChat=new Intent(getApplicationContext(),ShowChat.class);
-                            showChat.putExtra("messages",chatMessages);
-                            startActivity(showChat);
-                        }
+                    view.setOnClickListener(v -> {
+                        Intent showChat=new Intent(getApplicationContext(),ShowChat.class);
+                        showChat.putExtra("messages",chatMessages);
+                        showChat.putExtra("chatId", chatID);
+                        startActivity(showChat);
                     });
 
                     return view;

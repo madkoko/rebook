@@ -41,6 +41,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
@@ -73,6 +74,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final int    DECLINE_ICON = R.mipmap.icon,
                                 DECLINE_REQUEST_CODE = 3;
     protected static final String DECLINE_ACTION = "decline";
+
 
     /**
      * Called when message is received.
@@ -154,10 +156,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String notificationTitle = remoteNotification.getTitle();
         String notificationBody = remoteNotification.getBody();
 
+
+        Log.d(TAG, notificationBody);
+
         // Retrieving the sender's image profile
         String senderJsonString = receivedMessage.getData().get("sender");
+        String bookRequest = receivedMessage.getData().get("book");
         Map<String, String> senderObject = // De-serializing the "sender" JSON object
             new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>(){}.getType());
+        Map<String, String> bookObject = // De-serializing the "book" JSON object
+                new Gson().fromJson(bookRequest, new TypeToken<Map<String, String>>(){}.getType());
+
+        String book = bookObject.get("title");
         String senderImageURL = senderObject.get("image");
         Log.d(TAG, "Sender image URL: " + senderImageURL); // Debugging
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
@@ -175,7 +185,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Accepting the book exchange request
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
         acceptIntent.setAction(ACCEPT_ACTION);
-        acceptIntent.putExtra("accepter", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        acceptIntent.putExtra("senderId",senderObject.get("id"));
+        acceptIntent.putExtra("sender",senderUsername);
+        acceptIntent.putExtra("senderImage",senderImageURL);
+        acceptIntent.putExtra("book",book);
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Declining the book exchange request

@@ -105,6 +105,7 @@ public class MessageManager {
         "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJ" +
         "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD"
     ;
+    private static String messageID;
 
 
     @SuppressLint("StaticFieldLeak")
@@ -418,13 +419,15 @@ public class MessageManager {
         }
     }
 
+
+
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
      *
      * @param sender: sender side of the chat (current logged user)
      *                receiver: receiver side of the chat (value of "chatID")
      */
-    public static void createChat(String sender, String receiver) {
+    public static void createChat(String sender, String receiver,String senderId, String receiverId, String imageSender, String imageReceiver, String textMessage) {
 
 
         DatabaseReference messagesRef = DatabaseManager.get("chats");
@@ -432,11 +435,17 @@ public class MessageManager {
         String chatID = messagesRef.push().getKey();
         messagesRef.child(chatID).child("messages");
 
-        DatabaseReference usersRef = DatabaseManager.get("users").child(sender);
+        DatabaseReference usersRefSender = DatabaseManager.get("users").child(senderId);
+        usersRefSender.child("chats").child(chatID).child("receiver").setValue(receiver);
+        usersRefSender.child("chats").child(chatID).child("receiverId").setValue(receiverId);
+        usersRefSender.child("chats").child(chatID).child("imageReceiver").setValue(imageReceiver);
 
-        usersRef.child("chats").child(chatID).setValue(receiver);
+        DatabaseReference usersRefReceiver = DatabaseManager.get("users").child(receiverId);
+        usersRefReceiver.child("chats").child(chatID).child("sender").setValue(sender);
+        usersRefReceiver.child("chats").child(chatID).child("senderId").setValue(senderId);
+        usersRefReceiver.child("chats").child(chatID).child("imageSender").setValue(imageSender);
 
-        createMessage(chatID, sender, "ciao");
+        createMessage(chatID, sender, textMessage);
 
     }
 
@@ -453,7 +462,7 @@ public class MessageManager {
 
         DatabaseReference messagesRef = DatabaseManager.get("chats").child(chatID).child("messages");
 
-        String messageID = messagesRef.push().getKey();
+        messageID = messagesRef.push().getKey();
 
         Message message = new Message();
         message.setSender(sender);
@@ -488,5 +497,11 @@ public class MessageManager {
     public static Map<String, String> getUserChatIDs() {
         return userChatIDs;
     }
+
+    /**
+     *
+     * @return messageID when we create a new chat with notification
+     */
+    public static String getMessageID(){return messageID;}
 
 }
