@@ -48,6 +48,7 @@ public class ShowChat extends AppCompatActivity {
         ListView chatsListView = findViewById(R.id.chat_listview);
         EditText editText = findViewById(R.id.send_message);
         Button send= findViewById(R.id.send);
+
         send.setOnClickListener(v -> {
             if(editText.getText().toString()!=null && editText.getText().toString()!=""){
                 MessageManager.createMessage(chatId, currentUserID, editText.getText().toString());
