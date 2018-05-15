@@ -1,12 +1,15 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Created by Francesco on 11/05/2018.
  */
 
-public class Message {
+public class Message implements Serializable{
 
     private String timestamp;
     private String sender;
@@ -52,5 +55,6 @@ public class Message {
                 ", text='" + text + '\'' +
                 '}';
     }
+
 }
 

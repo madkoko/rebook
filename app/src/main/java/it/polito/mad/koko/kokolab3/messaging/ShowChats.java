@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +20,7 @@ public class ShowChats extends AppCompatActivity {
     /**
      * Map ChatID-Messages with all the user's chats
      */
-    private Map<String,ArrayList<Message>> userChats;
+    private ArrayList<Chat> userChats;
 
     /**
      *  Map ChatID-ReceiverID with all the user's chats
@@ -72,14 +73,24 @@ public class ShowChats extends AppCompatActivity {
                     String dest=userChatIDs.get(chatID);
                     chatDest.setText(dest);
 
-                    for(String userChatID:userChats.keySet()){
-                        if(userChatID.equalsIgnoreCase(chatID)){
-                            ArrayList<Message> messages=userChats.get(userChatID);
+                    ArrayList<Message> messages=new ArrayList<>();
+                    for(Chat chat:userChats){
+                        if(chat.getChatID().equalsIgnoreCase(chatID)){
+                            messages=chat.getChatMessages();
                             Message lastMessage=messages.get(messages.size()-1);
                             String text=lastMessage.getText().toString();
                             lastMessageText.setText(text);
                         }
                     }
+                    final ArrayList<Message>chatMessages=messages;
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent showChat=new Intent(getApplicationContext(),ShowChat.class);
+                            showChat.putExtra("messages",chatMessages);
+                            startActivity(showChat);
+                        }
+                    });
 
                     return view;
                 }

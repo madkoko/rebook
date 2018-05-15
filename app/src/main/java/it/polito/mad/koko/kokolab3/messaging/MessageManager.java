@@ -38,20 +38,21 @@ public class MessageManager {
     private static ArrayList<Message> userMessages;
 
     /*
-    * All the chats of the current user
-    */
-
-    private static ArrayList<Chat> userChats;
-
-    /*
      * All the chats' ID of the current user
      */
     private static Map<String,String> userChatIDs;
 
     /*
      * All the messages corresponding to a chat ID
-     */
+
     private static Map<String,ArrayList<Message>> chatsMessages;
+    */
+
+    /*
+    * All the chats of the current user
+    */
+
+    private static ArrayList<Chat> userChats;
 
     /*
      * Listener to all the current user's chats ID
@@ -279,15 +280,14 @@ public class MessageManager {
 
     /**
      * set the listener to retrieve all the messages of a chat
-     * @param chatID ID of the chat which the listener is attached to
+     * @param userChat chat class in which we put all the messages corresponding to the chatID
      */
 
-    public static void setUserMessagesListener(String chatID){
+    public static void setUserMessagesListener(Chat userChat){
 
         userChatsMessagesListener =new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                userMessages=new ArrayList<>();
                 if(dataSnapshot.exists()){
 
                     String datasnapshot=dataSnapshot.toString();
@@ -301,12 +301,13 @@ public class MessageManager {
                     /**
                      * populate the Map with key: chatID and value:message
                      */
-                    userMessages.add(message);
+                    for(Chat chat:userChats)
+                        if(chat.equals(userChat))
+                            chat.getChatMessages().add(message);
 
                 }
-                chatsMessages.put(chatID,userMessages);
 
-                Log.d(TAG,chatsMessages.toString());
+                Log.d(TAG,userChat.toString());
 
             }
 
@@ -334,11 +335,21 @@ public class MessageManager {
 
     /**
      * For each chatID in the current user creates and attaches the Child listener to retrieve all the chat messages
+     *
+     * ArrayList<Chat>
      */
     public static void populateUserMessages(){
-        chatsMessages=new HashMap<>();
+
+        userChats=new ArrayList<>();
+
         for(String chatID: userChatIDs.keySet()){
-            MessageManager.setUserMessagesListener(chatID);
+
+            userMessages=new ArrayList<>();
+            Chat userChat=new Chat(chatID,userMessages);
+
+            userChats.add(userChat);
+
+            MessageManager.setUserMessagesListener(userChat);
             DatabaseManager.get("chats",chatID,"messages").addChildEventListener(userChatsMessagesListener);
         }
     }
@@ -392,18 +403,18 @@ public class MessageManager {
      * Return all user's messages from Firebase
      */
 
-    public static ArrayList<Message> getUserMessages(){
+    public static ArrayList<Chat> getUserChats(){
 
-        return userMessages;
+        return userChats;
     }
 
     /*
      * Return all user's chat from Firebase
-     */
+
     public static Map<String,ArrayList<Message>> getUserChats(){
 
         return chatsMessages;
-    }
+    }*/
 
     /**
      * Return all user's chatID as Key and receiverID as Value
