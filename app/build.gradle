@@ -39,16 +39,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:11.8.0'
     implementation 'com.firebaseui:firebase-ui:3.2.2' // FirebaseUI
     implementation 'com.facebook.android:facebook-android-sdk:4.27.0' // Facebook
-    implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true } // Twitter
+    implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true }
+    // Twitter
 
     // Firebase storage and database
     implementation 'com.google.firebase:firebase-storage:11.8.0'
     implementation 'com.google.firebase:firebase-database:11.8.0'
-    
+
     // Messaging
     implementation 'com.google.firebase:firebase-messaging:11.8.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
-    
+
     //
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -66,6 +67,7 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
 
 ext {
     supportlib_version = '27.1.1'

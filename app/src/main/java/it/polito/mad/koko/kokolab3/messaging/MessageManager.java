@@ -51,7 +51,7 @@ public class MessageManager {
     /*
      * All the messages corresponding to a chat ID
      */
-    private static Map<String,Message> chatsMessages;
+    private static Map<String,ArrayList<Message>> chatsMessages;
 
     /*
      * Listener to all the current user's chats ID
@@ -284,11 +284,14 @@ public class MessageManager {
 
     public static void setUserMessagesListener(String chatID){
 
-        chatsMessages=new HashMap<>();
         userChatsMessagesListener =new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                userMessages=new ArrayList<>();
                 if(dataSnapshot.exists()){
+
+                    String datasnapshot=dataSnapshot.toString();
+                    Log.d(TAG,datasnapshot);
                     Message message= new Message();
                     message.setSender((String)dataSnapshot.child("sender").getValue());
                     message.setText((String)dataSnapshot.child("text").getValue());
@@ -298,11 +301,12 @@ public class MessageManager {
                     /**
                      * populate the Map with key: chatID and value:message
                      */
-                    chatsMessages.put(chatID,message);
-
-                    Log.d(TAG,chatsMessages.toString());
+                    userMessages.add(message);
 
                 }
+                chatsMessages.put(chatID,userMessages);
+
+                Log.d(TAG,chatsMessages.toString());
 
             }
 
@@ -332,6 +336,7 @@ public class MessageManager {
      * For each chatID in the current user creates and attaches the Child listener to retrieve all the chat messages
      */
     public static void populateUserMessages(){
+        chatsMessages=new HashMap<>();
         for(String chatID: userChatIDs.keySet()){
             MessageManager.setUserMessagesListener(chatID);
             DatabaseManager.get("chats",chatID,"messages").addChildEventListener(userChatsMessagesListener);
@@ -395,9 +400,16 @@ public class MessageManager {
     /*
      * Return all user's chat from Firebase
      */
-    public static ArrayList<Chat> getUserChats(){
+    public static Map<String,ArrayList<Message>> getUserChats(){
 
-        return userChats;
+        return chatsMessages;
+    }
+
+    /**
+     * Return all user's chatID as Key and receiverID as Value
+     */
+    public static Map<String,String> getUserChatIDs(){
+        return userChatIDs;
     }
 
 }

@@ -26,6 +26,7 @@ import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.messaging.Message;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
+import it.polito.mad.koko.kokolab3.messaging.ShowChats;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -241,7 +242,10 @@ public class HomeActivity extends AppCompatActivity
             MessageManager.createChat(authenticator.getAuth().getCurrentUser().getUid(),"here goes the receiver");
             //MessageManager.createMessage("-LCTZnxijv9XtYMlBaCX",authenticator.getAuth().getCurrentUser().getUid(),"nuovo messaggio");
         } else if (id == R.id.nav_send) {
-            DefaultDialogsActivity.open(this);
+            //DefaultDialogsActivity.open(this);
+
+            startActivity(new Intent(getApplicationContext(), ShowChats.class));
+
         } else if (id == R.id.sign_out) {
             authenticator.signOut();
         }
