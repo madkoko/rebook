@@ -16,11 +16,13 @@
 
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -40,6 +42,7 @@ import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
+import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -147,17 +150,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void showNotification(RemoteMessage receivedMessage) {
         // Retrieving notification and its useful objects
-        RemoteMessage.Notification notification = receivedMessage.getNotification();
-        String notificationTitle = notification.getTitle();
-        String notificationBody = notification.getBody();
+        RemoteMessage.Notification remoteNotification = receivedMessage.getNotification();
+        String notificationTitle = remoteNotification.getTitle();
+        String notificationBody = remoteNotification.getBody();
 
         // Retrieving the sender's image profile
         String senderJsonString = receivedMessage.getData().get("sender");
         Map<String, String> senderObject = // De-serializing the "sender" JSON object
-            new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>(){}.getType())
-        ;
+            new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>(){}.getType());
         String senderImageURL = senderObject.get("image");
         Log.d(TAG, "Sender image URL: " + senderImageURL); // Debugging
+        Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
+
+        // Sender's username
+        String senderUsername = senderObject.get("username");
 
         // Tapping the notification
         Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_CALLBACK);
@@ -186,6 +192,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         // Notification's icon
                         .setSmallIcon(NOTIFICATION_ICON)
 
+                        // Sender's user picture
+                        .setLargeIcon(ImageManager.getCircleBitmap(senderImageBitmap))
+
                         // Title and expandable subtitle
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationBody)
@@ -205,8 +214,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setPriority(NOTIFICATION_PRIORITY)
                         .setOnlyAlertOnce(false)
                         .setColorized(true);
-                        /*.setStyle(new NotificationCompat.BigPictureStyle()
-                                .bigPicture(myBitmap));*/
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -219,6 +226,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(0 /* notification ID */, notificationBuilder.build());
     }
 }
