@@ -10,6 +10,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +37,8 @@ public class MessageManager {
     private static String TAG = "MessageManager";
 
     /*
-    * All the messages of the current user
-    */
+     * All the messages of the current user
+     */
     private static ArrayList<Message> userMessages;
 
     /*
@@ -102,29 +106,7 @@ public class MessageManager {
         "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD"
     ;
 
-    /**
-     * AsyncTask that sends a message from AuthUser to another user.
-     * I am not sure if this is the right way to send messages, please check the following:
-     *      https://firebase.google.com/docs/cloud-messaging/server
-     *
-     * @param recipient    Token of user that receive the message
-     * @param title         of the message
-     * @param body          of the message
-     * @param message       is text of message
-     *                      The JSON form of message is
-     *                      {
-     *                          "notification": {
-     *                              "title": title,
-     *                              "body": body
-     *                          },
-     *
-     *                          "data": {
-     *                              "message": message
-     *                          },
-     *
-     *                          "to" : "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1..."
-     *                      }
-     */
+
     @SuppressLint("StaticFieldLeak")
     public static void sendMessage(final String recipient, final String title, final String body, final String message) {
 
@@ -181,29 +163,111 @@ public class MessageManager {
     }
 
     /**
-     * Similar to sendMessage but to send first notifications
-     * @param recipient is string with token id
+     * Sending a notification to a specific user.
+     * The JSON message has the following structure:
+     * (Following the official Firebase JSON structure available on:
+     *  https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request)
+     *
+     * {    "notification": {
+     *          "title": title,
+     *          "body": body
+     *      },
+     *
+     *      "priority": "high",
+     *
+     *      "to": receiver_token
+     *
+     *      "data": {
+     *          "sender": {
+     *              "id": "kE3ErSqw...",
+     *              "username": sender_username,
+     *              "image": "https://firebasestorage..."
+     *          }
+     *
+     *          "receiver": {
+     *              "id": "f3j1lw...",
+     *              "username": receiver_username,
+     *              "token: ,
+     *              "image": "https://firebasestorage..."
+     *          }
+     *
+     *          "book": {
+     *              "title": book_title
+     *          }
+     *      }
+     * }
+     *
+     * @param senderId
+     * @param senderUsername
+     * @param senderImage
+     * @param receiverId
+     * @param receiverUsername
+     * @param receiverImage
+     * @param bookTitle
      */
-    public static void sendNotification(final String recipient,
-                                        final String senderName,
-                                        final String bookName) {
+    public static void sendNotification(    // Sender info
+                                            final String senderId,
+                                            final String senderUsername,
+                                            final String senderImage,
+
+                                            // Receiver info
+                                            final String receiverId,
+                                            final String receiverUsername,
+                                            final String receiverToken,
+                                            final String receiverImage,
+
+                                            // Book info
+                                            final String bookTitle) {
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
                 try {
-                    JSONObject root = new JSONObject();
+                    // Notification
+                    JSONObject notification = new JSONObject();
+                    String notificationTitle = BOOK_EXCHANGE_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
+                    String notificationText = BOOK_EXCHANGE_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
+                    notification.put("title", notificationTitle);
+                    notification.put("text", notificationText);
 
-                    String title = BOOK_EXCHANGE_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderName);
-                    String text = BOOK_EXCHANGE_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderName);
+                    // Sender
+                    JSONObject sender = new JSONObject();
+                    sender.put("id", senderId);
+                    sender.put("username", senderUsername);
+                    sender.put("image", senderImage);
 
+                    // Receiver
+                    JSONObject receiver = new JSONObject();
+                    receiver.put("id", receiverId);
+                    receiver.put("username", receiverUsername);
+                    receiver.put("image", receiverImage);
+
+                    // Book
+                    JSONObject book = new JSONObject();
+                    book.put("title", bookTitle);
+
+                    // Data
                     JSONObject data = new JSONObject();
-                    data.put("title", title);
-                    data.put("text", text);
-                    root.put("priority","high");
-                    root.put("notification", data);
-                    root.put("to", recipient);
-                    Log.d(TAG, "root: "+ root.toString());
+                    data.put("sender", sender);
+                    data.put("receiver", receiver);
+                    data.put("book", book);
+
+                    // Root
+                    JSONObject root = new JSONObject();
+                    root.put("notification", notification);
+                    root.put("priority", "high");
+                    root.put("to", receiverToken);
+                    root.put("data", data);
+
+                    // JSON pretty-printing
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    JsonParser jp = new JsonParser();
+                    JsonElement je = jp.parse(root.toString());
+                    String prettyJsonString = gson.toJson(je);
+                    Log.d(TAG, "JSON message: " + prettyJsonString);
+
+                    // Sending the JSON packet to FCM
                     String result = postToFCM(root.toString());
+
                     return result;
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -218,7 +282,7 @@ public class MessageManager {
 
             @Override
             protected void onPostExecute(String result) {
-                    Log.d("MessageManager", result);
+                Log.d(TAG, result);
 
             }
         }.execute();
@@ -226,6 +290,7 @@ public class MessageManager {
 
     /**
      * create http request with OkHttpClient
+     *
      * @param bodyString is Json with data
      * @return response of request
      * @throws IOException
@@ -233,15 +298,15 @@ public class MessageManager {
     private static String postToFCM(String bodyString) throws IOException {
         // Create a request body with json create in sendNotification or sendMessage
         RequestBody body = RequestBody.create(CONTENT_TYPE, bodyString);
-        Log.d(TAG, "body: "+String.valueOf(body));
+        Log.d(TAG, "body: " + String.valueOf(body));
         // Create a http request
         Request request = new Request.Builder()
                 .url(FCM_MESSAGE_URL)
                 .post(body)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "key="+ SERVER_KEY)
+                .addHeader("Authorization", "key=" + SERVER_KEY)
                 .build();
-        Log.d(TAG, "request: "+String.valueOf(request));
+        Log.d(TAG, "request: " + String.valueOf(request));
         // Use post http method to make a request
         Response response = mClient.newCall(request).execute();
         return response.body().string();
@@ -251,13 +316,13 @@ public class MessageManager {
      * Create the listener to populate the chat list with all the current user's chat from Firebase
      */
 
-    public static void setUserChatsIDListener(){
-        userChatIDs =new HashMap<>();
-        userChatIDsListener =new ValueEventListener() {
+    public static void setUserChatsIDListener() {
+        userChatIDs = new HashMap<>();
+        userChatIDsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    userChatIDs.putAll((Map<String,String>)dataSnapshot.getValue());
+                if (dataSnapshot.exists()) {
+                    userChatIDs.putAll((Map<String, String>) dataSnapshot.getValue());
                     MessageManager.populateUserMessages();
                 }
             }
@@ -273,30 +338,29 @@ public class MessageManager {
      * Attach the listener to the chats of the current user
      */
 
-    public static void populateUserChatsID(){
-        DatabaseManager.get("users",FirebaseAuth.getInstance().getCurrentUser().getUid(),"chats").addValueEventListener(userChatIDsListener);
+    public static void populateUserChatsID() {
+        DatabaseManager.get("users", FirebaseAuth.getInstance().getCurrentUser().getUid(), "chats").addValueEventListener(userChatIDsListener);
 
     }
 
     /**
      * set the listener to retrieve all the messages of a chat
+     *
      * @param userChat chat class in which we put all the messages corresponding to the chatID
      */
-
     public static void setUserMessagesListener(Chat userChat){
-
-        userChatsMessagesListener =new ChildEventListener() {
+        userChatsMessagesListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot.exists()){
 
-                    String datasnapshot=dataSnapshot.toString();
-                    Log.d(TAG,datasnapshot);
-                    Message message= new Message();
-                    message.setSender((String)dataSnapshot.child("sender").getValue());
-                    message.setText((String)dataSnapshot.child("text").getValue());
-                    message.setTimestamp((String)dataSnapshot.child("timestamp").getValue());
-                    Log.d(TAG,message.toString());
+                    String datasnapshot = dataSnapshot.toString();
+                    Log.d(TAG, datasnapshot);
+                    Message message = new Message();
+                    message.setSender((String) dataSnapshot.child("sender").getValue());
+                    message.setText((String) dataSnapshot.child("text").getValue());
+                    message.setTimestamp((String) dataSnapshot.child("timestamp").getValue());
+                    Log.d(TAG, message.toString());
 
                     /**
                      * populate the Map with key: chatID and value:message
@@ -356,40 +420,42 @@ public class MessageManager {
 
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
-     *  @param sender: sender side of the chat (current logged user)
-     *         receiver: receiver side of the chat (value of "chatID")
+     *
+     * @param sender: sender side of the chat (current logged user)
+     *                receiver: receiver side of the chat (value of "chatID")
      */
     public static void createChat(String sender, String receiver) {
 
 
-        DatabaseReference messagesRef= DatabaseManager.get("chats");
+        DatabaseReference messagesRef = DatabaseManager.get("chats");
 
-        String chatID=messagesRef.push().getKey();
+        String chatID = messagesRef.push().getKey();
         messagesRef.child(chatID).child("messages");
 
-        DatabaseReference usersRef=DatabaseManager.get("users").child(sender);
+        DatabaseReference usersRef = DatabaseManager.get("users").child(sender);
 
         usersRef.child("chats").child(chatID).setValue(receiver);
 
-        createMessage(chatID,sender,"ciao");
+        createMessage(chatID, sender, "ciao");
 
     }
 
 
     /**
      * Creates a message entry in Firebase
-     * @param chatID id of the chat which the message belongs to
-     * @param sender id of the sender of the message
+     *
+     * @param chatID      id of the chat which the message belongs to
+     * @param sender      id of the sender of the message
      * @param messageText content of the message
      */
 
-    public static void createMessage(String chatID,String sender,String messageText){
+    public static void createMessage(String chatID, String sender, String messageText) {
 
-        DatabaseReference messagesRef=DatabaseManager.get("chats").child(chatID).child("messages");
+        DatabaseReference messagesRef = DatabaseManager.get("chats").child(chatID).child("messages");
 
-        String messageID=messagesRef.push().getKey();
+        String messageID = messagesRef.push().getKey();
 
-        Message message=new Message();
+        Message message = new Message();
         message.setSender(sender);
         message.setText(messageText);
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
@@ -399,10 +465,10 @@ public class MessageManager {
 
     }
 
-    /*
+    /**
      * Return all user's messages from Firebase
+     * @return
      */
-
     public static ArrayList<Chat> getUserChats(){
 
         return userChats;
@@ -419,7 +485,7 @@ public class MessageManager {
     /**
      * Return all user's chatID as Key and receiverID as Value
      */
-    public static Map<String,String> getUserChatIDs(){
+    public static Map<String, String> getUserChatIDs() {
         return userChatIDs;
     }
 

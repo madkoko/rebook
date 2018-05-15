@@ -2,7 +2,6 @@ package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -11,16 +10,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import it.polito.mad.koko.kokolab3.ui.ProfileBackgroundImage;
+import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 /**
  * Singleton profile manager class
@@ -138,7 +134,7 @@ public class ProfileManager {
         uploadTask.addOnSuccessListener(taskSnapshot -> {
             downloadUrl = taskSnapshot.getDownloadUrl().toString();
             Ref.child("image").setValue(downloadUrl);
-            if(downloadUrl!=null)new ProfileBackgroundImage(downloadUrl);
+            if(downloadUrl!=null)ImageManager.loadBitmap(downloadUrl);
         });
         childUpdates.put("name", name);
         childUpdates.put("email", email);

@@ -11,24 +11,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+public class ImageManager {
 
-public class ProfileBackgroundImage {
-    private Target loadtarget;
-    private String url;
-    private String flag="NullImage";
-
-    public ProfileBackgroundImage(String url){
-        this.url=url;
-        loadBitmap(url);
-        loadtarget=null;
-    }
-
-    private void loadBitmap(String url) {
-
-        if (loadtarget == null) loadtarget = new Target() {
+    public static void loadBitmap(String url) {
+        Target loadtarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    createImageFile(bitmap);
+                createImageFile(bitmap);
 
             }
 
@@ -45,7 +34,7 @@ public class ProfileBackgroundImage {
         Picasso.get().load(url).into(loadtarget);
     }
 
-    private void createImageFile(Bitmap imageBitmap){
+    private static void createImageFile(Bitmap imageBitmap) {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp_profile");

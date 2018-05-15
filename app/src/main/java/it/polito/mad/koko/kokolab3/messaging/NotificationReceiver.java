@@ -20,14 +20,14 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // Debugging
-        Log.d(TAG,"New notification. Action: " + intent.getAction());
+        Log.d(TAG, "New notification. Action: " + intent.getAction());
 
         // Depending on the notification action
-        switch(intent.getAction()) {
+        switch (intent.getAction()) {
             // The book owner has accepted the book exchange
             case ACCEPT_ACTION:
                 // Notifying the requester
-
+                
 
                 // Creating a chat with the user
                 MessageManager.createChat(

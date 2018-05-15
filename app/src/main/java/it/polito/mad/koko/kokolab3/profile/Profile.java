@@ -12,7 +12,10 @@ public class Profile implements Serializable {
                     email,
                     phone,
                     location,
-                    bio,imgUrl, latLng, tokenMessage;
+                    bio,
+                    imgUrl,
+                    latLng,
+                    tokenMessage;
 
     public Profile() {
     }

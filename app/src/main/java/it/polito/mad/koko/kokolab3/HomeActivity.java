@@ -22,8 +22,6 @@ import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
-import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
-import it.polito.mad.koko.kokolab3.messaging.Message;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
 import it.polito.mad.koko.kokolab3.messaging.ShowChats;
@@ -31,8 +29,7 @@ import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
-import it.polito.mad.koko.kokolab3.ui.ProfileBackgroundImage;
-import it.polito.mad.koko.kokolab3.ui.chat.DefaultDialogsActivity;
+import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -173,7 +170,7 @@ public class HomeActivity extends AppCompatActivity
             } else {
                 if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImgUrl() != null) {
                     Profile p = profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid());
-                    new ProfileBackgroundImage(p.getImgUrl());
+                    ImageManager.loadBitmap(p.getImgUrl());
                 }
             }
         }

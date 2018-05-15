@@ -31,7 +31,7 @@ public class ShowBook extends AppCompatActivity
     private ProfileManager profileManager;
     private Book book;
     private Button sendRequest;
-    private String tokenId;
+    private String receiverToken;
     private JSONArray regArray;
 
     @Override
@@ -71,16 +71,35 @@ public class ShowBook extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         if (profileManager.getProfile(book.getUid()).getTokenMessage() != null) {
-            Profile profileAuth = profileManager.getProfile(FirebaseAuth.getInstance().getUid());
-            Profile profile = profileManager.getProfile(book.getUid());
-            tokenId = profile.getTokenMessage();
+            // Sender
+            String senderId = FirebaseAuth.getInstance().getUid();
+            Profile senderProfile = profileManager.getProfile(senderId);
+
+            // Receiver
+            String receiverId = book.getUid();
+            Profile receiverProfile = profileManager.getProfile(receiverId);
+            receiverToken = receiverProfile.getTokenMessage();
 
             // TODO debugging
-            Log.d("device_token", "Token is: " + tokenId);
+            Log.d("device_token", "Token is: " + receiverToken);
 
-            sendRequest.setOnClickListener(v -> MessageManager.sendNotification(tokenId,
-                    profileAuth.getName(),
-                    book.getTitle()));
+            sendRequest.setOnClickListener(
+                v -> MessageManager.sendNotification(
+                    // Sender info
+                    senderId,                       // sender ID
+                    senderProfile.getName(),        // sender username
+                    senderProfile.getImgUrl(),      // sender image
+
+                    // Receiver info
+                    receiverId,                     // receiver ID
+                    receiverProfile.getName(),      // receiver username
+                    receiverToken,                  // receiver token
+                    receiverProfile.getImgUrl(),    // receiver image
+
+                    // Book info
+                    book.getTitle()                 // book title
+                )
+            );
         }
     }
 

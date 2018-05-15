@@ -33,6 +33,11 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.Map;
+
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
@@ -106,14 +111,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
 
-            sendNotification(
-                    remoteMessage.getNotification().getTitle(),
-                    remoteMessage.getNotification().getBody()
-            );
+            showNotification(remoteMessage);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+        // message, here is where that should be initiated. See showNotification method below.
     }
     // [END receive_message]
 
@@ -141,10 +143,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param title     FCM message title received.
-     * @param body      FCM message body received.
+     * @param receivedMessage   the received remote message
      */
-    private void sendNotification(String title, String body) {
+    private void showNotification(RemoteMessage receivedMessage) {
+        // Retrieving notification and its useful objects
+        RemoteMessage.Notification notification = receivedMessage.getNotification();
+        String notificationTitle = notification.getTitle();
+        String notificationBody = notification.getBody();
+
+        // Retrieving the sender's image profile
+        String senderJsonString = receivedMessage.getData().get("sender");
+        Map<String, String> senderObject = // De-serializing the "sender" JSON object
+            new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>(){}.getType())
+        ;
+        String senderImageURL = senderObject.get("image");
+        Log.d(TAG, "Sender image URL: " + senderImageURL); // Debugging
+
         // Tapping the notification
         Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_CALLBACK);
         showSenderProfileIntent.putExtra("UserID", /*TODO put sender UID here*/ FirebaseAuth.getInstance().getUid());
@@ -173,9 +187,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setSmallIcon(NOTIFICATION_ICON)
 
                         // Title and expandable subtitle
-                        .setContentTitle(title)
-                        .setContentText(body)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationBody)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationBody))
                         // .setSubText() // TODO cumulative number of requests
 
                         // Tapping the notification
@@ -191,6 +205,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setPriority(NOTIFICATION_PRIORITY)
                         .setOnlyAlertOnce(false)
                         .setColorized(true);
+                        /*.setStyle(new NotificationCompat.BigPictureStyle()
+                                .bigPicture(myBitmap));*/
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
