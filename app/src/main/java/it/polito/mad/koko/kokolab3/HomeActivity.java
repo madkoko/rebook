@@ -157,6 +157,11 @@ public class HomeActivity extends AppCompatActivity
 
             BookManager.populateUserBookList();
             BookManager.populateSearchBooks();
+
+            // Retrieve all current user's chats
+            MessageManager.setUserChatsIDListener();
+            MessageManager.populateUserChatsID();
+
             //
             profileManager.getInstance();
             //profileManager.populateUsersList();
@@ -237,6 +242,10 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
             MessageManager.createChat(authenticator.getAuth().getCurrentUser().getUid(),"here goes the receiver");
+
+            // ricreate HomeActivity ---- MODIFY!!!!
+            recreate();
+
             //MessageManager.createMessage("-LCTZnxijv9XtYMlBaCX",authenticator.getAuth().getCurrentUser().getUid(),"nuovo messaggio");
         } else if (id == R.id.nav_send) {
             //DefaultDialogsActivity.open(this);

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -69,10 +70,10 @@ public class ShowChat extends AppCompatActivity {
 
                     String currentUserID= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                    /*if(messages.get(i).getSender().equalsIgnoreCase(currentUserID))
-                        messageView.
+                    if(messages.get(i).getSender().equalsIgnoreCase(currentUserID))
+                        messageText.setGravity(Gravity.RIGHT);
                     else
-                        messageText.setGravity(View.FOCUS_LEFT);*/
+                        messageText.setGravity(Gravity.LEFT);
 
                     return view;
                 }
