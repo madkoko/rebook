@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.EditProfile;
+import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class InsertBook extends AppCompatActivity {
 
@@ -66,8 +68,13 @@ public class InsertBook extends AppCompatActivity {
                 StrictMode.setVmPolicy(builder.build());
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
-                    // Launching the camera app
-                    startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                    try {
+                        // Launching the camera app
+                        startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                    } catch(Exception e) {
+                        // Creating an alert dialog indicating all possible causes
+                        AlertManager.permissionDialog(InsertBook.this);
+                    }
                 }
             }
         });

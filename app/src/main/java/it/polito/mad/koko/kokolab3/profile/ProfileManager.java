@@ -92,6 +92,7 @@ public class ProfileManager {
     public Profile getProfile(String Uid) {
         synchronized (allUsers) {
             Map<String, String> userInfo = (Map<String, String>) allUsers.get(Uid);
+
             Profile profile = new Profile(
                     userInfo.get("name"),
                     userInfo.get("email"),
@@ -101,6 +102,7 @@ public class ProfileManager {
                     userInfo.get("image"),
                     userInfo.get("position"),
                     userInfo.get("tokenMessage"));
+
             return profile;
         }
     }

@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
-
+import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -296,8 +296,13 @@ public class EditProfile extends AppCompatActivity {
                     StrictMode.setVmPolicy(builder.build());
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
-                        // Launching the camera app
-                        startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                        try {
+                            // Launching the camera app
+                            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                        } catch(Exception e) {
+                            // Creating an alert dialog indicating all possible causes
+                            AlertManager.permissionDialog(EditProfile.this);
+                        }
                     }
                 });
 
@@ -321,14 +326,7 @@ public class EditProfile extends AppCompatActivity {
         }// The image cannot be created
         catch (IOException e) {
             // Creating an alert dialog indicating all possible causes
-            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfile.this);
-            builder.setMessage(R.string.image_file_creation_error_message)
-                    .setTitle(R.string.image_file_creation_error_title)
-                    .setIcon(android.R.drawable.ic_dialog_alert);
-
-            // Showing the dialog to the screen
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            AlertManager.permissionDialog(EditProfile.this);
         }
     }
 

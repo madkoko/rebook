@@ -47,9 +47,9 @@
     <string name="user_born_name">Name</string>
 
     <!-- Camera -->
-    <string name="image_file_creation_error_title">Cannot save this photo</string>
+    <string name="image_file_creation_error_title">Cannot take a picture</string>
     <string name="image_file_creation_error_message">
-                Empty your phone storage and check this app\'s permissions
+                Empty your phone storage and/or check this app\'s permissions
                 in the Setting app.
             </string>
 
