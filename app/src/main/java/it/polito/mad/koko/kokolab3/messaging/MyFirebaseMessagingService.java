@@ -104,12 +104,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Handle message within 10 seconds
                 handleNow();
             }
-
         }
 
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            showNotification(remoteMessage);
+        if(remoteMessage.getNotification() != null) {
+            String notificationType = remoteMessage.getData().get("type");
+            boolean requestNotification = notificationType.compareTo("request") == 0;
+
+            showNotification(remoteMessage, requestNotification);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -141,9 +143,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param receivedMessage   the received remote message
+     * @param receivedMessage       the received remote message.
+     * @param showResponseButtons   whether the response buttons should be displayed or not.
      */
-    private void showNotification(RemoteMessage receivedMessage) {
+    private void showNotification(RemoteMessage receivedMessage, boolean showResponseButtons) {
         // Retrieving notification and its useful objects
         RemoteMessage.Notification remoteNotification = receivedMessage.getNotification();
         String notificationTitle = remoteNotification.getTitle();
@@ -183,7 +186,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }.getType());
 
         // Retrieving book information
-        String book = bookObject.get("title");
+        String bookTitle = bookObject.get("title");
 
         // Intent used upon tapping the notification
         Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_CALLBACK);
@@ -195,20 +198,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Intent used upon accepting the book exchange request
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
         acceptIntent.setAction(ACCEPT_ACTION);
-        acceptIntent.putExtra("senderId", senderId);
-        acceptIntent.putExtra("senderUsername", senderUsername);
-        acceptIntent.putExtra("senderImage", senderImageURL);
-        acceptIntent.putExtra("senderToken", senderToken);
-        acceptIntent.putExtra("receiverId", receiverId);
-        acceptIntent.putExtra("receiverUsername", receiverUsername);
-        acceptIntent.putExtra("receiverImage", receiverImageURL);
-        acceptIntent.putExtra("book", book);
+        loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject);
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Intent used upon declining the book exchange request
         Intent declineIntent = new Intent(this, NotificationReceiver.class);
         declineIntent.setAction(DECLINE_ACTION);
-        declineIntent.putExtra("decliner", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        loadExchangeIntentData(declineIntent, senderObject, receiverObject, bookObject);
         PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Creating the notification
@@ -231,16 +227,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         // Tapping the notification
                         .setContentIntent(showSenderProfilePendingIntent)
 
-                        // Notification action buttons
-                        .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
-                        .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent)
-
                         // Priorities, sound and style
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setPriority(NOTIFICATION_PRIORITY)
                         .setOnlyAlertOnce(false)
                         .setColorized(true);
+
+        // Notification action buttons
+        if(showResponseButtons)
+            notificationBuilder
+                    .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
+                    .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -256,7 +254,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0 /* notification ID */, notificationBuilder.build());
     }
 
-    private static void loadExchangeIntentData(Intent exchangeIntent) {
+    private static void loadExchangeIntentData(Intent exchangeIntent,
+                                               Map<String, String> sender,
+                                               Map<String, String> receiver,
+                                               Map<String, String> book) {
+        // Sender info
+        exchangeIntent.putExtra("senderId", sender.get("id"));
+        exchangeIntent.putExtra("senderUsername", sender.get("username"));
+        exchangeIntent.putExtra("senderImage", sender.get("image"));
+        exchangeIntent.putExtra("senderToken", sender.get("token"));
 
+        // Receiver info
+        exchangeIntent.putExtra("receiverId", receiver.get("id"));
+        exchangeIntent.putExtra("receiverUsername", receiver.get("username"));
+        exchangeIntent.putExtra("receiverImage", receiver.get("image"));
+        exchangeIntent.putExtra("receiverToken", receiver.get("token"));
+
+        // Book info
+        exchangeIntent.putExtra("book", book.get("title"));
     }
 }

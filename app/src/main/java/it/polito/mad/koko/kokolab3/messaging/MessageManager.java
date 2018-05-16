@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -175,10 +176,10 @@ public class MessageManager {
                     JSONObject resultJson = new JSONObject(result);
                     success = resultJson.getInt("success");
                     failure = resultJson.getInt("failure");
-                    Log.d("MessageManager", "success is: " + String.valueOf(success));
+                    //Log.d("MessageManager", "success is: " + String.valueOf(success));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d(TAG, "failure is: " + String.valueOf(failure));
+                    //Log.d(TAG, "failure is: " + String.valueOf(failure));
 
                 }
             }
@@ -225,44 +226,39 @@ public class MessageManager {
                 receiverUsername,
                 receiverToken,
                 receiverImage,
-                bookTitle
+                bookTitle,
+                "request"
         );
     }
 
     /**
-     * It sends a positive book exchange response to a specific user.
-     *
-     * @param senderId
-     * @param senderUsername
-     * @param senderImage
-     * @param receiverId
-     * @param receiverUsername
-     * @param receiverToken
-     * @param receiverImage
-     * @param bookTitle
+     * It sends a book exchange response notification.
+     * @param responseIntent    response intent data.
+     * @param accepted          whether the exchange response was positive or not.
      */
-    public static void sendPositiveResponseNotification(// Sender info
-                                                        final String senderId,
-                                                        final String senderUsername,
-                                                        final String senderImage,
-                                                        final String senderToken,
+    public static void sendResponseNotification(Intent responseIntent, boolean accepted) {
+        // Sender data
+        String senderId = responseIntent.getStringExtra("senderId");
+        String senderUsername = responseIntent.getStringExtra("senderUsername");
+        String senderImage = responseIntent.getStringExtra("senderImage");
+        String senderToken = responseIntent.getStringExtra("senderToken");
 
-                                                        // Receiver info
-                                                        final String receiverId,
-                                                        final String receiverUsername,
-                                                        final String receiverToken,
-                                                        final String receiverImage,
+        // Receiver data
+        String receiverId = responseIntent.getStringExtra("receiverId");
+        String receiverUsername = responseIntent.getStringExtra("receiverUsername");
+        String receiverImage = responseIntent.getStringExtra("receiverImage");
+        String receiverToken = responseIntent.getStringExtra("receiverToken");
 
-                                                        // Book info
-                                                        final String bookTitle) {
-        String notificationTitle =
-                BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE
-                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
-        String notificationText =
-                BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT
-                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
+        // Book data
+        String bookTitle = responseIntent.getStringExtra("book");
+
+        // Notification title
+        String notificationTitle = ((accepted) ? BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE : BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE)
+                .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername).replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
+
+        // Notification text
+        String notificationText = ((accepted) ? BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT : BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT)
+                .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername).replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
 
         sendNotification(
                 notificationTitle,
@@ -275,57 +271,8 @@ public class MessageManager {
                 receiverUsername,
                 receiverToken,
                 receiverImage,
-                bookTitle
-        );
-    }
-
-    /**
-     * It sends a negative book exchange response to a specific user.
-     *
-     * @param senderId
-     * @param senderUsername
-     * @param senderImage
-     * @param receiverId
-     * @param receiverUsername
-     * @param receiverToken
-     * @param receiverImage
-     * @param bookTitle
-     */
-    public static void sendNegativeResponseNotification(// Sender info
-                                                        final String senderId,
-                                                        final String senderUsername,
-                                                        final String senderImage,
-                                                        final String senderToken,
-
-                                                        // Receiver info
-                                                        final String receiverId,
-                                                        final String receiverUsername,
-                                                        final String receiverToken,
-                                                        final String receiverImage,
-
-                                                        // Book info
-                                                        final String bookTitle) {
-        String notificationTitle =
-                BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE
-                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
-        String notificationText =
-                BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT
-                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
-
-        sendNotification(
-                notificationTitle,
-                notificationText,
-                senderId,
-                senderUsername,
-                senderImage,
-                senderToken,
-                receiverId,
-                receiverUsername,
-                receiverToken,
-                receiverImage,
-                bookTitle
+                bookTitle,
+                accepted ? "accept" : "decline"
         );
     }
 
@@ -346,6 +293,8 @@ public class MessageManager {
      *      "to": receiver_token
      *
      *      "data": {
+     *          "type": "request" | "accept" | "decline"
+     *
      *          "sender": {
      *              "id": "kE3ErSqw...",
      *              "username": sender_username,
@@ -393,7 +342,9 @@ public class MessageManager {
                                              final String receiverImage,
 
                                              // Book info
-                                             final String bookTitle) {
+                                             final String bookTitle,
+
+                                             final String notificationType) {
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
@@ -424,6 +375,7 @@ public class MessageManager {
 
                     // Data
                     JSONObject data = new JSONObject();
+                    data.put("type", notificationType);
                     data.put("sender", sender);
                     data.put("receiver", receiver);
                     data.put("book", book);
@@ -453,7 +405,7 @@ public class MessageManager {
 
             @Override
             protected void onPostExecute(String result) {
-                Log.d(TAG, result);
+                //Log.d(TAG, result);
 
             }
         }.execute();
@@ -469,7 +421,7 @@ public class MessageManager {
     private static String postToFCM(String bodyString) throws IOException {
         // Create a request body with json create in sendNotification or sendMessage
         RequestBody body = RequestBody.create(CONTENT_TYPE, bodyString);
-        Log.d(TAG, "body: " + String.valueOf(body));
+        //Log.d(TAG, "body: " + String.valueOf(body));
         // Create a http request
         Request request = new Request.Builder()
                 .url(FCM_MESSAGE_URL)
@@ -477,7 +429,7 @@ public class MessageManager {
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "key=" + SERVER_KEY)
                 .build();
-        Log.d(TAG, "request: " + String.valueOf(request));
+        //Log.d(TAG, "request: " + String.valueOf(request));
         // Use post http method to make a request
         Response response = mClient.newCall(request).execute();
         return response.body().string();
@@ -526,12 +478,12 @@ public class MessageManager {
                 if (dataSnapshot.exists()) {
 
                     String datasnapshot = dataSnapshot.toString();
-                    Log.d(TAG, datasnapshot);
+                    //Log.d(TAG, datasnapshot);
                     Message message = new Message();
                     message.setSender((String) dataSnapshot.child("sender").getValue());
                     message.setText((String) dataSnapshot.child("text").getValue());
                     message.setTimestamp((String) dataSnapshot.child("timestamp").getValue());
-                    Log.d(TAG, message.toString());
+                    //Log.d(TAG, message.toString());
 
                     /**
                      * populate the Map with key: chatID and value:message
@@ -542,7 +494,7 @@ public class MessageManager {
 
                 }
 
-                Log.d(TAG, userChat.toString());
+                //Log.d(TAG, userChat.toString());
 
             }
 
@@ -609,23 +561,21 @@ public class MessageManager {
 
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
-     *
-     * @param senderUsername: sender side of the chat (current logged user)
-     *                        receiver: receiver side of the chat (value of "chatID")
+     * @param intent    the intent containing chat information.
      */
-    public static void createChat(  // Sender info
-                                    String senderId,
-                                    String senderUsername,
-                                    String senderImage,
+    public static void createChat(Intent intent) {
+        // Retrieving sender data
+        String senderId = intent.getStringExtra("senderId");
+        String senderUsername = intent.getStringExtra("senderUsername");
+        String senderImage = intent.getStringExtra("senderImage");
+        String senderToken = intent.getStringExtra("senderToken");
 
-                                    // Receiver info
-                                    String receiverId,
-                                    String receiverUsername,
-                                    String receiverImage,
+        // Retrieving Receiver data
+        String receiverId = intent.getStringExtra("receiverId");
+        String receiverUsername = intent.getStringExtra("receiverUsername");
+        String receiverImage = intent.getStringExtra("receiverImage");
+        String receiverToken = intent.getStringExtra("token");
 
-                                    // Message info
-                                    String textMessage
-    ) {
         // Creating the 'chats' child
         DatabaseReference messagesRef = DatabaseManager.get("chats");
         String chatID = messagesRef.push().getKey();
@@ -643,8 +593,7 @@ public class MessageManager {
         usersRefReceiver.child("chats").child(chatID).child("secondPartyId").setValue(senderId);
         usersRefReceiver.child("chats").child(chatID).child("secondPartyImage").setValue(senderImage);
 
-        createMessage(chatID, senderUsername, textMessage);
-
+        createMessage(chatID, senderUsername, FIRST_CHAT_MESSAGE);
     }
 
 

@@ -25,90 +25,38 @@ public class NotificationReceiver extends BroadcastReceiver {
         // Debugging
         Log.d(TAG, "New notification. Action: " + intent.getAction());
 
-        // profileManager instance
-        profileManager = ProfileManager.getInstance();
-
-        // Current profile information
-        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Profile currentProfile = profileManager.getProfile(currentUserId);
-
         // Retrieving all chat messages
         MessageManager.removeUserChatsMessagesListener();
 
-        // Depending on the notification action
-        switch (intent.getAction()) {
-            // The book owner has accepted the book exchange
-            case ACCEPT_ACTION:
-                // Sender data
-                String senderId = intent.getStringExtra("senderId");
-                String senderUsername = intent.getStringExtra("senderUsername");
-                String senderImage = intent.getStringExtra("senderImage");
-                String senderToken = intent.getStringExtra("senderToken");
+        // In case a book exchange response has been received, whether it's positive or not
+        if(intent.getAction().compareTo(ACCEPT_ACTION) == 0 || intent.getAction().compareTo(DECLINE_ACTION) == 0) {
+            // Retrieving the book exchange outcome
+            boolean exchangeAccepted = intent.getAction().compareTo(ACCEPT_ACTION) == 0;
 
-                // Receiver data
-                String receiverId = intent.getStringExtra("receiverId");
-                String receiverUsername = intent.getStringExtra("receiverUsername");
-                String receiverImage = intent.getStringExtra("receiverImage");
-                String receiverToken = intent.getStringExtra("token");
+            // Sending a response notification
+            MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
-                // Book data
-                String bookName = intent.getStringExtra("book");
-
-                // Notifying the requester
-                MessageManager.sendPositiveResponseNotification(
-                        // Sender info
-                        receiverId,         // sender ID
-                        receiverUsername,   // sender username
-                        receiverImage,      // sender image
-                        receiverToken,      // sender token
-
-                        // Receiver info
-                        senderId,           // receiver ID
-                        senderUsername,     // receiver username
-                        senderToken,        // receiver token
-                        senderImage,        // receiver image
-
-                        // Book info
-                        bookName           // book title
-                );
-
+            // If the book exchange has been accepted
+            if(exchangeAccepted) {
                 // Creating a chat with the user
-                MessageManager.createChat(
-                        // Sender info
-                        receiverId,         // sender ID
-                        receiverUsername,   // sender username
-                        receiverImage,      // sender image
-
-                        // Receiver info
-                        senderId,           // receiver ID
-                        senderUsername,     // receiver username
-                        senderImage,        // receiver image
-
-                        // Message info
-                        MessageManager.FIRST_CHAT_MESSAGE
-                );
+                MessageManager.createChat(intent);
 
                 // Opening the chat UI
-                /*
-                Intent showChat=new Intent(context,ShowChat.class);
+                /*Intent showChat=new Intent(context,ShowChat.class);
                 showChat.putExtra("messages",MessageManager.getMessageID());
                 showChat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(showChat);
-                */
+                context.startActivity(showChat);*/
                 MessageManager.populateUserMessages();
                 Intent showChats=new Intent(context,ShowChats.class);
                 showChats.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(showChats);
                 //DefaultMessagesActivity.open(context);
-
-                break;
-
-            // The book owner has not accepted the book exchange
-            case DECLINE_ACTION:
+            }
+            // If the book exchange has not been accepted
+            else {
                 // Showing a book exchange declined message
                 Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show();
-
-                break;
+            }
         }
     }
 }
