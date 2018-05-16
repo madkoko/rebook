@@ -33,7 +33,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Profile currentProfile = profileManager.getProfile(currentUserId);
 
         // Retrieving all chat messages
-        /* TODO remove listener when needed */ MessageManager.populateUserMessages();
+        MessageManager.removeUserChatsMessagesListener();
 
         // Depending on the notification action
         switch (intent.getAction()) {
@@ -87,13 +87,14 @@ public class NotificationReceiver extends BroadcastReceiver {
                 );
 
                 // Opening the chat UI
-                /*Intent showChat=new Intent(context,ShowChat.class);
+                /*
+                Intent showChat=new Intent(context,ShowChat.class);
                 showChat.putExtra("messages",MessageManager.getMessageID());
                 showChat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(showChat);*/
-
-                // Opening all user's chats
-                Intent showChats = new Intent(context, ShowChats.class);
+                context.startActivity(showChat);
+                */
+                MessageManager.populateUserMessages();
+                Intent showChats=new Intent(context,ShowChats.class);
                 showChats.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(showChats);
                 //DefaultMessagesActivity.open(context);

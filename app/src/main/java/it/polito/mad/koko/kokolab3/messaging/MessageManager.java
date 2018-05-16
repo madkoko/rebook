@@ -327,36 +327,36 @@ public class MessageManager {
      * It sends a general notification to a specific user.
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
-     * <p>
+     *
      * A JSON exmaple is shown below:
-     * <p>
+     *
      * {    "notification": {
-     * "title": title,
-     * "body": body
-     * },
-     * <p>
-     * "priority": "high",
-     * <p>
-     * "to": receiver_token
-     * <p>
-     * "data": {
-     * "sender": {
-     * "id": "kE3ErSqw...",
-     * "username": sender_username,
-     * "image": "https://firebasestorage..."
-     * }
-     * <p>
-     * "receiver": {
-     * "id": "f3j1lw...",
-     * "username": receiver_username,
-     * "token: ,
-     * "image": "https://firebasestorage..."
-     * }
-     * <p>
-     * "book": {
-     * "title": book_title
-     * }
-     * }
+     *          "title": title,
+     *          "body": body
+     *      },
+     *
+     *      "priority": "high",
+     *
+     *      "to": receiver_token
+     *
+     *      "data": {
+     *          "sender": {
+     *              "id": "kE3ErSqw...",
+     *              "username": sender_username,
+     *              "image": "https://firebasestorage..."
+     *          }
+     *
+     *          "receiver": {
+     *              "id": "f3j1lw...",
+     *              "username": receiver_username,
+     *              "token: ,
+     *              "image": "https://firebasestorage..."
+     *          }
+     *
+     *          "book": {
+     *              "title": book_title
+     *          }
+     *      }
      * }
      *
      * @param notificationTitle the notification title.
@@ -579,6 +579,23 @@ public class MessageManager {
         }
     }
 
+
+    public static void removeUserChatsMessagesListener(){
+
+        userChats=new ArrayList<>();
+
+        for(String chatID: userChatIDs.keySet()){
+
+            userMessages=new ArrayList<>();
+            Chat userChat=new Chat(chatID,userMessages);
+
+            userChats.add(userChat);
+
+            MessageManager.setUserMessagesListener(userChat);
+            DatabaseManager.get("chats",chatID,"messages").removeEventListener(userChatsMessagesListener);
+        }
+
+    }
 
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
