@@ -238,16 +238,16 @@ public class MessageManager {
      */
     public static void sendResponseNotification(Intent responseIntent, boolean accepted) {
         // Sender data
-        String senderId = responseIntent.getStringExtra("senderId");
-        String senderUsername = responseIntent.getStringExtra("senderUsername");
-        String senderImage = responseIntent.getStringExtra("senderImage");
-        String senderToken = responseIntent.getStringExtra("senderToken");
+        String receiverId = responseIntent.getStringExtra("senderId");
+        String receiverUsername = responseIntent.getStringExtra("senderUsername");
+        String receiverImage = responseIntent.getStringExtra("senderImage");
+        String receiverToken = responseIntent.getStringExtra("senderToken");
 
         // Receiver data
-        String receiverId = responseIntent.getStringExtra("receiverId");
-        String receiverUsername = responseIntent.getStringExtra("receiverUsername");
-        String receiverImage = responseIntent.getStringExtra("receiverImage");
-        String receiverToken = responseIntent.getStringExtra("receiverToken");
+        String senderId = responseIntent.getStringExtra("receiverId");
+        String senderUsername = responseIntent.getStringExtra("receiverUsername");
+        String senderImage = responseIntent.getStringExtra("receiverImage");
+        String senderToken = responseIntent.getStringExtra("receiverToken");
 
         // Book data
         String bookTitle = responseIntent.getStringExtra("book");
