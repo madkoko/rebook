@@ -44,7 +44,6 @@ import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
-import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -60,7 +59,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Accepting a book exchange request actions and properties
      */
-    private static final Class  ACCEPT_CALLBACK = DefaultMessagesActivity.class;
     private static final String ACCEPT_BUTTON_STRING = "Accept";
     private static final int    ACCEPT_ICON = R.mipmap.icon,
                                 ACCEPT_REQUEST_CODE = 2;
@@ -69,12 +67,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Denying a book exchange request actions and properties
      */
-    private static final Class  DECLINE_CALLBACK = DefaultMessagesActivity.class;
     private static final String DECLINE_BUTTON_STRING = "Decline";
     private static final int    DECLINE_ICON = R.mipmap.icon,
                                 DECLINE_REQUEST_CODE = 3;
     protected static final String DECLINE_ACTION = "decline";
-
 
     /**
      * Called when message is received.
@@ -155,7 +151,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         RemoteMessage.Notification remoteNotification = receivedMessage.getNotification();
         String notificationTitle = remoteNotification.getTitle();
         String notificationBody = remoteNotification.getBody();
-
 
         Log.d(TAG, notificationBody);
 

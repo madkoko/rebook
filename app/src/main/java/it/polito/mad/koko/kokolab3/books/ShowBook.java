@@ -38,30 +38,30 @@ public class ShowBook extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_book);
-        profileManager=ProfileManager.getInstance();
+        profileManager = ProfileManager.getInstance();
 
-        TextView isbn,title,author,publisher,editionYear,conditions;
+        TextView isbn, title, author, publisher, editionYear, conditions;
         ImageView bookImage;
 
-        isbn=findViewById(R.id.show_book_isbn);
-        title=findViewById(R.id.show_book_title);
-        author=findViewById(R.id.show_book_author);
-        publisher=findViewById(R.id.show_book_publisher);
-        editionYear=findViewById(R.id.show_book_edition_year);
-        conditions=findViewById(R.id.show_book_conditions);
-        bookImage=findViewById(R.id.show_book_photo);
-        sendRequest =findViewById(R.id.send_request);
+        isbn = findViewById(R.id.show_book_isbn);
+        title = findViewById(R.id.show_book_title);
+        author = findViewById(R.id.show_book_author);
+        publisher = findViewById(R.id.show_book_publisher);
+        editionYear = findViewById(R.id.show_book_edition_year);
+        conditions = findViewById(R.id.show_book_conditions);
+        bookImage = findViewById(R.id.show_book_photo);
+        sendRequest = findViewById(R.id.send_request);
 
-        Intent i=getIntent();
-        if(i.getExtras().get("book")!=null) {
+        Intent i = getIntent();
+        if (i.getExtras().get("book") != null) {
             book = (Book) i.getExtras().get("book");
 
-            if(book.getISBN()!=null)isbn.setText(book.getISBN());
-            if(book.getTitle()!=null)title.setText(book.getTitle());
-            if(book.getAuthor()!=null)author.setText(book.getAuthor());
-            if(book.getPublisher()!=null)publisher.setText(book.getPublisher());
-            if(book.getEditionYear()!=null)editionYear.setText(book.getEditionYear());
-            if(book.getBookConditions()!=null)conditions.setText(book.getBookConditions());
+            if (book.getISBN() != null) isbn.setText(book.getISBN());
+            if (book.getTitle() != null) title.setText(book.getTitle());
+            if (book.getAuthor() != null) author.setText(book.getAuthor());
+            if (book.getPublisher() != null) publisher.setText(book.getPublisher());
+            if (book.getEditionYear() != null) editionYear.setText(book.getEditionYear());
+            if (book.getBookConditions() != null) conditions.setText(book.getBookConditions());
             Picasso.get().load(book.getImage()).into(bookImage);
             //Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
         }
@@ -84,21 +84,21 @@ public class ShowBook extends AppCompatActivity
             Log.d("device_token", "Token is: " + receiverToken);
 
             sendRequest.setOnClickListener(
-                v -> MessageManager.sendNotification(
-                    // Sender info
-                    senderId,                       // sender ID
-                    senderProfile.getName(),        // sender username
-                    senderProfile.getImgUrl(),      // sender image
+                    v -> MessageManager.sendRequestNotification(
+                            // Sender info
+                            senderId,                       // sender ID
+                            senderProfile.getName(),        // sender username
+                            senderProfile.getImgUrl(),      // sender image
 
-                    // Receiver info
-                    receiverId,                     // receiver ID
-                    receiverProfile.getName(),      // receiver username
-                    receiverToken,                  // receiver token
-                    receiverProfile.getImgUrl(),    // receiver image
+                            // Receiver info
+                            receiverId,                     // receiver ID
+                            receiverProfile.getName(),      // receiver username
+                            receiverToken,                  // receiver token
+                            receiverProfile.getImgUrl(),    // receiver image
 
-                    // Book info
-                    book.getTitle()                 // book title
-                )
+                            // Book info
+                            book.getTitle()                 // book title
+                    )
             );
         }
     }
@@ -107,14 +107,14 @@ public class ShowBook extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         // Add a marker in Sydney, Australia,
         // and move the map's camera to the same location.
-        if(profileManager.getProfile(book.getUid()).getPosition()!=null) {
+        if (profileManager.getProfile(book.getUid()).getPosition() != null) {
             String pos = profileManager.getProfile(book.getUid()).getPosition();
             Log.d(TAG, pos);
-            String lat= pos.substring(pos.indexOf("(")+1,pos.indexOf(","));
-            String lng= pos.substring(pos.indexOf(",")+1, pos.indexOf(")"));
-            Log.d(TAG, lat+" "+lng);
+            String lat = pos.substring(pos.indexOf("(") + 1, pos.indexOf(","));
+            String lng = pos.substring(pos.indexOf(",") + 1, pos.indexOf(")"));
+            Log.d(TAG, lat + " " + lng);
             double latitude = Double.parseDouble(lat);
-            double longitude= Double.parseDouble(lng);
+            double longitude = Double.parseDouble(lng);
 
             LatLng position = new LatLng(latitude, longitude);
             googleMap.addMarker(new MarkerOptions()

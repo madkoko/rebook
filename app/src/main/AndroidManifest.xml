@@ -112,9 +112,6 @@
         </receiver>
 
         <!-- Messaging activities -->
-        <activity android:name=".ui.chat.DefaultDialogsActivity" />
-        <activity android:name=".ui.chat.DefaultMessagesActivity" />
-
         <service android:name=".messaging.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

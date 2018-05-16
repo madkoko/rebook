@@ -82,20 +82,37 @@ public class MessageManager {
     private static final MediaType CONTENT_TYPE = null;
 
     /**
-     * Book requests strings
+     * Message strings
      */
     public static final String
         // Message request target URL
         FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send",
 
+        // Sender's username placeholder
         SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",
 
-        BOOK_EXCHANGE_MESSAGE_TITLE =   "Book exchange request from " +
-                                        SENDER_USERNAME_PLACEHOLDER + "!",
+        // Book name placeholder
+        BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%",
 
-        BOOK_EXCHANGE_MESSAGE_TEXT =    "You can accept/deny immediately or check " +
+        // Book request messages
+        BOOK_REQUEST_MESSAGE_TITLE =   "Book exchange request from " +
+                                        SENDER_USERNAME_PLACEHOLDER + "!",
+        BOOK_REQUEST_MESSAGE_TEXT =    "You can accept/deny immediately or check " +
                                         SENDER_USERNAME_PLACEHOLDER +
-                                        "'s profile by clicking this notification"
+                                        "'s profile by clicking this notification",
+
+        // Book positive response messages
+        BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE =  SENDER_USERNAME_PLACEHOLDER +
+                                                " has accepted your request!",
+        BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT =   "You can now exchange " +
+                                                BOOK_NAME_PLACEHOLDER +
+                                                ". Tap here to open a chat.",
+
+        // Book positive response messages
+        BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE =  SENDER_USERNAME_PLACEHOLDER +
+                                                " has declined your request!",
+        BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT =   "You cannot exchange " +
+                                                BOOK_NAME_PLACEHOLDER + " anymore."
     ;
 
     /**
@@ -164,10 +181,150 @@ public class MessageManager {
     }
 
     /**
-     * Sending a notification to a specific user.
-     * The JSON message has the following structure:
-     * (Following the official Firebase JSON structure available on:
-     *  https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request)
+     * It sends a book exchange request notification to a specific user.
+     * @param senderId
+     * @param senderUsername
+     * @param senderImage
+     * @param receiverId
+     * @param receiverUsername
+     * @param receiverToken
+     * @param receiverImage
+     * @param bookTitle
+     */
+    public static void sendRequestNotification(     // Sender info
+                                                    final String senderId,
+                                                    final String senderUsername,
+                                                    final String senderImage,
+
+                                                    // Receiver info
+                                                    final String receiverId,
+                                                    final String receiverUsername,
+                                                    final String receiverToken,
+                                                    final String receiverImage,
+
+                                                    // Book info
+                                                    final String bookTitle) {
+        String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
+        String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
+
+        sendNotification(
+            notificationTitle,
+            notificationText,
+            senderId,
+            senderUsername,
+            senderImage,
+            receiverId,
+            receiverUsername,
+            receiverToken,
+            receiverImage,
+            bookTitle
+        );
+    }
+
+    /**
+     * It sends a positive book exchange response to a specific user.
+     * @param senderId
+     * @param senderUsername
+     * @param senderImage
+     * @param receiverId
+     * @param receiverUsername
+     * @param receiverToken
+     * @param receiverImage
+     * @param bookTitle
+     */
+    public static void sendPositiveResponseNotification(// Sender info
+                                                        final String senderId,
+                                                        final String senderUsername,
+                                                        final String senderImage,
+
+                                                        // Receiver info
+                                                        final String receiverId,
+                                                        final String receiverUsername,
+                                                        final String receiverToken,
+                                                        final String receiverImage,
+
+                                                        // Book info
+                                                        final String bookTitle) {
+        String notificationTitle =
+            BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE
+                .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
+                .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
+        ;
+        String notificationText =
+            BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT
+                .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
+                .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
+        ;
+
+        sendNotification(
+                notificationTitle,
+                notificationText,
+                senderId,
+                senderUsername,
+                senderImage,
+                receiverId,
+                receiverUsername,
+                receiverToken,
+                receiverImage,
+                bookTitle
+        );
+    }
+
+    /**
+     * It sends a negative book exchange response to a specific user.
+     * @param senderId
+     * @param senderUsername
+     * @param senderImage
+     * @param receiverId
+     * @param receiverUsername
+     * @param receiverToken
+     * @param receiverImage
+     * @param bookTitle
+     */
+    public static void sendNegativeResponseNotification(// Sender info
+                                                        final String senderId,
+                                                        final String senderUsername,
+                                                        final String senderImage,
+
+                                                        // Receiver info
+                                                        final String receiverId,
+                                                        final String receiverUsername,
+                                                        final String receiverToken,
+                                                        final String receiverImage,
+
+                                                        // Book info
+                                                        final String bookTitle) {
+        String notificationTitle =
+                BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE
+                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
+                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
+                ;
+        String notificationText =
+                BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT
+                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
+                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
+                ;
+
+        sendNotification(
+                notificationTitle,
+                notificationText,
+                senderId,
+                senderUsername,
+                senderImage,
+                receiverId,
+                receiverUsername,
+                receiverToken,
+                receiverImage,
+                bookTitle
+        );
+    }
+
+    /**
+     * It sends a general notification to a specific user.
+     * The JSON message structure is defined by Firebase:
+     * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
+     *
+     * A JSON exmaple is shown below:
      *
      * {    "notification": {
      *          "title": title,
@@ -198,6 +355,8 @@ public class MessageManager {
      *      }
      * }
      *
+     * @param notificationTitle     the notification title.
+     * @param notificationText      the notification text.
      * @param senderId
      * @param senderUsername
      * @param senderImage
@@ -206,7 +365,11 @@ public class MessageManager {
      * @param receiverImage
      * @param bookTitle
      */
-    public static void sendNotification(    // Sender info
+    private static void sendNotification(    // Notification title and text
+                                            final String notificationTitle,
+                                            final String notificationText,
+
+                                            // Sender info
                                             final String senderId,
                                             final String senderUsername,
                                             final String senderImage,
@@ -225,8 +388,7 @@ public class MessageManager {
                 try {
                     // Notification
                     JSONObject notification = new JSONObject();
-                    String notificationTitle = BOOK_EXCHANGE_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
-                    String notificationText = BOOK_EXCHANGE_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
+
                     notification.put("title", notificationTitle);
                     notification.put("text", notificationText);
 
@@ -428,8 +590,6 @@ public class MessageManager {
      *                receiver: receiver side of the chat (value of "chatID")
      */
     public static void createChat(String sender, String receiver,String senderId, String receiverId, String imageSender, String imageReceiver, String textMessage) {
-
-
         DatabaseReference messagesRef = DatabaseManager.get("chats");
 
         String chatID = messagesRef.push().getKey();

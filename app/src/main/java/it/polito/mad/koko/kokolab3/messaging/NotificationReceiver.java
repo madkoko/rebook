@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
-import it.polito.mad.koko.kokolab3.ui.chat.DefaultMessagesActivity;
 
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.ACCEPT_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.DECLINE_ACTION;
@@ -37,13 +36,28 @@ public class NotificationReceiver extends BroadcastReceiver {
         switch (intent.getAction()) {
             // The book owner has accepted the book exchange
             case ACCEPT_ACTION:
+                // First test message
+                String sender = intent.getStringExtra("sender");
+                String senderId = intent.getStringExtra("senderId");
+                String senderImage = intent.getStringExtra("senderImage");
+                String bookName = intent.getStringExtra("book");
 
                 // Notifying the requester
-                String sender= intent.getStringExtra("sender");
-                String senderId=intent.getStringExtra("senderId");
-                String senderImage=intent.getStringExtra("senderImage");
-                String bookName=intent.getStringExtra("book");
+                /*MessageManager.sendPositiveResponseNotification(
+                        // Sender info
+                        senderId,                       // sender ID
+                        senderProfile.getName(),        // sender username
+                        senderProfile.getImgUrl(),      // sender image
 
+                        // Receiver info
+                        receiverId,                     // receiver ID
+                        receiverProfile.getName(),      // receiver username
+                        receiverToken,                  // receiver token
+                        receiverProfile.getImgUrl(),    // receiver image
+
+                        // Book info
+                        book.getTitle()                 // book title
+                );*/
 
                 // Creating a chat with the user
                 MessageManager.createChat(
@@ -53,23 +67,17 @@ public class NotificationReceiver extends BroadcastReceiver {
                         currentUserId,
                         senderImage,
                         profile.getImgUrl(),
-                        "Hi, "+sender+" would like to exchange "+bookName+" with you!"
+                        "Hi, " + sender + " would like to exchange " + bookName + " with you!"
                 );
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 // Opening the chat UI
-
-                /*
-                Intent showChat=new Intent(context,ShowChat.class);
+                /*Intent showChat=new Intent(context,ShowChat.class);
                 showChat.putExtra("messages",MessageManager.getMessageID());
                 showChat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(showChat);
-                */
-                Intent showChats=new Intent(context,ShowChats.class);
+                context.startActivity(showChat);*/
+
+                // Opening all user's chats
+                Intent showChats = new Intent(context, ShowChats.class);
                 showChats.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(showChats);
                 //DefaultMessagesActivity.open(context);
