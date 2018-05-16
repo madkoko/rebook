@@ -143,7 +143,7 @@
             android:value="@string/default_notification_channel_id" />
 
         <activity android:name=".messaging.ShowChats" />
-        <activity android:name=".messaging.ShowChat"></activity>
+        <activity android:name=".messaging.ShowChat" />
     </application>
 
 </manifest>

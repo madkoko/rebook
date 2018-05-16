@@ -47,7 +47,9 @@ public class NotificationReceiver extends BroadcastReceiver {
                 showChat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(showChat);*/
                 MessageManager.populateUserMessages();
+
                 Intent showChats=new Intent(context,ShowChats.class);
+                //showChats.putExtra("chatID", chatID);
                 showChats.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(showChats);
                 //DefaultMessagesActivity.open(context);

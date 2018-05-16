@@ -42,7 +42,7 @@ public class MessageManager {
     /*
      * All the chats' ID of the current user
      */
-    private static Map<String, String> userChatIDs;
+    private static Map<String, Map<String,String>> userChatIDs;
 
     /*
      * All the messages corresponding to a chat ID
@@ -445,7 +445,9 @@ public class MessageManager {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    userChatIDs.putAll((Map<String, String>) dataSnapshot.getValue());
+
+                    userChatIDs.putAll((Map<String, Map<String,String>>) dataSnapshot.getValue());
+                    Log.d(TAG,userChatIDs.toString());
                     MessageManager.populateUserMessages();
                 }
             }
@@ -559,6 +561,7 @@ public class MessageManager {
 
     }
 
+
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
      * @param intent    the intent containing chat information.
@@ -642,7 +645,7 @@ public class MessageManager {
     /**
      * Return all user's chatID as Key and receiverID as Value
      */
-    public static Map<String, String> getUserChatIDs() {
+    public static Map<String, Map<String,String>> getUserChatIDs() {
         return userChatIDs;
     }
 

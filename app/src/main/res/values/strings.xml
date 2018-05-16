@@ -181,4 +181,9 @@
         <item name="image">Image (default)</item>
         <item name="voice">Voice message (custom)</item>
     </string-array>
+    <string name="title_activity_show_chats_recycler">ShowChatsRecycler</string>
+    <string name="title_activity_show_chat_recycler">ShowChatRecycler</string>
+
+    <string name="element_text">Element</string>
+
 </resources>

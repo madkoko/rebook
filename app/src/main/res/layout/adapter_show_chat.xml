@@ -13,9 +13,8 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
-        android:layout_weight="1"
-        android:hint="@string/book_title"
-        android:textSize="24sp" />
+        android:layout_weight="0.5"
+        android:textSize="16sp" />
 
 
 </LinearLayout>

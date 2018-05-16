@@ -7,8 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,7 +29,7 @@ public class ShowChats extends AppCompatActivity {
     /**
      *  Map ChatID-ReceiverID with all the user's chats
      */
-    private Map<String,String> userChatIDs;
+    private Map<String,Map<String,String>> userChatIDs;
 
     private static final String TAG = "ShowChats";
 
@@ -50,7 +53,7 @@ public class ShowChats extends AppCompatActivity {
 
                 @Override
                 public int getCount() {
-                    return userChats.size();
+                    return userChatIDs.size();
                 }
 
                 @Override
@@ -68,14 +71,19 @@ public class ShowChats extends AppCompatActivity {
                     if (view == null)
                         view = getLayoutInflater().inflate(R.layout.chats_adapter_layout, viewGroup, false);
 
+                    ImageView userThumbnail=(ImageView) view.findViewById(R.id.user_thumbnail);
                     TextView chatDest = (TextView) view.findViewById(R.id.chat_dest);
                     TextView lastMessageText = (TextView) view.findViewById(R.id.last_message);
                     String chatID=(String)userChatIDs.keySet().toArray()[i];
 
-                   //String dest=userChatIDs.get(chatID);
+                    Map<String,String> chatInfo=userChatIDs.get(chatID);
 
+                    String secondPartyUsername=chatInfo.get("secondPartyUsername");
+                    String secondPartyId=chatInfo.get("secondPartyId");
+                    String secondPartyImage=chatInfo.get("secondPartyImage");
+                    Picasso.get().load(secondPartyImage).fit().centerCrop().into(userThumbnail);
 
-                    //chatDest.setText(dest);
+                    chatDest.setText(secondPartyUsername);
 
                     ArrayList<Message> messages=new ArrayList<>();
                     for(Chat chat:userChats){
