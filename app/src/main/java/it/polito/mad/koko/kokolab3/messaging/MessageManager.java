@@ -590,6 +590,23 @@ public class MessageManager {
     }
 
 
+    public static void removeUserChatsMessagesListener(){
+
+        userChats=new ArrayList<>();
+
+        for(String chatID: userChatIDs.keySet()){
+
+            userMessages=new ArrayList<>();
+            Chat userChat=new Chat(chatID,userMessages);
+
+            userChats.add(userChat);
+
+            MessageManager.setUserMessagesListener(userChat);
+            DatabaseManager.get("chats",chatID,"messages").removeEventListener(userChatsMessagesListener);
+        }
+
+    }
+
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
      *
