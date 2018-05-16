@@ -10,10 +10,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.util.JsonUtil;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -427,13 +424,7 @@ public class MessageManager {
                     root.put("priority", "high");
                     root.put("to", receiverToken);
                     root.put("data", data);
-
-                    // JSON pretty-printing
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                    JsonParser jp = new JsonParser();
-                    JsonElement je = jp.parse(root.toString());
-                    String prettyJsonString = gson.toJson(je);
-                    Log.d(TAG, "JSON message: " + prettyJsonString);
+                    Log.d(TAG, "JSON message: " + JsonUtil.formatJson(root.toString()));
 
                     // Sending the JSON packet to FCM
                     String result = postToFCM(root.toString());

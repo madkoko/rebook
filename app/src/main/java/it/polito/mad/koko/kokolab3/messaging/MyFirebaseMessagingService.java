@@ -16,7 +16,6 @@
 
 package it.polito.mad.koko.kokolab3.messaging;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -41,9 +40,9 @@ import com.google.gson.reflect.TypeToken;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
+import it.polito.mad.koko.kokolab3.util.JsonUtil;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -159,6 +158,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> senderObject = // De-serializing the "sender" JSON object
                 new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
+        Log.d(TAG, "JSON sender: " + JsonUtil.formatJson(senderJsonString));
 
         // Retrieving sender information
         String senderId = senderObject.get("id");
@@ -166,16 +166,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String senderImageURL = senderObject.get("image");
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
 
-        // Retrieving the receievr data object
+        // Retrieving the receiver data object
         String receiverJsonString = receivedMessage.getData().get("receiver");
         Map<String, String> receiverObject = // De-serializing the "sender" JSON object
                 new Gson().fromJson(receiverJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
+        Log.d(TAG, "JSON receiver: " + JsonUtil.formatJson(receiverJsonString));
 
         // Retrieving receiver information
-        String receiverId = senderObject.get("id");
-        String receiverUsername = senderObject.get("username");
-        String receiverImageURL = senderObject.get("image");
+        String receiverId = receiverObject.get("id");
+        String receiverUsername = receiverObject.get("username");
+        String receiverImageURL = receiverObject.get("image");
 
         // Retrieving the book data object
         String bookJsonString = receivedMessage.getData().get("book");

@@ -32,6 +32,9 @@ public class NotificationReceiver extends BroadcastReceiver {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Profile currentProfile = profileManager.getProfile(currentUserId);
 
+        // Retrieving all chat messages
+        /* TODO remove listener when needed */ MessageManager.populateUserMessages();
+
         // Depending on the notification action
         switch (intent.getAction()) {
             // The book owner has accepted the book exchange
