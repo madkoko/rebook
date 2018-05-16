@@ -44,7 +44,7 @@ public class MessageManager {
     /*
      * All the chats' ID of the current user
      */
-    private static Map<String,String> userChatIDs;
+    private static Map<String, String> userChatIDs;
 
     /*
      * All the messages corresponding to a chat ID
@@ -53,8 +53,8 @@ public class MessageManager {
     */
 
     /*
-    * All the chats of the current user
-    */
+     * All the chats of the current user
+     */
 
     private static ArrayList<Chat> userChats;
 
@@ -82,22 +82,26 @@ public class MessageManager {
     private static final MediaType CONTENT_TYPE = null;
 
     /**
-     * Message strings
+     * Messages placeholders
      */
     public static final String
-        // Message request target URL
-        FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send",
-
         // Sender's username placeholder
         SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",
 
         // Book name placeholder
-        BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%",
+        BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%";
+
+    /**
+     * Message strings
+     */
+    private static final String
+        // Message request target URL
+        FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send",
 
         // Book request messages
-        BOOK_REQUEST_MESSAGE_TITLE =   "Book exchange request from " +
+        BOOK_REQUEST_MESSAGE_TITLE =    "Book exchange request from " +
                                         SENDER_USERNAME_PLACEHOLDER + "!",
-        BOOK_REQUEST_MESSAGE_TEXT =    "You can accept/deny immediately or check " +
+        BOOK_REQUEST_MESSAGE_TEXT =     "You can accept/deny immediately or check " +
                                         SENDER_USERNAME_PLACEHOLDER +
                                         "'s profile by clicking this notification",
 
@@ -112,16 +116,20 @@ public class MessageManager {
         BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE =  SENDER_USERNAME_PLACEHOLDER +
                                                 " has declined your request!",
         BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT =   "You cannot exchange " +
-                                                BOOK_NAME_PLACEHOLDER + " anymore."
-    ;
+                                                BOOK_NAME_PLACEHOLDER + " anymore.";
+
+    /**
+     * First chat message displayed as an intro.
+     */
+    public static final String FIRST_CHAT_MESSAGE = "You can now start the book exchange negotiation.\n" +
+                                                    "Do not send any personal data such as password and credit card numbers.";
 
     /**
      * Firebase server's key access
      */
     private static String SERVER_KEY =
-        "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJ" +
-        "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD"
-    ;
+            "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJ" +
+                    "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD";
     private static String messageID;
 
 
@@ -182,6 +190,7 @@ public class MessageManager {
 
     /**
      * It sends a book exchange request notification to a specific user.
+     *
      * @param senderId
      * @param senderUsername
      * @param senderImage
@@ -208,21 +217,22 @@ public class MessageManager {
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
         sendNotification(
-            notificationTitle,
-            notificationText,
-            senderId,
-            senderUsername,
-            senderImage,
-            receiverId,
-            receiverUsername,
-            receiverToken,
-            receiverImage,
-            bookTitle
+                notificationTitle,
+                notificationText,
+                senderId,
+                senderUsername,
+                senderImage,
+                receiverId,
+                receiverUsername,
+                receiverToken,
+                receiverImage,
+                bookTitle
         );
     }
 
     /**
      * It sends a positive book exchange response to a specific user.
+     *
      * @param senderId
      * @param senderUsername
      * @param senderImage
@@ -246,15 +256,13 @@ public class MessageManager {
                                                         // Book info
                                                         final String bookTitle) {
         String notificationTitle =
-            BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE
-                .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
-        ;
+                BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE
+                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
+                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
         String notificationText =
-            BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT
-                .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
-        ;
+                BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT
+                        .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
+                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
 
         sendNotification(
                 notificationTitle,
@@ -272,6 +280,7 @@ public class MessageManager {
 
     /**
      * It sends a negative book exchange response to a specific user.
+     *
      * @param senderId
      * @param senderUsername
      * @param senderImage
@@ -297,13 +306,11 @@ public class MessageManager {
         String notificationTitle =
                 BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE
                         .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
-                ;
+                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
         String notificationText =
                 BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT
                         .replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername)
-                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle)
-                ;
+                        .replaceAll(BOOK_NAME_PLACEHOLDER, bookTitle);
 
         sendNotification(
                 notificationTitle,
@@ -323,40 +330,40 @@ public class MessageManager {
      * It sends a general notification to a specific user.
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
-     *
+     * <p>
      * A JSON exmaple is shown below:
-     *
+     * <p>
      * {    "notification": {
-     *          "title": title,
-     *          "body": body
-     *      },
-     *
-     *      "priority": "high",
-     *
-     *      "to": receiver_token
-     *
-     *      "data": {
-     *          "sender": {
-     *              "id": "kE3ErSqw...",
-     *              "username": sender_username,
-     *              "image": "https://firebasestorage..."
-     *          }
-     *
-     *          "receiver": {
-     *              "id": "f3j1lw...",
-     *              "username": receiver_username,
-     *              "token: ,
-     *              "image": "https://firebasestorage..."
-     *          }
-     *
-     *          "book": {
-     *              "title": book_title
-     *          }
-     *      }
+     * "title": title,
+     * "body": body
+     * },
+     * <p>
+     * "priority": "high",
+     * <p>
+     * "to": receiver_token
+     * <p>
+     * "data": {
+     * "sender": {
+     * "id": "kE3ErSqw...",
+     * "username": sender_username,
+     * "image": "https://firebasestorage..."
+     * }
+     * <p>
+     * "receiver": {
+     * "id": "f3j1lw...",
+     * "username": receiver_username,
+     * "token: ,
+     * "image": "https://firebasestorage..."
+     * }
+     * <p>
+     * "book": {
+     * "title": book_title
+     * }
+     * }
      * }
      *
-     * @param notificationTitle     the notification title.
-     * @param notificationText      the notification text.
+     * @param notificationTitle the notification title.
+     * @param notificationText  the notification text.
      * @param senderId
      * @param senderUsername
      * @param senderImage
@@ -366,22 +373,22 @@ public class MessageManager {
      * @param bookTitle
      */
     private static void sendNotification(    // Notification title and text
-                                            final String notificationTitle,
-                                            final String notificationText,
+                                             final String notificationTitle,
+                                             final String notificationText,
 
-                                            // Sender info
-                                            final String senderId,
-                                            final String senderUsername,
-                                            final String senderImage,
+                                             // Sender info
+                                             final String senderId,
+                                             final String senderUsername,
+                                             final String senderImage,
 
-                                            // Receiver info
-                                            final String receiverId,
-                                            final String receiverUsername,
-                                            final String receiverToken,
-                                            final String receiverImage,
+                                             // Receiver info
+                                             final String receiverId,
+                                             final String receiverUsername,
+                                             final String receiverToken,
+                                             final String receiverImage,
 
-                                            // Book info
-                                            final String bookTitle) {
+                                             // Book info
+                                             final String bookTitle) {
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
@@ -511,11 +518,11 @@ public class MessageManager {
      *
      * @param userChat chat class in which we put all the messages corresponding to the chatID
      */
-    public static void setUserMessagesListener(Chat userChat){
+    public static void setUserMessagesListener(Chat userChat) {
         userChatsMessagesListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
 
                     String datasnapshot = dataSnapshot.toString();
                     Log.d(TAG, datasnapshot);
@@ -528,13 +535,13 @@ public class MessageManager {
                     /**
                      * populate the Map with key: chatID and value:message
                      */
-                    for(Chat chat:userChats)
-                        if(chat.equals(userChat))
+                    for (Chat chat : userChats)
+                        if (chat.equals(userChat))
                             chat.getChatMessages().add(message);
 
                 }
 
-                Log.d(TAG,userChat.toString());
+                Log.d(TAG, userChat.toString());
 
             }
 
@@ -562,50 +569,63 @@ public class MessageManager {
 
     /**
      * For each chatID in the current user creates and attaches the Child listener to retrieve all the chat messages
-     *
+     * <p>
      * ArrayList<Chat>
      */
-    public static void populateUserMessages(){
+    public static void populateUserMessages() {
 
-        userChats=new ArrayList<>();
+        userChats = new ArrayList<>();
 
-        for(String chatID: userChatIDs.keySet()){
+        for (String chatID : userChatIDs.keySet()) {
 
-            userMessages=new ArrayList<>();
-            Chat userChat=new Chat(chatID,userMessages);
+            userMessages = new ArrayList<>();
+            Chat userChat = new Chat(chatID, userMessages);
 
             userChats.add(userChat);
 
             MessageManager.setUserMessagesListener(userChat);
-            DatabaseManager.get("chats",chatID,"messages").addChildEventListener(userChatsMessagesListener);
+            DatabaseManager.get("chats", chatID, "messages").addChildEventListener(userChatsMessagesListener);
         }
     }
-
 
 
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
      *
-     * @param sender: sender side of the chat (current logged user)
-     *                receiver: receiver side of the chat (value of "chatID")
+     * @param senderUsername: sender side of the chat (current logged user)
+     *                        receiver: receiver side of the chat (value of "chatID")
      */
-    public static void createChat(String sender, String receiver,String senderId, String receiverId, String imageSender, String imageReceiver, String textMessage) {
-        DatabaseReference messagesRef = DatabaseManager.get("chats");
+    public static void createChat(  // Sender info
+                                    String senderId,
+                                    String senderUsername,
+                                    String senderImage,
 
+                                    // Receiver info
+                                    String receiverId,
+                                    String receiverUsername,
+                                    String receiverImage,
+
+                                    // Message info
+                                    String textMessage
+    ) {
+        // Creating the 'chats' child
+        DatabaseReference messagesRef = DatabaseManager.get("chats");
         String chatID = messagesRef.push().getKey();
         messagesRef.child(chatID).child("messages");
 
+        // Creating a chat child under the sender one
         DatabaseReference usersRefSender = DatabaseManager.get("users").child(senderId);
-        usersRefSender.child("chats").child(chatID).child("receiver").setValue(receiver);
-        usersRefSender.child("chats").child(chatID).child("receiverId").setValue(receiverId);
-        usersRefSender.child("chats").child(chatID).child("imageReceiver").setValue(imageReceiver);
+        usersRefSender.child("chats").child(chatID).child("secondPartyUsername").setValue(receiverUsername);
+        usersRefSender.child("chats").child(chatID).child("secondPartyId").setValue(receiverId);
+        usersRefSender.child("chats").child(chatID).child("secondPartyImage").setValue(receiverImage);
 
+        // Creating a chat child under the receiver one
         DatabaseReference usersRefReceiver = DatabaseManager.get("users").child(receiverId);
-        usersRefReceiver.child("chats").child(chatID).child("sender").setValue(sender);
-        usersRefReceiver.child("chats").child(chatID).child("senderId").setValue(senderId);
-        usersRefReceiver.child("chats").child(chatID).child("imageSender").setValue(imageSender);
+        usersRefReceiver.child("chats").child(chatID).child("secondPartyUsername").setValue(senderUsername);
+        usersRefReceiver.child("chats").child(chatID).child("secondPartyId").setValue(senderId);
+        usersRefReceiver.child("chats").child(chatID).child("secondPartyImage").setValue(senderImage);
 
-        createMessage(chatID, sender, textMessage);
+        createMessage(chatID, senderUsername, textMessage);
 
     }
 
@@ -636,9 +656,10 @@ public class MessageManager {
 
     /**
      * Return all user's messages from Firebase
+     *
      * @return
      */
-    public static ArrayList<Chat> getUserChats(){
+    public static ArrayList<Chat> getUserChats() {
 
         return userChats;
     }
@@ -659,9 +680,10 @@ public class MessageManager {
     }
 
     /**
-     *
      * @return messageID when we create a new chat with notification
      */
-    public static String getMessageID(){return messageID;}
+    public static String getMessageID() {
+        return messageID;
+    }
 
 }

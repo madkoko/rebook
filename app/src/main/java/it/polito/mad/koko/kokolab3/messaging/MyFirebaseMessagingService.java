@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,24 +52,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Notification properties
      */
-    private static final Class  NOTIFICATION_CALLBACK = ShowProfile.class;
-    private static final int    NOTIFICATION_ICON = R.mipmap.icon,
-                                NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX,
-                                NOTIFICATION_REQUEST_CODE = 1;
+    private static final Class NOTIFICATION_CALLBACK = ShowProfile.class;
+    private static final int NOTIFICATION_ICON = R.mipmap.icon,
+            NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX,
+            NOTIFICATION_REQUEST_CODE = 1;
     /**
      * Accepting a book exchange request actions and properties
      */
     private static final String ACCEPT_BUTTON_STRING = "Accept";
-    private static final int    ACCEPT_ICON = R.mipmap.icon,
-                                ACCEPT_REQUEST_CODE = 2;
+    private static final int ACCEPT_ICON = R.mipmap.icon,
+            ACCEPT_REQUEST_CODE = 2;
     protected static final String ACCEPT_ACTION = "accept";
 
     /**
      * Denying a book exchange request actions and properties
      */
     private static final String DECLINE_BUTTON_STRING = "Decline";
-    private static final int    DECLINE_ICON = R.mipmap.icon,
-                                DECLINE_REQUEST_CODE = 3;
+    private static final int DECLINE_ICON = R.mipmap.icon,
+            DECLINE_REQUEST_CODE = 3;
     protected static final String DECLINE_ACTION = "decline";
 
     /**
@@ -154,39 +154,59 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Log.d(TAG, notificationBody);
 
-        // Retrieving the sender's image profile
+        // Retrieving the sender data object
         String senderJsonString = receivedMessage.getData().get("sender");
-        String bookRequest = receivedMessage.getData().get("book");
         Map<String, String> senderObject = // De-serializing the "sender" JSON object
-            new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>(){}.getType());
-        Map<String, String> bookObject = // De-serializing the "book" JSON object
-                new Gson().fromJson(bookRequest, new TypeToken<Map<String, String>>(){}.getType());
+                new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>() {
+                }.getType());
 
-        String book = bookObject.get("title");
+        // Retrieving sender information
+        String senderId = senderObject.get("id");
+        String senderUsername = senderObject.get("username");
         String senderImageURL = senderObject.get("image");
-        Log.d(TAG, "Sender image URL: " + senderImageURL); // Debugging
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
 
-        // Sender's username
-        String senderUsername = senderObject.get("username");
+        // Retrieving the receievr data object
+        String receiverJsonString = receivedMessage.getData().get("receiver");
+        Map<String, String> receiverObject = // De-serializing the "sender" JSON object
+                new Gson().fromJson(receiverJsonString, new TypeToken<Map<String, String>>() {
+                }.getType());
 
-        // Tapping the notification
+        // Retrieving receiver information
+        String receiverId = senderObject.get("id");
+        String receiverUsername = senderObject.get("username");
+        String receiverImageURL = senderObject.get("image");
+
+        // Retrieving the book data object
+        String bookJsonString = receivedMessage.getData().get("book");
+        Map<String, String> bookObject = // De-serializing the "book" JSON object
+                new Gson().fromJson(bookJsonString, new TypeToken<Map<String, String>>() {
+                }.getType());
+
+        // Retrieving book information
+        String book = bookObject.get("title");
+
+        // Intent used upon tapping the notification
         Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_CALLBACK);
         showSenderProfileIntent.putExtra("UserID", /*TODO put sender UID here*/ FirebaseAuth.getInstance().getUid());
         showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent showSenderProfilePendingIntent = PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, showSenderProfileIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        // Accepting the book exchange request
+        // Intent used upon accepting the book exchange request
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
         acceptIntent.setAction(ACCEPT_ACTION);
-        acceptIntent.putExtra("senderId",senderObject.get("id"));
-        acceptIntent.putExtra("sender",senderUsername);
-        acceptIntent.putExtra("senderImage",senderImageURL);
-        acceptIntent.putExtra("book",book);
+        acceptIntent.putExtra("senderId", senderId);
+        acceptIntent.putExtra("senderUsername", senderUsername);
+        acceptIntent.putExtra("senderImage", senderImageURL);
+        acceptIntent.putExtra("senderToken", senderImageURL);
+        acceptIntent.putExtra("receiverId", receiverId);
+        acceptIntent.putExtra("receiverUsername", receiverUsername);
+        acceptIntent.putExtra("receiverImage", receiverImageURL);
+        acceptIntent.putExtra("book", book);
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Declining the book exchange request
+        // Intent used upon declining the book exchange request
         Intent declineIntent = new Intent(this, NotificationReceiver.class);
         declineIntent.setAction(DECLINE_ACTION);
         declineIntent.putExtra("decliner", FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -235,5 +255,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(0 /* notification ID */, notificationBuilder.build());
+    }
+
+    private static void loadExchangeIntentData(Intent exchangeIntent) {
+
     }
 }

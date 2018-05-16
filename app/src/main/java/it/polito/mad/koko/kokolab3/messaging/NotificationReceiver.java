@@ -25,49 +25,62 @@ public class NotificationReceiver extends BroadcastReceiver {
         // Debugging
         Log.d(TAG, "New notification. Action: " + intent.getAction());
 
-        //Instance of profileManager
+        // profileManager instance
         profileManager = ProfileManager.getInstance();
 
-        //Instance of auth profile
+        // Current profile information
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Profile profile = profileManager.getProfile(currentUserId);
+        Profile currentProfile = profileManager.getProfile(currentUserId);
 
         // Depending on the notification action
         switch (intent.getAction()) {
             // The book owner has accepted the book exchange
             case ACCEPT_ACTION:
-                // First test message
-                String sender = intent.getStringExtra("sender");
+                // Sender data
                 String senderId = intent.getStringExtra("senderId");
+                String senderUsername = intent.getStringExtra("senderUsername");
                 String senderImage = intent.getStringExtra("senderImage");
+                String senderToken = intent.getStringExtra("senderToken");
+
+                // Receiver data
+                String receiverId = intent.getStringExtra("receiverId");
+                String receiverUsername = intent.getStringExtra("receiverUsername");
+                String receiverImage = intent.getStringExtra("receiverImage");
+
+                // Book data
                 String bookName = intent.getStringExtra("book");
 
                 // Notifying the requester
-                /*MessageManager.sendPositiveResponseNotification(
+                MessageManager.sendPositiveResponseNotification(
                         // Sender info
-                        senderId,                       // sender ID
-                        senderProfile.getName(),        // sender username
-                        senderProfile.getImgUrl(),      // sender image
+                        receiverId,         // sender ID
+                        receiverUsername,   // sender username
+                        receiverImage,      // sender image
 
                         // Receiver info
-                        receiverId,                     // receiver ID
-                        receiverProfile.getName(),      // receiver username
-                        receiverToken,                  // receiver token
-                        receiverProfile.getImgUrl(),    // receiver image
+                        senderId,           // receiver ID
+                        senderUsername,     // receiver username
+                        senderToken,        // receiver token
+                        senderImage,        // receiver image
 
                         // Book info
-                        book.getTitle()                 // book title
-                );*/
+                        bookName           // book title
+                );
 
                 // Creating a chat with the user
                 MessageManager.createChat(
-                        sender,
-                        profile.getName(),
-                        senderId,
-                        currentUserId,
-                        senderImage,
-                        profile.getImgUrl(),
-                        "Hi, " + sender + " would like to exchange " + bookName + " with you!"
+                        // Sender info
+                        receiverId,         // sender ID
+                        receiverUsername,   // sender username
+                        receiverImage,      // sender image
+
+                        // Receiver info
+                        senderId,           // receiver ID
+                        senderUsername,     // receiver username
+                        senderImage,        // receiver image
+
+                        // Message info
+                        MessageManager.FIRST_CHAT_MESSAGE
                 );
 
                 // Opening the chat UI
