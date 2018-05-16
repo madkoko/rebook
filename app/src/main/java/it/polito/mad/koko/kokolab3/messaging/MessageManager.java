@@ -201,6 +201,7 @@ public class MessageManager {
                                                     final String senderId,
                                                     final String senderUsername,
                                                     final String senderImage,
+                                                    final String senderToken,
 
                                                     // Receiver info
                                                     final String receiverId,
@@ -219,6 +220,7 @@ public class MessageManager {
                 senderId,
                 senderUsername,
                 senderImage,
+                senderToken,
                 receiverId,
                 receiverUsername,
                 receiverToken,
@@ -243,6 +245,7 @@ public class MessageManager {
                                                         final String senderId,
                                                         final String senderUsername,
                                                         final String senderImage,
+                                                        final String senderToken,
 
                                                         // Receiver info
                                                         final String receiverId,
@@ -267,6 +270,7 @@ public class MessageManager {
                 senderId,
                 senderUsername,
                 senderImage,
+                senderToken,
                 receiverId,
                 receiverUsername,
                 receiverToken,
@@ -291,6 +295,7 @@ public class MessageManager {
                                                         final String senderId,
                                                         final String senderUsername,
                                                         final String senderImage,
+                                                        final String senderToken,
 
                                                         // Receiver info
                                                         final String receiverId,
@@ -315,6 +320,7 @@ public class MessageManager {
                 senderId,
                 senderUsername,
                 senderImage,
+                senderToken,
                 receiverId,
                 receiverUsername,
                 receiverToken,
@@ -327,36 +333,37 @@ public class MessageManager {
      * It sends a general notification to a specific user.
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
-     * <p>
+     *
      * A JSON exmaple is shown below:
-     * <p>
+     *
      * {    "notification": {
-     * "title": title,
-     * "body": body
-     * },
-     * <p>
-     * "priority": "high",
-     * <p>
-     * "to": receiver_token
-     * <p>
-     * "data": {
-     * "sender": {
-     * "id": "kE3ErSqw...",
-     * "username": sender_username,
-     * "image": "https://firebasestorage..."
-     * }
-     * <p>
-     * "receiver": {
-     * "id": "f3j1lw...",
-     * "username": receiver_username,
-     * "token: ,
-     * "image": "https://firebasestorage..."
-     * }
-     * <p>
-     * "book": {
-     * "title": book_title
-     * }
-     * }
+     *          "title": title,
+     *          "body": body
+     *      },
+     *
+     *      "priority": "high",
+     *
+     *      "to": receiver_token
+     *
+     *      "data": {
+     *          "sender": {
+     *              "id": "kE3ErSqw...",
+     *              "username": sender_username,
+     *              "image": "https://firebasestorage..."
+     *              "token": sender_token
+     *          }
+     *
+     *          "receiver": {
+     *              "id": "f3j1lw...",
+     *              "username": receiver_username,
+     *              "image": "https://firebasestorage..."
+     *              "token: receiver_token,
+     *          }
+     *
+     *          "book": {
+     *              "title": book_title
+     *          }
+     *      }
      * }
      *
      * @param notificationTitle the notification title.
@@ -377,6 +384,7 @@ public class MessageManager {
                                              final String senderId,
                                              final String senderUsername,
                                              final String senderImage,
+                                             final String senderToken,
 
                                              // Receiver info
                                              final String receiverId,
@@ -401,12 +409,14 @@ public class MessageManager {
                     sender.put("id", senderId);
                     sender.put("username", senderUsername);
                     sender.put("image", senderImage);
+                    sender.put("token", senderToken);
 
                     // Receiver
                     JSONObject receiver = new JSONObject();
                     receiver.put("id", receiverId);
                     receiver.put("username", receiverUsername);
                     receiver.put("image", receiverImage);
+                    receiver.put("token", receiverToken);
 
                     // Book
                     JSONObject book = new JSONObject();
@@ -560,7 +570,7 @@ public class MessageManager {
 
     /**
      * For each chatID in the current user creates and attaches the Child listener to retrieve all the chat messages
-     * <p>
+     *
      * ArrayList<Chat>
      */
     public static void populateUserMessages() {

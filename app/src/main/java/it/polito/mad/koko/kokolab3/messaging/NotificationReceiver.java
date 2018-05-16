@@ -49,6 +49,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 String receiverId = intent.getStringExtra("receiverId");
                 String receiverUsername = intent.getStringExtra("receiverUsername");
                 String receiverImage = intent.getStringExtra("receiverImage");
+                String receiverToken = intent.getStringExtra("token");
 
                 // Book data
                 String bookName = intent.getStringExtra("book");
@@ -59,6 +60,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                         receiverId,         // sender ID
                         receiverUsername,   // sender username
                         receiverImage,      // sender image
+                        receiverToken,      // sender token
 
                         // Receiver info
                         senderId,           // receiver ID

@@ -109,8 +109,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
             showNotification(remoteMessage);
         }
 
@@ -151,19 +149,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String notificationTitle = remoteNotification.getTitle();
         String notificationBody = remoteNotification.getBody();
 
-        Log.d(TAG, notificationBody);
+        // Debugging
+        Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString()));
 
         // Retrieving the sender data object
         String senderJsonString = receivedMessage.getData().get("sender");
         Map<String, String> senderObject = // De-serializing the "sender" JSON object
                 new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
-        Log.d(TAG, "JSON sender: " + JsonUtil.formatJson(senderJsonString));
 
         // Retrieving sender information
         String senderId = senderObject.get("id");
         String senderUsername = senderObject.get("username");
         String senderImageURL = senderObject.get("image");
+        String senderToken = senderObject.get("token");
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
 
         // Retrieving the receiver data object
@@ -171,7 +170,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> receiverObject = // De-serializing the "sender" JSON object
                 new Gson().fromJson(receiverJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
-        Log.d(TAG, "JSON receiver: " + JsonUtil.formatJson(receiverJsonString));
 
         // Retrieving receiver information
         String receiverId = receiverObject.get("id");
@@ -200,7 +198,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         acceptIntent.putExtra("senderId", senderId);
         acceptIntent.putExtra("senderUsername", senderUsername);
         acceptIntent.putExtra("senderImage", senderImageURL);
-        acceptIntent.putExtra("senderToken", senderImageURL);
+        acceptIntent.putExtra("senderToken", senderToken);
         acceptIntent.putExtra("receiverId", receiverId);
         acceptIntent.putExtra("receiverUsername", receiverUsername);
         acceptIntent.putExtra("receiverImage", receiverImageURL);

@@ -89,6 +89,7 @@ public class ShowBook extends AppCompatActivity
                             senderId,                       // sender ID
                             senderProfile.getName(),        // sender username
                             senderProfile.getImgUrl(),      // sender image
+                            senderProfile.getTokenMessage(),// sender token
 
                             // Receiver info
                             receiverId,                     // receiver ID
