@@ -348,7 +348,7 @@ public class MessageManager {
                     // Notification
                     JSONObject notification = new JSONObject();
                     notification.put("title", notificationTitle);
-                    notification.put("text", notificationText);
+                    notification.put("body", notificationText);
 
                     // Sender
                     JSONObject sender = new JSONObject();
