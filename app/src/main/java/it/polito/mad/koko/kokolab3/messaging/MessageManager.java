@@ -590,17 +590,17 @@ public class MessageManager {
      * Creates a message entry in Firebase
      *
      * @param chatId      id of the chat which the message belongs to
-     * @param sender      id of the sender of the message
-     * @param receiver    id of the receiver of the message
+     * @param senderId      id of the sender of the message
+     * @param receiverId    id of the receiver of the message
      * @param messageText content of the message
      */
 
-    public static void createMessage(String chatId, String sender, String receiver, String messageText) {
+    public static void createMessage(String chatId, String senderId, String receiverId, String messageText) {
         // Creating a message entry
         DatabaseReference messagesRef = DatabaseManager.get("chats", chatId, "messages");
         messageID = messagesRef.push().getKey();
         Message message = new Message();
-        message.setSender(sender);
+        message.setSender(senderId);
         message.setText(messageText);
         message.setCheck("false");
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
@@ -608,8 +608,8 @@ public class MessageManager {
         messagesRef.child(messageID).setValue(message);
 
         // Creating the last message entry on both receiver and sender
-        DatabaseManager.set(messageText, "users/"+sender+"chats/" + chatId + "/lastMessage");
-        DatabaseManager.set(messageText, "users/"+receiver+"chats/" + chatId + "/lastMessage");
+        DatabaseManager.set(messageText, "users/"+senderId+"/chats/" + chatId + "/lastMessage");
+        DatabaseManager.set(messageText, "users/"+receiverId+"/chats/" + chatId + "/lastMessage");
     }
 
     /**
