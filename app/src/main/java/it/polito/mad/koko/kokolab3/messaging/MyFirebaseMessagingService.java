@@ -275,15 +275,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // The sender's profile has to be shown
             case 1:
                 // Creating the requestIntent that will open the request sender's profile
-                Intent requestIntent = new Intent(this, NotificationReceiver.class);
+                /*Intent requestIntent = new Intent(this, NotificationReceiver.class);
                 requestIntent.setAction(REQUEST_ACTION);
-                requestIntent.putExtra("UserID", FirebaseAuth.getInstance().getUid());
+                requestIntent.putExtra("UserID", *//* TODO insert sender's ID *//* FirebaseAuth.getInstance().getUid());
                 requestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent requestPendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, requestIntent,
-                        PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent.FLAG_ONE_SHOT);*/
 
                 // Setting the onTap intent
-                notificationBuilder.setContentIntent(requestPendingIntent);
+                // notificationBuilder.setContentIntent(requestPendingIntent);
 
                 break;
 

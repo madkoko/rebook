@@ -30,10 +30,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         // In case a book exchange request has been received
         if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
+            // TODO a summarized ShowProfile activity should be started here
+
             // Starting the showProfile activity
-            Intent showProfileIntent = new Intent(context, ShowProfile.class);
+            /*Intent showProfileIntent = new Intent(context, ShowProfile.class);
             showProfileIntent.putExtra("UserID", intent.getStringExtra("UserID"));
-            context.startActivity(showProfileIntent);
+            context.startActivity(showProfileIntent);*/
         } else if (intent.getAction().compareTo(MESSAGE_ACTION) == 0) {
             // Starting the showChat activity
             Intent showChatIntent = new Intent(context, ShowChat.class);

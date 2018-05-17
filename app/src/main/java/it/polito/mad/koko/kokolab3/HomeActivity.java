@@ -240,14 +240,7 @@ public class HomeActivity extends AppCompatActivity
             // startActivityForResult(searchBooks, SEARCH_BOOKS);
             startActivity(searchBooks);
 
-        } else if (id == R.id.nav_share) {
-            //MessageManager.createChat(authenticator.getAuth().getCurrentUser().getUid(),"here goes the receiver");
-
-            // ricreate HomeActivity ---- MODIFY!!!!
-            recreate();
-
-            //MessageManager.createMessage("-LCTZnxijv9XtYMlBaCX",authenticator.getAuth().getCurrentUser().getUid(),"nuovo messaggio");
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_chats) {
             //DefaultDialogsActivity.open(this);
 
             startActivity(new Intent(getApplicationContext(), ShowChats.class));

@@ -22,16 +22,12 @@
             android:title="@string/search_books" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Book exchange">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_chats"
+                android:icon="@drawable/bg_custom_incoming_message"
+                android:title="Chats" />
         </menu>
     </item>
 
