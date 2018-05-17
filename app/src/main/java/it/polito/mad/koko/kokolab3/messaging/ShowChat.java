@@ -35,13 +35,18 @@ public class ShowChat extends AppCompatActivity {
      */
     private FirebaseListAdapter<Message> adapter;
 
+    /**
+     * This chat's ID
+     */
+    private String chatId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chat);
 
         // Retrieving the chat id
-        String chatId = getIntent().getStringExtra("chatId");
+        chatId = getIntent().getStringExtra("chatId");
 
         // Retrieving the sender information
         String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -49,7 +54,6 @@ public class ShowChat extends AppCompatActivity {
         String senderUsername = senderProfile.getName();
         String senderImage = senderProfile.getImgUrl();
         String senderToken = senderProfile.getTokenMessage();
-
 
         // Retrieving the receiver information
         String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
@@ -165,6 +169,21 @@ public class ShowChat extends AppCompatActivity {
         chatListView.setAdapter(adapter);
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        MyFirebaseMessagingService.setActiveChat(chatId);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        MyFirebaseMessagingService.clearActiveChat();
     }
 
     @Override

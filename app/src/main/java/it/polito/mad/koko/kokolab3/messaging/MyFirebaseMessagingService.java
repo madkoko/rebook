@@ -48,6 +48,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
 
     /**
+     * Currently active chat
+     */
+    private static String activeChatId = "";
+
+    /**
      * Notification properties
      */
     private static final int NOTIFICATION_ICON = R.mipmap.icon,
@@ -124,16 +129,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 or not, so action buttons will be displayed accordingly */
             boolean showResponseButtons = notificationType.compareTo("request") == 0;
 
-            /*  Figuring out what action should be performed upon tapping
-                the notification */
+            // Figuring out what action should be performed upon tapping the notification
             int onTapAction = 0; // nothing has to be performed
             if(notificationType.compareTo("request") == 0)
                 onTapAction = 1; // the sender's profile has to be shown
             else if(notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
                 onTapAction = 2; // the chat with the sender has to be opened
 
-            // Showing the actual notification
-            showNotification(remoteMessage, showResponseButtons, onTapAction);
+            // If this is a new message notification
+            if(notificationType.compareTo("message") == 0) {
+                synchronized (activeChatId) {
+                    // Retrieving the chat ID corresponding to this new notification
+                    String chatId = remoteMessage.getData().get("chatId");
+
+                    // If the chat corresponding to this notification is not currently active
+                    if(chatId.compareTo(activeChatId) != 0)
+                        // Show the new message notification
+                        showNotification(remoteMessage, showResponseButtons, onTapAction);
+                }
+            }
+            else {
+                // Always show the notification
+                showNotification(remoteMessage, showResponseButtons, onTapAction);
+            }
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -342,5 +360,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Book info
         exchangeIntent.putExtra("book", book.get("title"));
+    }
+
+    /**
+     * Setting the currently active chat ID
+     * @param activeChatId  the currently active chat ID
+     */
+    public static void setActiveChat(String activeChatId) {
+        if(activeChatId != null)
+            synchronized (MyFirebaseMessagingService.activeChatId) {
+                MyFirebaseMessagingService.activeChatId = activeChatId;
+            }
+    }
+
+    public static void clearActiveChat() {
+        setActiveChat("");
     }
 }

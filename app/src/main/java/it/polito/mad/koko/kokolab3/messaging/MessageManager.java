@@ -120,7 +120,7 @@ public class MessageManager {
      * First chat message displayed as an intro.
      */
     public static final String FIRST_CHAT_MESSAGE = "You can now start the book exchange negotiation.\n" +
-                                                    "Do not send any personal data such as password and credit card numbers.";
+                                                    "Do not send any personal data such as passwords and credit card numbers.";
 
     /**
      * Firebase server's key access

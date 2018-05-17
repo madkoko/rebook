@@ -7,7 +7,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
-import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.ACCEPT_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.DECLINE_ACTION;
@@ -47,6 +46,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             // Retrieving the book exchange outcome
             boolean exchangeAccepted = intent.getAction().compareTo(ACCEPT_ACTION) == 0;
 
+            // If the book exchange has not been accepted
             if (!exchangeAccepted)
                 // Sending a negative response notification
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
