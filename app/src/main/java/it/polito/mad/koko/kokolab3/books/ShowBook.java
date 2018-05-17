@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,7 +51,6 @@ public class ShowBook extends AppCompatActivity
         editionYear = findViewById(R.id.show_book_edition_year);
         conditions = findViewById(R.id.show_book_conditions);
         bookImage = findViewById(R.id.show_book_photo);
-        sendRequest = findViewById(R.id.send_request);
 
         Intent i = getIntent();
         if (i.getExtras().get("book") != null) {
@@ -82,25 +82,29 @@ public class ShowBook extends AppCompatActivity
 
             // TODO debugging
             Log.d("device_token", "Token is: " + receiverToken);
+            String authUser= FirebaseAuth.getInstance().getCurrentUser().getUid();
+            sendRequest = findViewById(R.id.send_request);
+            if(authUser.compareTo(book.getUid())!=0) {
+                sendRequest.setVisibility(View.VISIBLE);
+                sendRequest.setOnClickListener(
+                        v -> MessageManager.sendRequestNotification(
+                                // Sender info
+                                senderId,                       // sender ID
+                                senderProfile.getName(),        // sender username
+                                senderProfile.getImgUrl(),      // sender image
+                                senderProfile.getTokenMessage(),// sender token
 
-            sendRequest.setOnClickListener(
-                    v -> MessageManager.sendRequestNotification(
-                            // Sender info
-                            senderId,                       // sender ID
-                            senderProfile.getName(),        // sender username
-                            senderProfile.getImgUrl(),      // sender image
-                            senderProfile.getTokenMessage(),// sender token
+                                // Receiver info
+                                receiverId,                     // receiver ID
+                                receiverProfile.getName(),      // receiver username
+                                receiverProfile.getImgUrl(),    // receiver image
+                                receiverToken,                  // receiver token
 
-                            // Receiver info
-                            receiverId,                     // receiver ID
-                            receiverProfile.getName(),      // receiver username
-                            receiverProfile.getImgUrl(),    // receiver image
-                            receiverToken,                  // receiver token
-
-                            // Book info
-                            book.getTitle()                 // book title
-                    )
-            );
+                                // Book info
+                                book.getTitle()                 // book title
+                        )
+                );
+            }
         }
     }
 

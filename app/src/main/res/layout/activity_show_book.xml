@@ -155,6 +155,7 @@
                     android:layout_below="@+id/show_book_conditions"
                     android:hint="@string/send_request"
                     android:textSize="20sp"
+                    android:visibility="gone"
                     android:layout_alignParentRight="true" />
 
 
