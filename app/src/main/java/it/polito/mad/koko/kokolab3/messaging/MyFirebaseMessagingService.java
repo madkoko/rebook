@@ -373,6 +373,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
     }
 
+    /**
+     * Clearing the currently active chat ID
+     */
     public static void clearActiveChat() {
         setActiveChat("");
     }
