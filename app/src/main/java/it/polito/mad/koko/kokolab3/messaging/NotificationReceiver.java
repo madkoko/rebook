@@ -55,7 +55,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 //DefaultMessagesActivity.open(context);
             }
             // If the book exchange has not been accepted
-            else {
+            else if(intent.getAction().compareTo(DECLINE_ACTION) == 0) {
                 // Showing a book exchange declined message
                 Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show();
             }

@@ -17,12 +17,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 
+import java.util.Map;
+
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class ShowChat extends AppCompatActivity {
 
-    private static final String TAG= "ShowChatActivity";
+    private static final String TAG = "ShowChatActivity";
 
     /**
      * All the messages of the selected chat
@@ -31,29 +36,90 @@ public class ShowChat extends AppCompatActivity {
     private ListView chatsListView;
     private FirebaseListAdapter<Message> adapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chat);
 
-        // Retrieving chat information
+        // Retrieving the chat id
         String chatId = getIntent().getStringExtra("chatId");
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String currentUsername = ProfileManager.getInstance().getProfile(currentUserID).getName();
+
+        // Retrieving the sender information
+        String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Profile senderProfile = ProfileManager.getInstance().getProfile(senderId);
+        String senderUsername = senderProfile.getName();
+        String senderImage = senderProfile.getImgUrl();
+        String senderToken = senderProfile.getTokenMessage();
+
+        // Retrieving the receiver information
+        String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
+        Map<String, Map<String, String>> userChatIDs = MessageManager.getUserChatIDs();
+        for(String chatIdIterator: userChatIDs.keySet()) { // Cycling across all user's chats
+            // When the right chat is reached by the iterator
+            if(chatId.compareTo(chatIdIterator) == 0) {
+                // Retrieving the receiver map
+                Map<String, String> receiver = userChatIDs.get(chatIdIterator);
+
+                // Retrieving the receiver information
+                receiverId = receiver.get("secondPartyId");
+                receiverUsername = receiver.get("secondPartyUsername");
+                receiverImage = receiver.get("secondPartyImage");
+                receiverToken = receiver.get("secondPartyToken");
+
+                break;
+            }
+        }
+
+        // If still no receiver has been found
+        if(receiverId == null) {
+            // Show an error dialog
+            AlertManager.noUserDialog(this);
+
+            return;
+        }
+
+        // Receiver info must be final in order to be used in a lambda function
+        String finalReceiverId = receiverId;
+        String finalReceiverUsername = receiverUsername;
+        String finalReceiverImage = receiverImage;
+        String finalReceiverToken = receiverToken;
 
         Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
 
-
+        // UI elements
         chatsListView = findViewById(R.id.chat_listview);
-        EditText editText = findViewById(R.id.send_message);
-        Button send= findViewById(R.id.send);
+        EditText messageEditor = findViewById(R.id.send_message);
+        Button send = findViewById(R.id.send);
 
-        send.setOnClickListener(v -> {
-            if(editText.getText().toString()!=null && editText.getText().toString()!=""){
-                MessageManager.createMessage(chatId, currentUsername, editText.getText().toString());
-                editText.setText("");
-                //((BaseAdapter) chatsListView.getAdapter()).notifyDataSetChanged();
+        send.setOnClickListener((View v) -> {
+            if (messageEditor.getText().toString() != null && messageEditor.getText().toString().compareTo("") != 0) {
+                // Retrieving the message text
+                String messageText = messageEditor.getText().toString();
+
+                // Creating a new message entry in Firebase
+                MessageManager.createMessage(chatId, senderUsername, messageText);
+
+                // Sending the corresponding notification
+                MessageManager.sendMessageNotification(// Sender info
+                        senderId,                       // sender ID
+                        senderUsername,        // sender username
+                        senderImage,      // sender image
+                        senderToken,// sender token
+
+                        // Receiver info
+                        finalReceiverId,                     // receiver ID
+                        finalReceiverUsername,      // receiver username
+                        finalReceiverImage,    // receiver image
+                        finalReceiverToken,                  // receiver token
+
+                        // Book info
+                        null,                 // book title
+
+                        messageText
+                );
+
+                // Clearing the text editor
+                messageEditor.setText("");
             }
         });
         //FirebaseListOptions<Message> for retrieving data from firebase
@@ -69,11 +135,11 @@ public class ShowChat extends AppCompatActivity {
             @Override
             protected void populateView(View view, Message model, int position) {
                 Log.d(TAG, String.valueOf(model));
-                TextView messageText =  view.findViewById(R.id.message_text);
+                TextView messageText = view.findViewById(R.id.message_text);
 
                 messageText.setText(model.getText());
 
-                if(model.getSender().equalsIgnoreCase(currentUserID))
+                if (model.getSender().equalsIgnoreCase(senderUsername))
                     messageText.setGravity(Gravity.RIGHT);
                 else
                     messageText.setGravity(Gravity.LEFT);
@@ -96,7 +162,7 @@ public class ShowChat extends AppCompatActivity {
     }
 }
 
-        // set the list view to show all the books
+// set the list view to show all the books
         /*
         if (messages != null) {
 

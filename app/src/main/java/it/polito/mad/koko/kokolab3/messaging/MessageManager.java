@@ -138,8 +138,8 @@ public class MessageManager {
      * @param senderImage
      * @param receiverId
      * @param receiverUsername
-     * @param receiverToken
      * @param receiverImage
+     * @param receiverToken
      * @param bookTitle
      */
     public static void sendRequestNotification(     // Sender info
@@ -151,8 +151,8 @@ public class MessageManager {
                                                     // Receiver info
                                                     final String receiverId,
                                                     final String receiverUsername,
-                                                    final String receiverToken,
                                                     final String receiverImage,
+                                                    final String receiverToken,
 
                                                     // Book info
                                                     final String bookTitle) {
@@ -168,8 +168,8 @@ public class MessageManager {
                 senderToken,
                 receiverId,
                 receiverUsername,
-                receiverToken,
                 receiverImage,
+                receiverToken,
                 bookTitle,
                 "request"
         );
@@ -213,10 +213,46 @@ public class MessageManager {
                 senderToken,
                 receiverId,
                 receiverUsername,
-                receiverToken,
                 receiverImage,
+                receiverToken,
                 bookTitle,
                 accepted ? "accept" : "decline"
+        );
+    }
+
+    /**
+     * It sends
+     */
+    public static void sendMessageNotification(// Sender info
+                                               final String senderId,
+                                               final String senderUsername,
+                                               final String senderImage,
+                                               final String senderToken,
+
+                                               // Receiver info
+                                               final String receiverId,
+                                               final String receiverUsername,
+                                               final String receiverImage,
+                                               final String receiverToken,
+
+                                               // Book info
+                                               final String bookTitle,
+
+                                               // Message info
+                                               final String messageText) {
+        sendNotification(
+                senderUsername,
+                messageText,
+                senderId,
+                senderUsername,
+                senderImage,
+                senderToken,
+                receiverId,
+                receiverUsername,
+                receiverImage,
+                receiverToken,
+                bookTitle,
+                "message"
         );
     }
 
@@ -282,12 +318,13 @@ public class MessageManager {
                                              // Receiver info
                                              final String receiverId,
                                              final String receiverUsername,
-                                             final String receiverToken,
                                              final String receiverImage,
+                                             final String receiverToken,
 
                                              // Book info
                                              final String bookTitle,
 
+                                             // Notification info
                                              final String notificationType) {
         new AsyncTask<String, Void, String>() {
             @Override
@@ -379,10 +416,9 @@ public class MessageManager {
         return response.body().string();
     }
 
-    /*
+    /**
      * Create the listener to populate the chat list with all the current user's chat from Firebase
      */
-
     public static void setUserChatsIDListener() {
         userChatIDs = new HashMap<>();
         userChatIDsListener = new ValueEventListener() {
@@ -406,14 +442,12 @@ public class MessageManager {
     /**
      * Attach the listener to the chats of the current user
      */
-
     public static void populateUserChatsID() {
         DatabaseManager.get("users", FirebaseAuth.getInstance().getCurrentUser().getUid(), "chats").addValueEventListener(userChatIDsListener);
-
     }
 
     /**
-     * set the listener to retrieve all the messages of a chat
+     * It sets the listener to retrieve all the messages of a chat
      *
      * @param userChat chat class in which we put all the messages corresponding to the chatID
      */
@@ -472,7 +506,6 @@ public class MessageManager {
      * ArrayList<Chat>
      */
     public static void populateUserMessages() {
-
         userChats = new ArrayList<>();
 
         for (String chatID : userChatIDs.keySet()) {
@@ -489,7 +522,6 @@ public class MessageManager {
 
 
     public static void removeUserChatsMessagesListener(){
-
         userChats=new ArrayList<>();
 
         for(String chatID: userChatIDs.keySet()){
@@ -521,78 +553,79 @@ public class MessageManager {
         String receiverId = intent.getStringExtra("receiverId");
         String receiverUsername = intent.getStringExtra("receiverUsername");
         String receiverImage = intent.getStringExtra("receiverImage");
-        String receiverToken = intent.getStringExtra("token");
+        String receiverToken = intent.getStringExtra("receiverToken");
 
         // Creating the 'chats' child
         DatabaseReference messagesRef = DatabaseManager.get("chats");
         String chatID = messagesRef.push().getKey();
+
+        // Creating the 'chats/chat_id/requester' child
+        messagesRef.child(chatID).child("requester").setValue(senderId);
+
+        // Creating the 'chats/chat_id/bookOwner' child
+        messagesRef.child(chatID).child("bookOwner").setValue(receiverId);
+
+        // Creating the 'chats/chat_id/messages' child
         messagesRef.child(chatID).child("messages");
 
         // Creating a chat child under the sender one
-        DatabaseReference usersRefSender = DatabaseManager.get("users").child(senderId);
+        DatabaseReference usersRefSender = DatabaseManager.get("users", senderId);
         usersRefSender.child("chats").child(chatID).child("secondPartyUsername").setValue(receiverUsername);
         usersRefSender.child("chats").child(chatID).child("secondPartyId").setValue(receiverId);
         usersRefSender.child("chats").child(chatID).child("secondPartyImage").setValue(receiverImage);
+        usersRefSender.child("chats").child(chatID).child("secondPartyToken").setValue(receiverToken);
 
         // Creating a chat child under the receiver one
         DatabaseReference usersRefReceiver = DatabaseManager.get("users").child(receiverId);
         usersRefReceiver.child("chats").child(chatID).child("secondPartyUsername").setValue(senderUsername);
         usersRefReceiver.child("chats").child(chatID).child("secondPartyId").setValue(senderId);
         usersRefReceiver.child("chats").child(chatID).child("secondPartyImage").setValue(senderImage);
+        usersRefReceiver.child("chats").child(chatID).child("secondPartyToken").setValue(senderToken);
 
-        createMessage(chatID, senderUsername, FIRST_CHAT_MESSAGE);
+        createMessage(chatID, senderId, FIRST_CHAT_MESSAGE);
     }
 
 
     /**
      * Creates a message entry in Firebase
      *
-     * @param chatID      id of the chat which the message belongs to
+     * @param chatId      id of the chat which the message belongs to
      * @param sender      id of the sender of the message
      * @param messageText content of the message
      */
 
-    public static void createMessage(String chatID, String sender, String messageText) {
-        DatabaseReference messagesRef = DatabaseManager.get("chats").child(chatID).child("messages");
-
+    public static void createMessage(String chatId, String sender, String messageText) {
+        // Creating a message entry
+        DatabaseReference messagesRef = DatabaseManager.get("chats", chatId, "messages");
         messageID = messagesRef.push().getKey();
-
         Message message = new Message();
         message.setSender(sender);
         message.setText(messageText);
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
         message.setTimestamp(timeStamp);
-
         messagesRef.child(messageID).setValue(message);
+
+        // Creating the last message entry
+        DatabaseManager.set(messageText, "chats/" + chatId + "/lastMessage");
     }
 
     /**
-     * Return all user's messages from Firebase
-     *
-     * @return
+     * @return  all user's messages from Firebase
      */
     public static ArrayList<Chat> getUserChats() {
-
         return userChats;
     }
 
-    /*
-     * Return all user's chat from Firebase
-
-    public static Map<String,ArrayList<Message>> getUserChats(){
-
-        return chatsMessages;
-    }*/
-
     /**
-     * Return all user's chatID as Key and receiverID as Value
+     * @return  a Java Map having chatID as key and a receiver info Map
+     *          as value.
      */
     public static Map<String, Map<String,String>> getUserChatIDs() {
         return userChatIDs;
     }
 
     /**
-     * @return messageID when we create a new chat with notification
+     * @return  messageID when we create a new chat with notification
      */
     public static String getMessageID() {
         return messageID;

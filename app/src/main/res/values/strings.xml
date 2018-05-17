@@ -158,6 +158,10 @@
     <!--    This is the name that users will see when interacting with this channel.
             It should describe the category of notifications that will be sent through this channel -->
     <string name="default_notification_channel_name" translatable="true">News</string>
+    <string name="no_user_error_title">User no longer exists</string>
+    <string name="no_user_error_message">
+                This user might have deleted his/her account.
+            </string>
 
     <!-- Messaging UI -->
     <string name="sample_title_default">Default view</string>

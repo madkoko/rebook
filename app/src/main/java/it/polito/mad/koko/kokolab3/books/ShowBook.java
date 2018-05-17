@@ -94,8 +94,8 @@ public class ShowBook extends AppCompatActivity
                             // Receiver info
                             receiverId,                     // receiver ID
                             receiverProfile.getName(),      // receiver username
-                            receiverToken,                  // receiver token
                             receiverProfile.getImgUrl(),    // receiver image
+                            receiverToken,                  // receiver token
 
                             // Book info
                             book.getTitle()                 // book title
