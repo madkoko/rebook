@@ -32,8 +32,6 @@ public class ShowChat extends AppCompatActivity {
     /**
      * All the messages of the selected chat
      */
-    private FirebaseListOptions<Message> options;
-    private ListView chatsListView;
     private FirebaseListAdapter<Message> adapter;
 
     @Override
@@ -86,45 +84,21 @@ public class ShowChat extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
 
-        // UI elements
-        chatsListView = findViewById(R.id.chat_listview);
-        EditText messageEditor = findViewById(R.id.send_message);
-        Button send = findViewById(R.id.send);
 
-        send.setOnClickListener((View v) -> {
-            if (messageEditor.getText().toString() != null && messageEditor.getText().toString().compareTo("") != 0) {
-                // Retrieving the message text
-                String messageText = messageEditor.getText().toString();
+        ListView chatListView = findViewById(R.id.chat_listview);
+        EditText editText = findViewById(R.id.send_message);
+        Button send= findViewById(R.id.send);
 
-                // Creating a new message entry in Firebase
-                MessageManager.createMessage(chatId, senderUsername, messageText);
-
-                // Sending the corresponding notification
-                MessageManager.sendMessageNotification(// Sender info
-                        senderId,                       // sender ID
-                        senderUsername,        // sender username
-                        senderImage,      // sender image
-                        senderToken,// sender token
-
-                        // Receiver info
-                        finalReceiverId,                     // receiver ID
-                        finalReceiverUsername,      // receiver username
-                        finalReceiverImage,    // receiver image
-                        finalReceiverToken,                  // receiver token
-
-                        // Book info
-                        null,                 // book title
-
-                        messageText
-                );
-
-                // Clearing the text editor
-                messageEditor.setText("");
+        send.setOnClickListener(v -> {
+            if(editText.getText().toString()!=null && editText.getText().toString().compareToIgnoreCase("")!=0){
+                MessageManager.createMessage(chatId, senderUsername, editText.getText().toString());
+                editText.setText("");
+                //((BaseAdapter) chatsListView.getAdapter()).notifyDataSetChanged();
             }
         });
         //FirebaseListOptions<Message> for retrieving data from firebase
         //query is reference
-        options = new FirebaseListOptions.Builder<Message>()
+        FirebaseListOptions<Message> options = new FirebaseListOptions.Builder<Message>()
                 .setLayout(R.layout.adapter_show_chat)
                 .setQuery(query, Message.class)
                 .build();
@@ -145,7 +119,7 @@ public class ShowChat extends AppCompatActivity {
                     messageText.setGravity(Gravity.LEFT);
             }
         };
-        chatsListView.setAdapter(adapter);
+        chatListView.setAdapter(adapter);
 
     }
 
@@ -162,46 +136,3 @@ public class ShowChat extends AppCompatActivity {
     }
 }
 
-// set the list view to show all the books
-        /*
-        if (messages != null) {
-
-            //Log.d(TAG, "book_list onStart ShowBooks" + book_list.toString());
-
-
-            baseAdapter = new BaseAdapter() {
-
-                @Override
-                public int getCount() {
-                    return messages.size();
-                }
-
-                @Override
-                public Object getItem(int i) {
-                    return messages.get(i);
-                }
-
-                @Override
-                public long getItemId(int i) {
-                    return 0;
-                }
-
-                @Override
-                public View getView(final int i, View view, ViewGroup viewGroup) {
-                    if (view == null)
-                        view = getLayoutInflater().inflate(R.layout.adapter_show_chat, viewGroup, false);
-
-                    TextView messageText = (TextView) view.findViewById(R.id.message_text);
-                    messageText.setText(messages.get(i).getText());
-
-                    if(messages.get(i).getSender().equalsIgnoreCase(currentUserID))
-                        messageText.setGravity(Gravity.RIGHT);
-                    else
-                        messageText.setGravity(Gravity.LEFT);
-
-                    return view;
-                }
-            };
-            chatsListView.setAdapter(baseAdapter);
-        }
-        */
