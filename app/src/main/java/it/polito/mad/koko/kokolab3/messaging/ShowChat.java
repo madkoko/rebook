@@ -84,18 +84,43 @@ public class ShowChat extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
 
+        // UI elements
+        ListView chatsListView = findViewById(R.id.chat_listview);
+        EditText messageEditor = findViewById(R.id.send_message);
+        Button send = findViewById(R.id.send);
 
-        ListView chatListView = findViewById(R.id.chat_listview);
-        EditText editText = findViewById(R.id.send_message);
-        Button send= findViewById(R.id.send);
+        send.setOnClickListener((View v) -> {
+            if (messageEditor.getText().toString() != null && messageEditor.getText().toString().compareTo("") != 0) {
+                // Retrieving the message text
+                String messageText = messageEditor.getText().toString();
 
-        send.setOnClickListener(v -> {
-            if(editText.getText().toString()!=null && editText.getText().toString().compareToIgnoreCase("")!=0){
-                MessageManager.createMessage(chatId, senderUsername, editText.getText().toString());
-                editText.setText("");
-                //((BaseAdapter) chatsListView.getAdapter()).notifyDataSetChanged();
+                // Creating a new message entry in Firebase
+                MessageManager.createMessage(chatId, senderUsername, messageText);
+
+                // Sending the corresponding notification
+                MessageManager.sendMessageNotification(// Sender info
+                        senderId,                       // sender ID
+                        senderUsername,        // sender username
+                        senderImage,      // sender image
+                        senderToken,// sender token
+
+                        // Receiver info
+                        finalReceiverId,                     // receiver ID
+                        finalReceiverUsername,      // receiver username
+                        finalReceiverImage,    // receiver image
+                        finalReceiverToken,                  // receiver token
+
+                        // Book info
+                        null,                 // book title
+
+                        messageText
+                );
+
+                // Clearing the text editor
+                messageEditor.setText("");
             }
         });
+
         //FirebaseListOptions<Message> for retrieving data from firebase
         //query is reference
         FirebaseListOptions<Message> options = new FirebaseListOptions.Builder<Message>()
@@ -119,7 +144,7 @@ public class ShowChat extends AppCompatActivity {
                     messageText.setGravity(Gravity.LEFT);
             }
         };
-        chatListView.setAdapter(adapter);
+        chatsListView.setAdapter(adapter);
 
     }
 
