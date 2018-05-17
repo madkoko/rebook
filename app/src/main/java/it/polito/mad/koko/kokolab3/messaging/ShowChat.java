@@ -1,12 +1,10 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -20,19 +18,15 @@ import com.google.firebase.database.Query;
 
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowChat extends AppCompatActivity {
+
+    private static final String TAG= "ShowChatActivity";
 
     /**
      * All the messages of the selected chat
      */
-    //private ArrayList<Message> messages;
-    private String chatId;
-    private String currentUserID;
-    private BaseAdapter baseAdapter;
-    private Query query;
-    private String TAG= "ShowChatActivity";
-
     private FirebaseListOptions<Message> options;
     private ListView chatsListView;
     private FirebaseListAdapter<Message> adapter;
@@ -43,11 +37,12 @@ public class ShowChat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chat);
 
+        // Retrieving chat information
+        String chatId = getIntent().getStringExtra("chatId");
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUsername = ProfileManager.getInstance().getProfile(currentUserID).getName();
 
-        //messages=(ArrayList<Message>) getIntent().getExtras().get("messages");
-        chatId= getIntent().getStringExtra("chatId");
-        currentUserID= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
+        Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
 
 
         chatsListView = findViewById(R.id.chat_listview);
@@ -56,7 +51,7 @@ public class ShowChat extends AppCompatActivity {
 
         send.setOnClickListener(v -> {
             if(editText.getText().toString()!=null && editText.getText().toString()!=""){
-                MessageManager.createMessage(chatId, currentUserID, editText.getText().toString());
+                MessageManager.createMessage(chatId, currentUsername, editText.getText().toString());
                 editText.setText("");
                 //((BaseAdapter) chatsListView.getAdapter()).notifyDataSetChanged();
             }

@@ -130,62 +130,6 @@ public class MessageManager {
                     "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD";
     private static String messageID;
 
-
-    @SuppressLint("StaticFieldLeak")
-    public static void sendMessage(final String recipient, final String title, final String body, final String message) {
-
-        new AsyncTask<String, String, String>() {
-            /**
-             * AsyncTask for send message
-             * @param params
-             * @return result of sending message
-             */
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    //Create a JSON
-                    JSONObject root = new JSONObject();
-                    JSONObject notification = new JSONObject();
-                    notification.put("body", body);
-                    notification.put("title", title);
-
-                    JSONObject data = new JSONObject();
-                    data.put("message", message);
-                    root.put("notification", notification);
-                    root.put("data", data);
-                    root.put("to", recipient);
-                    // String that returns the result of HTTP request
-                    String result = postToFCM(root.toString());
-                    Log.d(TAG, "Result: " + result);
-                    return result;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-
-            /**
-             *  In this method we have the result of AsyncTasck
-             * @param result of the AsyncTasck
-             */
-
-            @Override
-            protected void onPostExecute(String result) {
-                int success, failure = 0;
-                try {
-                    JSONObject resultJson = new JSONObject(result);
-                    success = resultJson.getInt("success");
-                    failure = resultJson.getInt("failure");
-                    //Log.d("MessageManager", "success is: " + String.valueOf(success));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    //Log.d(TAG, "failure is: " + String.valueOf(failure));
-
-                }
-            }
-        }.execute();
-    }
-
     /**
      * It sends a book exchange request notification to a specific user.
      *
@@ -293,7 +237,7 @@ public class MessageManager {
      *      "to": receiver_token
      *
      *      "data": {
-     *          "type": "request" | "accept" | "decline"
+     *          "type": "request" | "accept" | "decline" | "message"
      *
      *          "sender": {
      *              "id": "kE3ErSqw...",
@@ -609,7 +553,6 @@ public class MessageManager {
      */
 
     public static void createMessage(String chatID, String sender, String messageText) {
-
         DatabaseReference messagesRef = DatabaseManager.get("chats").child(chatID).child("messages");
 
         messageID = messagesRef.push().getKey();
@@ -621,7 +564,6 @@ public class MessageManager {
         message.setTimestamp(timeStamp);
 
         messagesRef.child(messageID).setValue(message);
-
     }
 
     /**
