@@ -74,7 +74,6 @@ public class ShowChat extends AppCompatActivity {
             }
         }
 
-
         //Set title.
         setTitle(receiverUsername);
 

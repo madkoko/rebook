@@ -272,16 +272,17 @@ public class MessageManager {
      *
      * A JSON exmaple is shown below:
      *
-     * {    "notification": {
-     *          "title": title,
-     *          "body": body
-     *      },
-     *
+     * {
      *      "priority": "high",
      *
      *      "to": receiver_token
      *
      *      "data": {
+     *          "notification": {
+     *              "title": title,
+     *              "body": body
+     *          },
+     *
      *          "type": "request" | "accept" | "decline" | "message",
      *
      *          "chatId": chat_id,
@@ -346,9 +347,8 @@ public class MessageManager {
                 try {
                     // Notification
                     JSONObject notification = new JSONObject();
-
                     notification.put("title", notificationTitle);
-                    notification.put("text", notificationText);
+                    notification.put("body", notificationText);
 
                     // Sender
                     JSONObject sender = new JSONObject();
@@ -370,6 +370,7 @@ public class MessageManager {
 
                     // Data
                     JSONObject data = new JSONObject();
+                    data.put("notification", notification);
                     data.put("type", notificationType);
                     data.put("chatId", chatId);
                     data.put("sender", sender);
@@ -378,7 +379,6 @@ public class MessageManager {
 
                     // Root
                     JSONObject root = new JSONObject();
-                    root.put("notification", notification);
                     root.put("priority", "high");
                     root.put("to", receiverToken);
                     root.put("data", data);
