@@ -212,10 +212,10 @@ public class ShowProfile extends AppCompatActivity {
 
         //
 
-        if(profile.getImgUrl()!=null) {
-            //Picasso.get().load(profile.getImgUrl()).into(user_photo);
+        if(profile.getImage()!=null) {
+            //Picasso.get().load(profile.getImage()).into(user_photo);
             // Get the data from an ImageView and apply blur effect
-            Picasso.get().load(profile.getImgUrl()).transform(new CircleTransform()).into(user_photo);
+            Picasso.get().load(profile.getImage()).transform(new CircleTransform()).into(user_photo);
         }
     }
 }

@@ -72,7 +72,7 @@ public class ProfileManager {
                                 allUsers = new ConcurrentHashMap<>();
                                 allUsers.clear();
 
-                                allUsers.putAll((Map<String, Profile>) dataSnapshot.getValue());
+                                allUsers.putAll((Map<String, Profile>)dataSnapshot.getValue());
                             }
                         }
 

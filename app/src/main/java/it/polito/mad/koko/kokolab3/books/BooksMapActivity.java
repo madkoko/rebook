@@ -60,17 +60,17 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
 
         // Retrieving user IDs
         profileManager = ProfileManager.getInstance();
-        Intent in = getIntent();
-        ArrayList<String> list = (ArrayList<String>)in.getSerializableExtra("key");
+        Intent mapsIntent = getIntent();
+        ArrayList<String> users = mapsIntent.getStringArrayListExtra("key");
 
         // Collecting markers in order to zoom automatically
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         // For each user ID
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) != null) {
-                if (profileManager.getProfile(list.get(i)) != null) {
-                    Profile user = profileManager.getProfile(list.get(i));
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i) != null) {
+                if (profileManager.getProfile(users.get(i)) != null) {
+                    Profile user = profileManager.getProfile(users.get(i));
                     String pos = user.getPosition();
                     String nameUser = user.getName();
 

@@ -13,8 +13,8 @@ public class Profile implements Serializable {
                     phone,
                     location,
                     bio,
-                    imgUrl,
-                    latLng,
+                    image,
+                    position,
                     tokenMessage;
 
     public Profile() {
@@ -27,8 +27,8 @@ public class Profile implements Serializable {
         this.phone=phone;
         this.location=location;
         this.bio=bio;
-        this.imgUrl=imgUrl;
-        this.latLng = latLng;
+        this.image =imgUrl;
+        this.position = position;
         this.tokenMessage=tokenMessage;
     }
 
@@ -49,14 +49,14 @@ public class Profile implements Serializable {
         return location;
     }
 
-    public String getPosition() {return latLng;}
+    public String getPosition() {return position;}
 
     public String getBio() {
         return bio;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
+    public String getImage() {
+        return image;
     }
 
     public String getTokenMessage() { return tokenMessage; }
@@ -77,14 +77,14 @@ public class Profile implements Serializable {
         this.location = location;
     }
 
-    public void setPosition(String latLng) {this.latLng=latLng;}
+    public void setPosition(String latLng) {this.position =latLng;}
 
     public void setBio(String bio) {
         this.bio = bio;
     }
 
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setTokenMessage(String tokenMessage) { this.tokenMessage = tokenMessage; }
@@ -99,8 +99,8 @@ public class Profile implements Serializable {
                 ", phone='" + phone + '\'' +
                 ", location='" + location + '\'' +
                 ", bio='" + bio + '\'' +
-                ", imgUrl='" + imgUrl + '\'' +
-                ", position='" + latLng + '\'' +
+                ", image='" + image + '\'' +
+                ", position='" + position + '\'' +
                 '}';
     }
 

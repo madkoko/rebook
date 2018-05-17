@@ -399,8 +399,8 @@ public class EditProfile extends AppCompatActivity {
             user_photo.setImageBitmap(tmp);
         } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
-        } else if (p.getImgUrl() != null) {
-            Picasso.get().load(p.getImgUrl()).fit().centerCrop().into(user_photo);
+        } else if (p.getImage() != null) {
+            Picasso.get().load(p.getImage()).fit().centerCrop().into(user_photo);
         }
     }
 }

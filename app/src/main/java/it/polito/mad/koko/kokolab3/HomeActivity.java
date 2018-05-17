@@ -173,9 +173,9 @@ public class HomeActivity extends AppCompatActivity
                 Intent intent = new Intent(getApplicationContext(), EditProfile.class);
                 startActivity(intent);
             } else {
-                if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImgUrl() != null) {
+                if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImage() != null) {
                     Profile p = profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid());
-                    ImageManager.loadBitmap(p.getImgUrl());
+                    ImageManager.loadBitmap(p.getImage());
                 }
             }
         }

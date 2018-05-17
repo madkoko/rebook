@@ -21,7 +21,6 @@ import com.google.firebase.database.Query;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
@@ -52,7 +51,7 @@ public class ShowChat extends AppCompatActivity {
         String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Profile senderProfile = ProfileManager.getInstance().getProfile(senderId);
         String senderUsername = senderProfile.getName();
-        String senderImage = senderProfile.getImgUrl();
+        String senderImage = senderProfile.getImage();
         String senderToken = senderProfile.getTokenMessage();
 
         // Retrieving the receiver information

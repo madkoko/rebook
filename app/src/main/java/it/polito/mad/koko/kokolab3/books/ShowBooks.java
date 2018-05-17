@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBooks extends AppCompatActivity
@@ -41,7 +42,6 @@ public class ShowBooks extends AppCompatActivity
     private ProfileManager pm;
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_books);
@@ -71,9 +71,13 @@ public class ShowBooks extends AppCompatActivity
         for(Book book: book_list) {
             if( book.getUid() != null &&
                 !book.getUid().isEmpty() &&
-                book.getUid() != "" &&
-                profileManager.getProfile(book.getUid()).getPosition() != null) {
-                    userId.add(book.getUid());
+                book.getUid() != "") {
+
+                Profile profile = profileManager.getProfile(book.getUid());
+                String userPosition = profile.getPosition();
+
+                if(userPosition != null)
+                        userId.add(book.getUid());
             }
         }
         mapsIntent.putExtra("key", userId);
