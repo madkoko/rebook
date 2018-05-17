@@ -42,7 +42,7 @@ public class MessageManager {
     /*
      * All the chats' ID of the current user
      */
-    private static Map<String, Map<String,String>> userChatIDs;
+    private static Map<String, Map<String, String>> userChatIDs;
 
     /*
      * All the messages corresponding to a chat ID
@@ -83,44 +83,44 @@ public class MessageManager {
      * Messages placeholders
      */
     public static final String
-        // Sender's username placeholder
-        SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",
+            // Sender's username placeholder
+            SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",
 
-        // Book name placeholder
-        BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%";
+    // Book name placeholder
+    BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%";
 
     /**
      * Message strings
      */
     private static final String
-        // Message request target URL
-        FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send",
+            // Message request target URL
+            FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send",
 
-        // Book request messages
-        BOOK_REQUEST_MESSAGE_TITLE =    "Book exchange request from " +
-                                        SENDER_USERNAME_PLACEHOLDER + "!",
-        BOOK_REQUEST_MESSAGE_TEXT =     "You can accept/deny immediately or check " +
-                                        SENDER_USERNAME_PLACEHOLDER +
-                                        "'s profile by clicking this notification",
+    // Book request messages
+    BOOK_REQUEST_MESSAGE_TITLE = "Book exchange request from " +
+            SENDER_USERNAME_PLACEHOLDER + "!",
+            BOOK_REQUEST_MESSAGE_TEXT = "You can accept/deny immediately or check " +
+                    SENDER_USERNAME_PLACEHOLDER +
+                    "'s profile by clicking this notification",
 
-        // Book positive response messages
-        BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE =  SENDER_USERNAME_PLACEHOLDER +
-                                                " has accepted your request!",
-        BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT =   "You can now exchange " +
-                                                BOOK_NAME_PLACEHOLDER +
-                                                ". Tap here to open a chat.",
+    // Book positive response messages
+    BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE = SENDER_USERNAME_PLACEHOLDER +
+            " has accepted your request!",
+            BOOK_POSITIVE_RESPONSE_MESSAGE_TEXT = "You can now exchange " +
+                    BOOK_NAME_PLACEHOLDER +
+                    ". Tap here to open a chat.",
 
-        // Book positive response messages
-        BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE =  SENDER_USERNAME_PLACEHOLDER +
-                                                " has declined your request!",
-        BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT =   "You cannot exchange " +
-                                                BOOK_NAME_PLACEHOLDER + " anymore.";
+    // Book positive response messages
+    BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE = SENDER_USERNAME_PLACEHOLDER +
+            " has declined your request!",
+            BOOK_NEGATIVE_RESPONSE_MESSAGE_TEXT = "You cannot exchange " +
+                    BOOK_NAME_PLACEHOLDER + " anymore.";
 
     /**
      * First chat message displayed as an intro.
      */
     public static final String FIRST_CHAT_MESSAGE = "You can now start the book exchange negotiation.\n" +
-                                                    "Do not send any personal data such as passwords and credit card numbers.";
+            "Do not send any personal data such as passwords and credit card numbers.";
 
     /**
      * Firebase server's key access
@@ -178,8 +178,9 @@ public class MessageManager {
 
     /**
      * It sends a book exchange response notification.
-     * @param responseIntent    response intent data.
-     * @param accepted          whether the exchange response was positive or not.
+     *
+     * @param responseIntent response intent data.
+     * @param accepted       whether the exchange response was positive or not.
      */
     public static void sendResponseNotification(Intent responseIntent, boolean accepted) {
         // Chat data
@@ -269,42 +270,42 @@ public class MessageManager {
      * It sends a general notification to a specific user.
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
-     *
+     * <p>
      * A JSON exmaple is shown below:
-     *
+     * <p>
      * {
-     *      "priority": "high",
-     *
-     *      "to": receiver_token
-     *
-     *      "data": {
-     *          "notification": {
-     *              "title": title,
-     *              "body": body
-     *          },
-     *
-     *          "type": "request" | "accept" | "decline" | "message",
-     *
-     *          "chatId": chat_id,
-     *
-     *          "sender": {
-     *              "id": "kE3ErSqw...",
-     *              "username": sender_username,
-     *              "image": "https://firebasestorage..."
-     *              "token": sender_token
-     *          }
-     *
-     *          "receiver": {
-     *              "id": "f3j1lw...",
-     *              "username": receiver_username,
-     *              "image": "https://firebasestorage..."
-     *              "token: receiver_token,
-     *          }
-     *
-     *          "book": {
-     *              "title": book_title
-     *          }
-     *      }
+     * "priority": "high",
+     * <p>
+     * "to": receiver_token
+     * <p>
+     * "data": {
+     * "notification": {
+     * "title": title,
+     * "body": body
+     * },
+     * <p>
+     * "type": "request" | "accept" | "decline" | "message",
+     * <p>
+     * "chatId": chat_id,
+     * <p>
+     * "sender": {
+     * "id": "kE3ErSqw...",
+     * "username": sender_username,
+     * "image": "https://firebasestorage..."
+     * "token": sender_token
+     * }
+     * <p>
+     * "receiver": {
+     * "id": "f3j1lw...",
+     * "username": receiver_username,
+     * "image": "https://firebasestorage..."
+     * "token: receiver_token,
+     * }
+     * <p>
+     * "book": {
+     * "title": book_title
+     * }
+     * }
      * }
      *
      * @param notificationTitle the notification title.
@@ -441,8 +442,8 @@ public class MessageManager {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
 
-                    userChatIDs.putAll((Map<String, Map<String,String>>) dataSnapshot.getValue());
-                    Log.d(TAG,userChatIDs.toString());
+                    userChatIDs.putAll((Map<String, Map<String, String>>) dataSnapshot.getValue());
+                    Log.d(TAG, userChatIDs.toString());
                     MessageManager.populateUserMessages();
                 }
             }
@@ -458,7 +459,11 @@ public class MessageManager {
      * Attach the listener to the chats of the current user
      */
     public static void populateUserChatsID() {
+
+
         DatabaseManager.get("users", FirebaseAuth.getInstance().getCurrentUser().getUid(), "chats").addValueEventListener(userChatIDsListener);
+
+
     }
 
     /**
@@ -517,7 +522,7 @@ public class MessageManager {
 
     /**
      * For each chatID in the current user creates and attaches the Child listener to retrieve all the chat messages
-     *
+     * <p>
      * ArrayList<Chat>
      */
     public static void populateUserMessages() {
@@ -535,24 +540,25 @@ public class MessageManager {
         }
     }
 
-    public static void removeUserChatsMessagesListener(){
-        userChats=new ArrayList<>();
+    public static void removeUserChatsMessagesListener() {
+        userChats = new ArrayList<>();
 
-        for(String chatID: userChatIDs.keySet()){
-            userMessages=new ArrayList<>();
-            Chat userChat=new Chat(chatID,userMessages);
+        for (String chatID : userChatIDs.keySet()) {
+            userMessages = new ArrayList<>();
+            Chat userChat = new Chat(chatID, userMessages);
 
             userChats.add(userChat);
 
             MessageManager.setUserMessagesListener(userChat);
-            DatabaseManager.get("chats",chatID,"messages").removeEventListener(userChatsMessagesListener);
+            DatabaseManager.get("chats", chatID, "messages").removeEventListener(userChatsMessagesListener);
         }
     }
 
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
-     * @param intent    the intent containing chat information.
-     * @return          the ID of the just created chat.
+     *
+     * @param intent the intent containing chat information.
+     * @return the ID of the just created chat.
      */
     public static String createChat(Intent intent) {
         // Retrieving sender data
@@ -604,8 +610,8 @@ public class MessageManager {
      * Creates a message entry in Firebase
      *
      * @param chatId      id of the chat which the message belongs to
-     * @param senderId      id of the sender of the message
-     * @param receiverId    id of the receiver of the message
+     * @param senderId    id of the sender of the message
+     * @param receiverId  id of the receiver of the message
      * @param messageText content of the message
      */
     public static void createMessage(String chatId, String senderId, String receiverId, String messageText) {
@@ -621,27 +627,27 @@ public class MessageManager {
         messagesRef.child(messageID).setValue(message);
 
         // Creating the last message entry on both receiver and sender
-        DatabaseManager.set(messageText, "users/"+senderId+"/chats/" + chatId + "/lastMessage");
-        DatabaseManager.set(messageText, "users/"+receiverId+"/chats/" + chatId + "/lastMessage");
+        DatabaseManager.set(messageText, "users/" + senderId + "/chats/" + chatId + "/lastMessage");
+        DatabaseManager.set(messageText, "users/" + receiverId + "/chats/" + chatId + "/lastMessage");
     }
 
     /**
-     * @return  all user's messages from Firebase
+     * @return all user's messages from Firebase
      */
     public static ArrayList<Chat> getUserChats() {
         return userChats;
     }
 
     /**
-     * @return  a Java Map having chatID as key and a receiver info Map
-     *          as value.
+     * @return a Java Map having chatID as key and a receiver info Map
+     * as value.
      */
-    public static Map<String, Map<String,String>> getUserChatIDs() {
+    public static Map<String, Map<String, String>> getUserChatIDs() {
         return userChatIDs;
     }
 
     /**
-     * @return  messageID when we create a new chat with notification
+     * @return messageID when we create a new chat with notification
      */
     public static String getMessageID() {
         return messageID;
@@ -649,7 +655,7 @@ public class MessageManager {
 
     public static void setFirebaseCheck(String chatID, String messageID) {
         // Creating the 'chats' child
-        DatabaseReference messagesRef = DatabaseManager.get("chats", chatID, "messages",messageID);
+        DatabaseReference messagesRef = DatabaseManager.get("chats", chatID, "messages", messageID);
 
         // Setting if the message has been checked child
         messagesRef.child("check").setValue("true");

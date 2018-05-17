@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +26,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Log.d(TAG, "New notification. Action: " + intent.getAction());
 
         // Retrieving all chat messages
-        MessageManager.removeUserChatsMessagesListener();
+        //MessageManager.removeUserChatsMessagesListener();
 
         // In case a book exchange request has been received
         if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
@@ -60,7 +61,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 intent.putExtra("chatId", chatId);
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
-                MessageManager.populateUserMessages();
+                //MessageManager.populateUserMessages();
 
                 // Starting the showChat activity
                 Intent showChatIntent = new Intent(context, ShowChat.class);
@@ -72,6 +73,10 @@ public class NotificationReceiver extends BroadcastReceiver {
                 // Showing a book exchange declined message
                 Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show();
             }
+            NotificationManager notificationManager =
+                    (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+            notificationManager.cancel((int)intent.getExtras().get("notificationID"));
+
         }
     }
 }

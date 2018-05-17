@@ -16,6 +16,7 @@
 
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -40,12 +41,18 @@ import com.google.gson.reflect.TypeToken;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+
+    /**
+     * Counter to increment notification ID
+     */
+    private static int counterNotificationId=0;
 
     /**
      * Currently active chat
@@ -106,6 +113,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
+
+
+        MessageManager.setUserChatsIDListener();
+        ProfileManager profileManager = ProfileManager.getInstance();
+        profileManager.populateUsersList();
+        MessageManager.populateUserChatsID();
+        MessageManager.populateUserMessages();
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
@@ -199,6 +213,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String notificationTitle = notificationObject.get("title");
         String notificationBody = notificationObject.get("body");
 
+
         // Debugging
         Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString()));
 
@@ -244,18 +259,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Intent used upon accepting the book exchange request
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
         acceptIntent.setAction(ACCEPT_ACTION);
+        acceptIntent.putExtra("notificationID",counterNotificationId);
         loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject);
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
 
         // Intent used upon declining the book exchange request
         Intent declineIntent = new Intent(this, NotificationReceiver.class);
         declineIntent.setAction(DECLINE_ACTION);
+        declineIntent.putExtra("notificationID",counterNotificationId);
         loadExchangeIntentData(declineIntent, senderObject, receiverObject, bookObject);
         PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Creating the notification
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         // Notification's icon
@@ -270,12 +290,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationBody))
                         // .setSubText() // TODO cumulative number of requests
 
+                        // Stack notification
+                        .setGroup("Koko")
+
                         // Priorities, sound and style
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setPriority(NOTIFICATION_PRIORITY)
                         .setOnlyAlertOnce(false)
                         .setColorized(true);
+
+
+
 
         // Notification action buttons
         if (showResponseButtons)
@@ -311,7 +337,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 messageIntent.setAction(MESSAGE_ACTION);
                 messageIntent.putExtra("chatId", chatId);
                 PendingIntent messagePendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, messageIntent,
-                        PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent.FLAG_CANCEL_CURRENT);
 
                 // Setting the onTap intent
                 notificationBuilder.setContentIntent(messagePendingIntent);
@@ -337,8 +363,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }
-
-        notificationManager.notify(0 /* notification ID */, notificationBuilder.build());
+        Notification builtNotification = notificationBuilder.build();
+        notificationManager.notify(counterNotificationId++/* notification ID */, builtNotification );
+        //notificationManager.cancelAll();
     }
 
     private static void loadExchangeIntentData(Intent exchangeIntent,
