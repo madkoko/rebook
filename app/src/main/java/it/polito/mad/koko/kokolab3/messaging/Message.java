@@ -14,13 +14,17 @@ public class Message implements Serializable{
     private String timestamp;
     private String sender;
     private String text;
+    private String check;
 
-    public Message(){};
+    public Message(){
+        this.check="false";
+    };
 
     public Message(String timestamp, String sender, String text) {
         this.timestamp = timestamp;
         this.sender = sender;
         this.text = text;
+        this.check="false";
     }
 
     public String getTimestamp() {
@@ -47,12 +51,21 @@ public class Message implements Serializable{
         this.text = text;
     }
 
+    public String getCheck() {
+        return check;
+    }
+
+    public void setCheck(String check) {
+        this.check = check;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
                 "timestamp=" + timestamp +
                 ", sender='" + sender + '\'' +
                 ", text='" + text + '\'' +
+                ", check='" + check + '\''+
                 '}';
     }
 

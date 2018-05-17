@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -52,9 +53,9 @@ public class ShowChat extends AppCompatActivity {
         // Retrieving the receiver information
         String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
         Map<String, Map<String, String>> userChatIDs = MessageManager.getUserChatIDs();
-        for(String chatIdIterator: userChatIDs.keySet()) { // Cycling across all user's chats
+        for (String chatIdIterator : userChatIDs.keySet()) { // Cycling across all user's chats
             // When the right chat is reached by the iterator
-            if(chatId.compareTo(chatIdIterator) == 0) {
+            if (chatId.compareTo(chatIdIterator) == 0) {
                 // Retrieving the receiver map
                 Map<String, String> receiver = userChatIDs.get(chatIdIterator);
 
@@ -69,7 +70,7 @@ public class ShowChat extends AppCompatActivity {
         }
 
         // If still no receiver has been found
-        if(receiverId == null) {
+        if (receiverId == null) {
             // Show an error dialog
             AlertManager.noUserDialog(this);
 
@@ -85,7 +86,7 @@ public class ShowChat extends AppCompatActivity {
         Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
 
         // UI elements
-        ListView chatsListView = findViewById(R.id.chat_listview);
+        ListView chatListView = findViewById(R.id.chat_listview);
         EditText messageEditor = findViewById(R.id.send_message);
         Button send = findViewById(R.id.send);
 
@@ -135,16 +136,25 @@ public class ShowChat extends AppCompatActivity {
             protected void populateView(View view, Message model, int position) {
                 Log.d(TAG, String.valueOf(model));
                 TextView messageText = view.findViewById(R.id.message_text);
+                ImageView checkImage = view.findViewById(R.id.check_image);
 
                 messageText.setText(model.getText());
 
-                if (model.getSender().equalsIgnoreCase(senderUsername))
+                if (model.getSender().equalsIgnoreCase(senderUsername)) {
                     messageText.setGravity(Gravity.RIGHT);
-                else
+                    messageText.setBackgroundColor(getResources().getColor(R.color.fui_transparent));
+                    messageText.setTextColor(getResources().getColor(R.color.secondary_text));
+                    if (model.getCheck().compareTo("true")==0)
+                        checkImage.setVisibility(View.VISIBLE);
+                } else {
                     messageText.setGravity(Gravity.LEFT);
+                    MessageManager.setFirebaseCheck(chatId,adapter.getRef(position).getKey());
+
+                }
             }
         };
-        chatsListView.setAdapter(adapter);
+        chatListView.setAdapter(adapter);
+
 
     }
 

@@ -601,6 +601,7 @@ public class MessageManager {
         Message message = new Message();
         message.setSender(sender);
         message.setText(messageText);
+        message.setCheck("false");
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
         message.setTimestamp(timeStamp);
         messagesRef.child(messageID).setValue(message);
@@ -631,4 +632,11 @@ public class MessageManager {
         return messageID;
     }
 
+    public static void setFirebaseCheck(String chatID, String messageID) {
+        // Creating the 'chats' child
+        DatabaseReference messagesRef = DatabaseManager.get("chats", chatID, "messages",messageID);
+
+        // Setting if the message has been checked child
+        messagesRef.child("check").setValue("true");
+    }
 }

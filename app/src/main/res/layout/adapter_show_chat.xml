@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:dividerPadding="8dp"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="10dp"
+    >
 
     <TextView
         android:id="@+id/message_text"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
-        android:layout_weight="0.5"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:padding="5dp"
+        android:textColor="#ffffff"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/rounde_rectangle"
+        />
+    <!---->
+
+
+
+    <ImageView
+        android:id="@+id/check_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/fui_done_check_mark"
+        android:visibility="gone"/>
+
 
 
 </LinearLayout>
