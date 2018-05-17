@@ -96,7 +96,7 @@ public class ShowChat extends AppCompatActivity {
                 String messageText = messageEditor.getText().toString();
 
                 // Creating a new message entry in Firebase
-                MessageManager.createMessage(chatId, senderUsername, messageText);
+                MessageManager.createMessage(chatId, senderId,finalReceiverId, messageText);
 
                 // Sending the corresponding notification
                 MessageManager.sendMessageNotification(// Sender info

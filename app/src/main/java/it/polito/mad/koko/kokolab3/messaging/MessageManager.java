@@ -582,7 +582,7 @@ public class MessageManager {
         usersRefReceiver.child("chats").child(chatID).child("secondPartyImage").setValue(senderImage);
         usersRefReceiver.child("chats").child(chatID).child("secondPartyToken").setValue(senderToken);
 
-        createMessage(chatID, senderId, FIRST_CHAT_MESSAGE);
+        createMessage(chatID, senderId,receiverId, FIRST_CHAT_MESSAGE);
     }
 
 
@@ -591,10 +591,11 @@ public class MessageManager {
      *
      * @param chatId      id of the chat which the message belongs to
      * @param sender      id of the sender of the message
+     * @param receiver    id of the receiver of the message
      * @param messageText content of the message
      */
 
-    public static void createMessage(String chatId, String sender, String messageText) {
+    public static void createMessage(String chatId, String sender, String receiver, String messageText) {
         // Creating a message entry
         DatabaseReference messagesRef = DatabaseManager.get("chats", chatId, "messages");
         messageID = messagesRef.push().getKey();
@@ -606,8 +607,9 @@ public class MessageManager {
         message.setTimestamp(timeStamp);
         messagesRef.child(messageID).setValue(message);
 
-        // Creating the last message entry
-        DatabaseManager.set(messageText, "chats/" + chatId + "/lastMessage");
+        // Creating the last message entry on both receiver and sender
+        DatabaseManager.set(messageText, "users/"+sender+"chats/" + chatId + "/lastMessage");
+        DatabaseManager.set(messageText, "users/"+receiver+"chats/" + chatId + "/lastMessage");
     }
 
     /**
