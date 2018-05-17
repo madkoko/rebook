@@ -171,6 +171,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
+                null,
                 "request"
         );
     }
@@ -181,6 +182,9 @@ public class MessageManager {
      * @param accepted          whether the exchange response was positive or not.
      */
     public static void sendResponseNotification(Intent responseIntent, boolean accepted) {
+        // Chat data
+        String chatId = responseIntent.getStringExtra("chatId");
+
         // Sender data
         String receiverId = responseIntent.getStringExtra("senderId");
         String receiverUsername = responseIntent.getStringExtra("senderUsername");
@@ -216,6 +220,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
+                chatId,
                 accepted ? "accept" : "decline"
         );
     }
@@ -238,6 +243,9 @@ public class MessageManager {
                                                // Book info
                                                final String bookTitle,
 
+                                               // Chat info
+                                               final String chatId,
+
                                                // Message info
                                                final String messageText) {
         sendNotification(
@@ -252,6 +260,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
+                chatId,
                 "message"
         );
     }
@@ -273,7 +282,9 @@ public class MessageManager {
      *      "to": receiver_token
      *
      *      "data": {
-     *          "type": "request" | "accept" | "decline" | "message"
+     *          "type": "request" | "accept" | "decline" | "message",
+     *
+     *          "chatId": chat_id,
      *
      *          "sender": {
      *              "id": "kE3ErSqw...",
@@ -324,6 +335,9 @@ public class MessageManager {
                                              // Book info
                                              final String bookTitle,
 
+                                             // Chat info
+                                             final String chatId,
+
                                              // Notification info
                                              final String notificationType) {
         new AsyncTask<String, Void, String>() {
@@ -357,6 +371,7 @@ public class MessageManager {
                     // Data
                     JSONObject data = new JSONObject();
                     data.put("type", notificationType);
+                    data.put("chatId", chatId);
                     data.put("sender", sender);
                     data.put("receiver", receiver);
                     data.put("book", book);
@@ -520,12 +535,10 @@ public class MessageManager {
         }
     }
 
-
     public static void removeUserChatsMessagesListener(){
         userChats=new ArrayList<>();
 
         for(String chatID: userChatIDs.keySet()){
-
             userMessages=new ArrayList<>();
             Chat userChat=new Chat(chatID,userMessages);
 
@@ -534,15 +547,14 @@ public class MessageManager {
             MessageManager.setUserMessagesListener(userChat);
             DatabaseManager.get("chats",chatID,"messages").removeEventListener(userChatsMessagesListener);
         }
-
     }
-
 
     /**
      * It creates a chat entry in Firebase and a reference in both users involved.
      * @param intent    the intent containing chat information.
+     * @return          the ID of the just created chat.
      */
-    public static void createChat(Intent intent) {
+    public static String createChat(Intent intent) {
         // Retrieving sender data
         String senderId = intent.getStringExtra("senderId");
         String senderUsername = intent.getStringExtra("senderUsername");
@@ -582,7 +594,9 @@ public class MessageManager {
         usersRefReceiver.child("chats").child(chatID).child("secondPartyImage").setValue(senderImage);
         usersRefReceiver.child("chats").child(chatID).child("secondPartyToken").setValue(senderToken);
 
-        createMessage(chatID, senderId,receiverId, FIRST_CHAT_MESSAGE);
+        createMessage(chatID, senderId, receiverId, FIRST_CHAT_MESSAGE);
+
+        return chatID;
     }
 
 
@@ -594,7 +608,6 @@ public class MessageManager {
      * @param receiverId    id of the receiver of the message
      * @param messageText content of the message
      */
-
     public static void createMessage(String chatId, String senderId, String receiverId, String messageText) {
         // Creating a message entry
         DatabaseReference messagesRef = DatabaseManager.get("chats", chatId, "messages");

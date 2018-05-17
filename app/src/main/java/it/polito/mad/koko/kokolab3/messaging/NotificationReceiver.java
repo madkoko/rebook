@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.ACCEPT_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.DECLINE_ACTION;
+import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.MESSAGE_ACTION;
+import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.REQUEST_ACTION;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -28,34 +28,45 @@ public class NotificationReceiver extends BroadcastReceiver {
         // Retrieving all chat messages
         MessageManager.removeUserChatsMessagesListener();
 
+        // In case a book exchange request has been received
+        if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
+            // Starting the showProfile activity
+            Intent showProfileIntent = new Intent(context, ShowProfile.class);
+            showProfileIntent.putExtra("UserID", intent.getStringExtra("UserID"));
+            context.startActivity(showProfileIntent);
+        } else if (intent.getAction().compareTo(MESSAGE_ACTION) == 0) {
+            // Starting the showChat activity
+            Intent showChatIntent = new Intent(context, ShowChat.class);
+            showChatIntent.putExtra("chatId", intent.getStringExtra("chatId"));
+            context.startActivity(showChatIntent);
+        }
         // In case a book exchange response has been received, whether it's positive or not
-        if(intent.getAction().compareTo(ACCEPT_ACTION) == 0 || intent.getAction().compareTo(DECLINE_ACTION) == 0) {
+        else if (intent.getAction().compareTo(ACCEPT_ACTION) == 0 || intent.getAction().compareTo(DECLINE_ACTION) == 0) {
             // Retrieving the book exchange outcome
             boolean exchangeAccepted = intent.getAction().compareTo(ACCEPT_ACTION) == 0;
 
-            // Sending a response notification
-            MessageManager.sendResponseNotification(intent, exchangeAccepted);
+            if (!exchangeAccepted)
+                // Sending a negative response notification
+                MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
             // If the book exchange has been accepted
-            if(exchangeAccepted) {
+            if (exchangeAccepted) {
                 // Creating a chat with the user
-                MessageManager.createChat(intent);
+                String chatId = MessageManager.createChat(intent);
 
-                // Opening the chat UI
-                /*Intent showChat=new Intent(context,ShowChat.class);
-                showChat.putExtra("messages",MessageManager.getMessageID());
-                showChat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(showChat);*/
+                // Sending a positive response notification
+                intent.putExtra("chatId", chatId);
+                MessageManager.sendResponseNotification(intent, exchangeAccepted);
+
                 MessageManager.populateUserMessages();
 
-                Intent showChats=new Intent(context,ShowChats.class);
-                //showChats.putExtra("chatID", chatID);
-                showChats.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(showChats);
-                //DefaultMessagesActivity.open(context);
+                // Starting the showChat activity
+                Intent showChatIntent = new Intent(context, ShowChat.class);
+                showChatIntent.putExtra("chatId", chatId);
+                context.startActivity(showChatIntent);
             }
             // If the book exchange has not been accepted
-            else if(intent.getAction().compareTo(DECLINE_ACTION) == 0) {
+            else if (intent.getAction().compareTo(DECLINE_ACTION) == 0) {
                 // Showing a book exchange declined message
                 Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show();
             }

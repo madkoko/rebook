@@ -40,7 +40,6 @@ import com.google.gson.reflect.TypeToken;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
 
@@ -51,10 +50,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Notification properties
      */
-    private static final Class NOTIFICATION_CALLBACK = ShowProfile.class;
     private static final int NOTIFICATION_ICON = R.mipmap.icon,
-            NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX,
-            NOTIFICATION_REQUEST_CODE = 1;
+            NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX;
+
+    /**
+     * Request notification properties
+     */
+    protected static final String REQUEST_ACTION = "request";
+    private static final int REQUEST_REQUEST_CODE = 1;
+
     /**
      * Accepting a book exchange request actions and properties
      */
@@ -70,6 +74,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final int DECLINE_ICON = R.mipmap.icon,
             DECLINE_REQUEST_CODE = 3;
     protected static final String DECLINE_ACTION = "decline";
+
+    /**
+     * Message notification properties
+     */
+    protected static final String MESSAGE_ACTION = "message";
 
     /**
      * Called when message is received.
@@ -107,11 +116,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         // Check if message contains a notification payload.
-        if(remoteMessage.getNotification() != null) {
+        if (remoteMessage.getNotification() != null) {
+            // Retrieving the notification type
             String notificationType = remoteMessage.getData().get("type");
-            boolean requestNotification = notificationType.compareTo("request") == 0;
 
-            showNotification(remoteMessage, requestNotification);
+            /*  Figuring out whether it is a request notification
+                or not, so action buttons will be displayed accordingly */
+            boolean showResponseButtons = notificationType.compareTo("request") == 0;
+
+            /*  Figuring out what action should be performed upon tapping
+                the notification */
+            int onTapAction = 0; // nothing has to be performed
+            if(notificationType.compareTo("request") == 0)
+                onTapAction = 1; // the sender's profile has to be shown
+            else if(notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
+                onTapAction = 2; // the chat with the sender has to be opened
+
+            // Showing the actual notification
+            showNotification(remoteMessage, showResponseButtons, onTapAction);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -145,8 +167,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param receivedMessage       the received remote message.
      * @param showResponseButtons   whether the response buttons should be displayed or not.
+     * @param onTapAction           the action that must be performed upon tapping on the
+     *                              notification. Possible values:
+     *                              0: nothing has to be performed
+     *                              1: the sender's profile has to be shown
+     *                              2: the chat with the sender has to be opened
      */
-    private void showNotification(RemoteMessage receivedMessage, boolean showResponseButtons) {
+    private void showNotification(RemoteMessage receivedMessage,
+                                  boolean showResponseButtons,
+                                  int onTapAction
+    ) {
         // Retrieving notification and its useful objects
         RemoteMessage.Notification remoteNotification = receivedMessage.getNotification();
         String notificationTitle = remoteNotification.getTitle();
@@ -154,6 +184,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Debugging
         Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString()));
+
+        // Retrieving chat info
+        String chatId = receivedMessage.getData().get("chatId");
 
         // Retrieving the sender data object
         String senderJsonString = receivedMessage.getData().get("sender");
@@ -189,11 +222,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String bookTitle = bookObject.get("title");
 
         // Intent used upon tapping the notification
-        Intent showSenderProfileIntent = new Intent(this, NOTIFICATION_CALLBACK);
-        showSenderProfileIntent.putExtra("UserID", /*TODO put sender UID here*/ FirebaseAuth.getInstance().getUid());
-        showSenderProfileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent showSenderProfilePendingIntent = PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, showSenderProfileIntent,
-                PendingIntent.FLAG_ONE_SHOT);
+
 
         // Intent used upon accepting the book exchange request
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
@@ -224,9 +253,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationBody))
                         // .setSubText() // TODO cumulative number of requests
 
-                        // Tapping the notification
-                        .setContentIntent(showSenderProfilePendingIntent)
-
                         // Priorities, sound and style
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
@@ -235,10 +261,54 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setColorized(true);
 
         // Notification action buttons
-        if(showResponseButtons)
+        if (showResponseButtons)
             notificationBuilder
                     .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
                     .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent);
+
+        // Action to be performed upon tapping the notification
+        switch(onTapAction) {
+            // Nothing has to be performed
+            case 0:
+                break;
+
+            // The sender's profile has to be shown
+            case 1:
+                // Creating the requestIntent that will open the request sender's profile
+                Intent requestIntent = new Intent(this, NotificationReceiver.class);
+                requestIntent.setAction(REQUEST_ACTION);
+                requestIntent.putExtra("UserID", FirebaseAuth.getInstance().getUid());
+                requestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent requestPendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, requestIntent,
+                        PendingIntent.FLAG_ONE_SHOT);
+
+                // Setting the onTap intent
+                notificationBuilder.setContentIntent(requestPendingIntent);
+
+                break;
+
+            // The chat with the sender has to be opened
+            case 2:
+                // Creating the messageIntent that will open the chat with the request's sender
+                Intent messageIntent = new Intent(this, NotificationReceiver.class);
+                messageIntent.setAction(MESSAGE_ACTION);
+                messageIntent.putExtra("chatId", chatId);
+                PendingIntent messagePendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, messageIntent,
+                        PendingIntent.FLAG_ONE_SHOT);
+
+                // Setting the onTap intent
+                notificationBuilder.setContentIntent(messagePendingIntent);
+
+                break;
+
+            default:
+                throw new IllegalArgumentException("Illegal onTapAction value.\n" +
+                        "Possible values:\n" +
+                        "\t0: nothing has to be performed\n" +
+                        "\t1: the sender's profile has to be shown\n" +
+                        "\t2: the chat with the sender has to be opened"
+                );
+        }
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

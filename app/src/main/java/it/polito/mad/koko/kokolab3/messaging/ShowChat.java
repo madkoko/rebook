@@ -96,7 +96,7 @@ public class ShowChat extends AppCompatActivity {
                 String messageText = messageEditor.getText().toString();
 
                 // Creating a new message entry in Firebase
-                MessageManager.createMessage(chatId, senderId,finalReceiverId, messageText);
+                MessageManager.createMessage(chatId, senderId, finalReceiverId, messageText);
 
                 // Sending the corresponding notification
                 MessageManager.sendMessageNotification(// Sender info
@@ -113,6 +113,9 @@ public class ShowChat extends AppCompatActivity {
 
                         // Book info
                         null,                 // book title
+
+                        // Chat info
+                        chatId,
 
                         messageText
                 );
@@ -144,11 +147,11 @@ public class ShowChat extends AppCompatActivity {
                     messageText.setGravity(Gravity.RIGHT);
                     messageText.setBackgroundColor(getResources().getColor(R.color.fui_transparent));
                     messageText.setTextColor(getResources().getColor(R.color.secondary_text));
-                    if (model.getCheck().compareTo("true")==0)
+                    if (model.getCheck().compareTo("true") == 0)
                         checkImage.setVisibility(View.VISIBLE);
                 } else {
                     messageText.setGravity(Gravity.LEFT);
-                    MessageManager.setFirebaseCheck(chatId,adapter.getRef(position).getKey());
+                    MessageManager.setFirebaseCheck(chatId, adapter.getRef(position).getKey());
 
                 }
             }
