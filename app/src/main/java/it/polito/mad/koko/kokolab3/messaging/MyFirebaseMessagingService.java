@@ -189,10 +189,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                   boolean showResponseButtons,
                                   int onTapAction
     ) {
-        // Retrieving notification and its useful objects
-        RemoteMessage.Notification remoteNotification = receivedMessage.getNotification();
-        String notificationTitle = remoteNotification.getTitle();
-        String notificationBody = remoteNotification.getBody();
+        // Retrieving the notification data object
+        String notificationJsonString = receivedMessage.getData().get("notification");
+        Map<String, String> notificationObject = // De-serializing the "object" JSON object
+                new Gson().fromJson(notificationJsonString, new TypeToken<Map<String, String>>() {
+                }.getType());
+
+        // Retrieving notificaiton information
+        String notificationTitle = notificationObject.get("title");
+        String notificationBody = notificationObject.get("body");
 
         // Debugging
         Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString()));
