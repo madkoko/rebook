@@ -109,19 +109,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.d(TAG, "Received message with a payload");
 
-            if (/* Check if data needs to be processed by long running job */ false) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
-            }
-        }
-
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
             // Retrieving the notification type
             String notificationType = remoteMessage.getData().get("type");
 
@@ -152,6 +141,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Always show the notification
                 showNotification(remoteMessage, showResponseButtons, onTapAction);
             }
+        }
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Received message with a notification");
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
