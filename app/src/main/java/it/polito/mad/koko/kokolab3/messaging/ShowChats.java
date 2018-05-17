@@ -36,6 +36,10 @@ public class ShowChats extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chats);
 
+
+        //Set title.
+        setTitle(R.string.chats_activity_title);
+
         String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");

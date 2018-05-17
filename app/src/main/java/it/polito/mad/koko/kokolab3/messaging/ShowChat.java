@@ -50,6 +50,7 @@ public class ShowChat extends AppCompatActivity {
         String senderImage = senderProfile.getImgUrl();
         String senderToken = senderProfile.getTokenMessage();
 
+
         // Retrieving the receiver information
         String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
         Map<String, Map<String, String>> userChatIDs = MessageManager.getUserChatIDs();
@@ -68,6 +69,10 @@ public class ShowChat extends AppCompatActivity {
                 break;
             }
         }
+
+
+        //Set title.
+        setTitle(receiverUsername);
 
         // If still no receiver has been found
         if (receiverId == null) {
@@ -143,13 +148,14 @@ public class ShowChat extends AppCompatActivity {
 
                 messageText.setText(model.getText());
 
-                if (model.getSender().equalsIgnoreCase(senderUsername)) {
+                if (model.getSender().equalsIgnoreCase(senderId)) {
+                    //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
                     messageText.setGravity(Gravity.RIGHT);
-                    messageText.setBackgroundColor(getResources().getColor(R.color.fui_transparent));
-                    messageText.setTextColor(getResources().getColor(R.color.secondary_text));
-                    if (model.getCheck().compareTo("true") == 0)
+
+                    if (model.getCheck().compareTo("true")==0)
                         checkImage.setVisibility(View.VISIBLE);
                 } else {
+                    //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
                     messageText.setGravity(Gravity.LEFT);
                     MessageManager.setFirebaseCheck(chatId, adapter.getRef(position).getKey());
 

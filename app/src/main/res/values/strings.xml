@@ -189,5 +189,6 @@
     <string name="title_activity_show_chat_recycler">ShowChatRecycler</string>
 
     <string name="element_text">Element</string>
+    <string name="chats_activity_title">Chats</string>
 
 </resources>
