@@ -1,7 +1,7 @@
 package it.polito.mad.koko.kokolab3;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModel;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,9 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -33,7 +34,8 @@ import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
-import it.polito.mad.koko.kokolab3.tabsHomeActivity.topListBook;
+import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeChatList;
+import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeListBook;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 public class HomeActivity extends AppCompatActivity
@@ -64,6 +66,11 @@ public class HomeActivity extends AppCompatActivity
      */
     private int USER_BOOKS = 0;
     private ListView listView;
+    private Fragment homeListBook;
+    private Fragment homeListChats;
+    private ViewSwitcher viewSwitcher;
+    private LinearLayout layoutRecycler;
+    private LinearLayout layoutList;
 
     //private int SEARCH_BOOKS = 2;
 
@@ -122,47 +129,85 @@ public class HomeActivity extends AppCompatActivity
         //*********//
         // Final UI implementation
 
+        viewSwitcher = findViewById(R.id.home_switcher);
+        layoutRecycler = findViewById(R.id.home_recycler_switcher);
+        layoutList = findViewById(R.id.home_list_switcher);
+
+
         TabLayout tab_layout = findViewById(R.id.tabs_home);
 
-
-
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
-        tab_layout.addTab(tab_layout.newTab().setText("Tab 1"));
-        tab_layout.addTab(tab_layout.newTab().setText("Tab 2"));
-        tab_layout.addTab(tab_layout.newTab().setText("Tab 3"));
+        tab_layout.addTab(tab_layout.newTab().setText("home"));
+        homeListBook = new HomeListBook();
+        tab_layout.addTab(tab_layout.newTab().setText("chats"));
+        homeListChats = new HomeChatList();
+        tab_layout.addTab(tab_layout.newTab().setText("in progress"));
+        selectFragment(0);
+
 
 
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG,"onTabSelected"+String.valueOf(tab.getPosition()));
                 selectFragment(tab.getPosition());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                Log.d(TAG,"onTabUnselected"+String.valueOf(tab.getPosition()));
+                removeFragment(tab.getPosition());
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
             }
         });
+    }
 
+
+    private void removeFragment(int position) {
+        switch (position){
+            case 0:
+                getFragmentManager().beginTransaction().remove(homeListBook).commit();
+                break;
+            case 1:
+                    getFragmentManager().beginTransaction().remove(homeListChats).commit();
+                break;
+            case 2:
+                //listView.invalidate();
+                break;
+            default:
+
+                break;
+        }
 
     }
 
     private void selectFragment(int position) {
         switch (position){
+            case 0:
+                if (viewSwitcher.getCurrentView() != layoutRecycler) {
+                    viewSwitcher.showPrevious();
+                    getFragmentManager().beginTransaction().add(android.R.id.content, homeListBook).commit();
+                }
+                //new HomeListBook();
+                break;
             case 1:
-                //getFragmentManager().beginTransaction().add(android.R.id.content, new topListBook()).commit();
-                //new topListBook();
+                if (viewSwitcher.getCurrentView() != layoutList) {
+                    viewSwitcher.showNext();
+                }
+                getFragmentManager().beginTransaction().add(android.R.id.content, homeListChats).commit();
                 break;
             case 2:
-                break;
-            case 3:
+                if (viewSwitcher.getCurrentView() != layoutList) {
+                    viewSwitcher.showNext();
+                }
+                //getFragmentManager().beginTransaction().add(android.R.id.content, homeListChats).commit();
                 break;
             default:
+
                 break;
         }
 
