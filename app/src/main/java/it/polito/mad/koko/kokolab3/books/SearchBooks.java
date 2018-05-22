@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.twitter.sdk.android.core.models.Search;
+//import com.twitter.sdk.android.core.models.Search;
 
 import it.polito.mad.koko.kokolab3.R;
 

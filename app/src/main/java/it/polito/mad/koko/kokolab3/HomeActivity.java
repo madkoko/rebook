@@ -1,9 +1,11 @@
 package it.polito.mad.koko.kokolab3;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +33,7 @@ import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
+import it.polito.mad.koko.kokolab3.tabsHomeActivity.topListBook;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 public class HomeActivity extends AppCompatActivity
@@ -58,6 +63,7 @@ public class HomeActivity extends AppCompatActivity
      * Request code for the activity "ShowBooks" to show only the current user's books
      */
     private int USER_BOOKS = 0;
+    private ListView listView;
 
     //private int SEARCH_BOOKS = 2;
 
@@ -67,6 +73,8 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         authenticator = new Authenticator(this);
+
+
 
         // UI
         setContentView(R.layout.activity_main);
@@ -110,6 +118,54 @@ public class HomeActivity extends AppCompatActivity
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
         }
+
+        //*********//
+        // Final UI implementation
+
+        TabLayout tab_layout = findViewById(R.id.tabs_home);
+
+
+
+        tab_layout.setTabMode(TabLayout.MODE_FIXED);
+        tab_layout.addTab(tab_layout.newTab().setText("Tab 1"));
+        tab_layout.addTab(tab_layout.newTab().setText("Tab 2"));
+        tab_layout.addTab(tab_layout.newTab().setText("Tab 3"));
+
+
+        tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                selectFragment(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+    }
+
+    private void selectFragment(int position) {
+        switch (position){
+            case 1:
+                //getFragmentManager().beginTransaction().add(android.R.id.content, new topListBook()).commit();
+                //new topListBook();
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+
     }
 
     /**

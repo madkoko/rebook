@@ -115,8 +115,6 @@ public class ShowProfile extends AppCompatActivity {
 
 
         tabs = (TabLayout) findViewById(R.id.tabs);
-
-
         tabs.addTab(tabs.newTab().setText(R.string.show_profile));
         tabs.addTab(tabs.newTab().setText(R.string.books));
 

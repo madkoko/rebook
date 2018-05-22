@@ -1,5 +1,5 @@
 package it.polito.mad.koko.kokolab3.auth.provider;
-
+/*
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +27,11 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.auth.custom.BaseActivity;
+*/
+public class TwitterLoginActivity{
 
+}
+/*
 public class TwitterLoginActivity extends BaseActivity
         implements View.OnClickListener {
 
@@ -176,3 +180,4 @@ public class TwitterLoginActivity extends BaseActivity
         }
     }
 }
+*/
