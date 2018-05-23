@@ -27,7 +27,6 @@ import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.tabShowChat.Conversation;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
-import it.polito.mad.koko.kokolab3.tabsHomeActivity.topListBook;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class ShowChat extends AppCompatActivity {
