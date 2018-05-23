@@ -1,5 +1,7 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.app.Fragment;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,179 +24,187 @@ import com.google.firebase.database.Query;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.messaging.tabShowChat.Conversation;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.tabsHomeActivity.topListBook;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class ShowChat extends AppCompatActivity {
 
     private static final String TAG = "ShowChatActivity";
-
-    /**
-     * All the messages of the selected chat
-     */
-    private FirebaseListAdapter<Message> adapter;
-
-    /**
-     * This chat's ID
-     */
-    private String chatId;
+    private FirebaseListAdapter<Message> adapter; // All the messages of the selected chat
+    private String chatId; // chat ID
+    private Bundle savedInstanceState;
+    private String senderId;
+    private Profile senderProfile;
+    private String senderUsername;
+    private String senderImage;
+    private String senderToken;
+    private String finalReceiverId;
+    private String finalReceiverUsername;
+    private String finalReceiverImage;
+    private String finalReceiverToken;
+    private Button send;
+    private EditText messageEditor;
+    private LinearLayout sendMsgLayout;
+    private Fragment conversation;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         setContentView(R.layout.activity_show_chat);
 
-        // Retrieving the chat id
+        this.savedInstanceState = bundle;
+
+        // 1. Retrieve Chat ID
         chatId = getIntent().getStringExtra("chatId");
 
-        // Retrieving the sender information
-        String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Profile senderProfile = ProfileManager.getInstance().getProfile(senderId);
-        String senderUsername = senderProfile.getName();
-        String senderImage = senderProfile.getImage();
-        String senderToken = senderProfile.getTokenMessage();
+        // 2. Retrieve *sender* information
+        senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        senderProfile = ProfileManager.getInstance().getProfile(senderId);
+        senderUsername = senderProfile.getName();
+        senderImage = senderProfile.getImage();
+        senderToken = senderProfile.getTokenMessage();
 
-        // Retrieving the receiver information
+        // 3. Retrieve *receiver* information
         String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
         Map<String, Map<String, String>> userChatIDs = MessageManager.getUserChatIDs();
-        for (String chatIdIterator : userChatIDs.keySet()) { // Cycling across all user's chats
-            // When the right chat is reached by the iterator
-            if (chatId.compareTo(chatIdIterator) == 0) {
-                // Retrieving the receiver map
-                Map<String, String> receiver = userChatIDs.get(chatIdIterator);
-
-                // Retrieving the receiver information
-                receiverId = receiver.get("secondPartyId");
+        for (String chatIdIterator : userChatIDs.keySet()) {                       // >>> Cycling across all user's chats
+            if (chatId.compareTo(chatIdIterator) == 0) {                           // >>> The right chat is reached by the iterator
+                Map<String, String> receiver = userChatIDs.get(chatIdIterator);    // >>> Retrieve Receiver's map
+                receiverId = receiver.get("secondPartyId");                        // >>> Retrieve Receiver's informations
                 receiverUsername = receiver.get("secondPartyUsername");
                 receiverImage = receiver.get("secondPartyImage");
                 receiverToken = receiver.get("secondPartyToken");
-
                 break;
             }
         }
-
-        //Set title.
-        setTitle(receiverUsername);
-
-        // If still no receiver has been found
-        if (receiverId == null) {
-            // Show an error dialog
-            AlertManager.noUserDialog(this);
-
+        if (receiverId == null) {                                                   // !! No Receiver found? !!
+            AlertManager.noUserDialog(this);                                // >>> Show an error dialog and return
             return;
         }
+        finalReceiverId = receiverId;                                               // !! Receiver infos must be final in order to be used in a lambda function !!
+        finalReceiverUsername = receiverUsername;
+        finalReceiverImage = receiverImage;
+        finalReceiverToken = receiverToken;
 
-        // Receiver info must be final in order to be used in a lambda function
-        String finalReceiverId = receiverId;
-        String finalReceiverUsername = receiverUsername;
-        String finalReceiverImage = receiverImage;
-        String finalReceiverToken = receiverToken;
+        // 4. Set Title (-> the chat title is the receiver Username)
+        setTitle(receiverUsername);
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
-
-        // UI elements
-        ListView chatListView = findViewById(R.id.chat_listview);
-        EditText messageEditor = findViewById(R.id.send_message);
-        Button send = findViewById(R.id.send);
-
+        // 5. Send message
+        send = findViewById(R.id.send);
         send.setOnClickListener((View v) -> {
             if (messageEditor.getText().toString() != null && messageEditor.getText().toString().compareTo("") != 0) {
-                // Retrieving the message text
-                String messageText = messageEditor.getText().toString();
-
-                // Creating a new message entry in Firebase
-                MessageManager.createMessage(chatId, senderId, finalReceiverId, messageText);
-
-                // Sending the corresponding notification
-                MessageManager.sendMessageNotification(// Sender info
-                        senderId,                       // sender ID
-                        senderUsername,        // sender username
-                        senderImage,      // sender image
-                        senderToken,// sender token
-
-                        // Receiver info
-                        finalReceiverId,                     // receiver ID
-                        finalReceiverUsername,      // receiver username
-                        finalReceiverImage,    // receiver image
-                        finalReceiverToken,                  // receiver token
-
-                        // Book info
-                        null,                 // book title
-
-                        // Chat info
+                String messageText = messageEditor.getText().toString();                        // >>> Get the msg's Text
+                MessageManager.createMessage(chatId, senderId, finalReceiverId, messageText);   // >>> Create a new message entry in Firebase
+                MessageManager.sendMessageNotification(                                         // >>> Send the corresponding notification
+                        senderId,
+                        senderUsername,
+                        senderImage,
+                        senderToken,
+                        finalReceiverId,
+                        finalReceiverUsername,
+                        finalReceiverImage,
+                        finalReceiverToken,
+                        null,
                         chatId,
-
                         messageText
                 );
-
-                // Clearing the text editor
-                messageEditor.setText("");
+                messageEditor.setText("");                                                      // >>> Clear the text editor
             }
         });
 
-        //FirebaseListOptions<Message> for retrieving data from firebase
-        //query is reference
-        FirebaseListOptions<Message> options = new FirebaseListOptions.Builder<Message>()
-                .setLayout(R.layout.adapter_show_chat)
-                .setQuery(query, Message.class)
-                .build();
-        Log.d(TAG, String.valueOf(options.getSnapshots()));
+        // 5. Final UI implementation
+        conversation = new Conversation();
 
-        //FirebaseListAdapter for create ListAdapter Ui from firebaseUi
-        adapter = new FirebaseListAdapter<Message>(options) {
+        // Parameters to be sent to ConversationFragment
+        Bundle bun = new Bundle();
+        /*
+        savedInstanceState.putString("senderId", senderId);// this parametr is null
+        savedInstanceState.putString("senderUsername", senderUsername);
+        savedInstanceState.putString("senderImage", senderImage);
+        savedInstanceState.putString("senderToken", senderToken);
+        savedInstanceState.putString("receiverId", finalReceiverId);
+        savedInstanceState.putString("receiverUsername", finalReceiverUsername);
+        savedInstanceState.putString("receiverImage", finalReceiverImage);
+        savedInstanceState.putString("receiverToken", finalReceiverToken);
+        */
+        bun.putString("chatId", chatId);
+
+        // set Fragmentclass Arguments
+        conversation.setArguments(bun);
+
+        TabLayout tab_layout = findViewById(R.id.tabs_chat);
+        tab_layout.setTabMode(TabLayout.MODE_FIXED);
+        tab_layout.addTab(tab_layout.newTab().setText("Conversation"));
+        tab_layout.addTab(tab_layout.newTab().setText("Book Requests"));
+
+        selectFragment(0);
+
+        tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
             @Override
-            protected void populateView(View view, Message model, int position) {
-                Log.d(TAG, String.valueOf(model));
-                TextView messageText = view.findViewById(R.id.message_text);
-                ImageView checkImage = view.findViewById(R.id.check_image);
-
-                messageText.setText(model.getText());
-
-                if (model.getSender().equalsIgnoreCase(senderId)) {
-                    //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
-                    messageText.setGravity(Gravity.RIGHT);
-
-                    if (model.getCheck().compareTo("true")==0)
-                        checkImage.setVisibility(View.VISIBLE);
-                } else {
-                    //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
-                    messageText.setGravity(Gravity.LEFT);
-                    MessageManager.setFirebaseCheck(chatId, adapter.getRef(position).getKey());
-
-                }
+            public void onTabSelected(TabLayout.Tab tab) {
+                selectFragment(tab.getPosition());
             }
-        };
-        chatListView.setAdapter(adapter);
 
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                closeFragment(tab.getPosition());
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // nothing to do ?!?!??!?!?!?! Speriamo cazzo
+            }
+
+        });
+    }
+
+
+    // 6. Tab Menù
+    private void selectFragment(int position) {
+        switch (position) {
+
+            case 0: // *** CHAT TAB ***
+
+                // Set layout visibility: show send_msg_layout
+                sendMsgLayout = findViewById(R.id.send_msg_layout);
+                sendMsgLayout.setVisibility(View.VISIBLE);
+
+                getFragmentManager().beginTransaction().add(android.R.id.content, conversation).commit();
+
+                break;
+
+            case 1: // *** BOOK REQ TAB ***
+
+                // Set layout visibility: hide send_msg_layout
+                //sendMsgLayout = findViewById(R.id.send_msg_layout);
+                //sendMsgLayout.setVisibility(View.INVISIBLE);
+
+                break;
+
+            default: // ** no need **
+                break;
+        }
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void closeFragment(int position) {
+        switch (position) {
 
+            case 0: // *** CHAT TAB ***
+                getFragmentManager().beginTransaction().remove(conversation).commit();
+                break;
 
-        MyFirebaseMessagingService.setActiveChat(chatId);
-    }
+            case 1: // *** BOOK REQ TAB ***
+                //getFragmentManager().beginTransaction().remove(conversation).commit();
+                break;
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+            default: // ** no need **
+                break;
+        }
 
-        MyFirebaseMessagingService.clearActiveChat();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
     }
 }
-

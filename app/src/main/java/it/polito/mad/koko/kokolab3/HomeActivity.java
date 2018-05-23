@@ -164,6 +164,8 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
             }
         });
+
+
     }
 
 
@@ -176,7 +178,6 @@ public class HomeActivity extends AppCompatActivity
                     getFragmentManager().beginTransaction().remove(homeListChats).commit();
                 break;
             case 2:
-                //listView.invalidate();
                 break;
             default:
 
