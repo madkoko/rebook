@@ -95,8 +95,8 @@ public class HomeActivity extends AppCompatActivity
 
             Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
             insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-            BookManager.removeUserBooksEventListener();
-            BookManager.removeSearchBooksEventListener();
+            //BookManager.removeUserBooksEventListener();
+            //BookManager.removeSearchBooksEventListener();
             startActivityForResult(insertBook, INSERT_BOOK);
         });
 
@@ -118,8 +118,8 @@ public class HomeActivity extends AppCompatActivity
         // creation of the BookManager if the user is authenticated
         if (authenticator.hasLoggedIn()) {
             // Retrieving the ProfileManager singleton
-            BookManager.populateUserBookList();
-            BookManager.populateSearchBooks();
+            //BookManager.populateUserBookList();
+            //BookManager.populateSearchBooks();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
@@ -238,12 +238,12 @@ public class HomeActivity extends AppCompatActivity
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
-        if (requestCode == INSERT_BOOK)
+        //if (requestCode == INSERT_BOOK)
             // Retrieving all user's books
-            BookManager.populateUserBookList();
+            //BookManager.populateUserBookList();
 
             // Returning in HomeActivity from an Authentication procedure
-        else if (resultCode == AUTH) {
+        if (resultCode == AUTH) {
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
@@ -257,8 +257,8 @@ public class HomeActivity extends AppCompatActivity
 
             // Creating the Firebase user entry in the database
 
-            BookManager.populateUserBookList();
-            BookManager.populateSearchBooks();
+            //BookManager.populateUserBookList();
+            //BookManager.populateSearchBooks();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();

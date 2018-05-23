@@ -3,15 +3,25 @@ package it.polito.mad.koko.kokolab3.books;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 //import com.twitter.sdk.android.core.models.Search;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import it.polito.mad.koko.kokolab3.R;
 
 public class SearchBooks extends AppCompatActivity {
+
+    private static final String TAG = "SearchBooks";
+
+    private int SEARCH_BOOKS=2;
 
     private EditText title;
     private EditText author;
@@ -19,7 +29,10 @@ public class SearchBooks extends AppCompatActivity {
     private EditText editionYear;
     private EditText conditions;
 
-    private int SEARCH_BOOKS=2;
+    /**
+     * ArrayList with all the books that match the keywords
+     */
+    private ArrayList<Book> searchedBooks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,34 +49,85 @@ public class SearchBooks extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchBooks();
+                if(title.getText().toString().equals("")&&author.getText().toString().equals("")&&publisher.getText().toString().equals("")&&editionYear.getText().toString().equals("")&&conditions.getText().toString().equals(""))
+                    Toast.makeText(getApplicationContext(), "Pleast insert a keyword", Toast.LENGTH_LONG).show();
+                else {
+                    searchBooks();
+                }
             }
         });
 
     }
 
-    public void searchBooks(){
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        //BookManager.removeSearchBooksEventListener();
+        // Retrieve all the books from Firebase
+        // everytime the activity is restarted
+        BookManager.populateAllBooks();
 
-        BookManager.setSearchKeywords(
-            title.getText().toString(),
-            author.getText().toString(),
-            publisher.getText().toString(),
-            editionYear.getText().toString(),
-            conditions.getText().toString())
-        ;
+    }
 
+    /**
+     * Method that filters all the books with the keywords
+     */
+    private void searchBooks(){
+
+        searchedBooks=BookManager.getAllBooks();
+
+        Iterator<Book> booksIterator=searchedBooks.iterator();
+        while(booksIterator.hasNext()){
+            if(!bookMatchesKeywords(booksIterator.next()))
+                booksIterator.remove();
+        }
+
+        // Starts the activity "ShowBooks" with his request code
+        // and putting the filtered books array list in the intent
         Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
         showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
+        showSearchBooks.putExtra("searchedBooks",searchedBooks);
         startActivity(showSearchBooks);
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    /**
+     * method to filter the books with the search keywords
+     *
+     * @param book book to which apply the search keywords
+     * @return true if it matches one of the keywords, false otherwise
+     */
 
-        //BookManager.populateSearchBooks();
+    private boolean bookMatchesKeywords(Book book) {
+
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String title = this.title.getText().toString();
+        String author = this.author.getText().toString();
+        String publisher = this.publisher.getText().toString();
+        String editionYear = this.editionYear.getText().toString();
+        String conditions = this.conditions.getText().toString();
+
+        if(book.getUid().equalsIgnoreCase(currentUserID)) {
+            return false;
+        }
+        else if (!title.equals("")) {
+            if (!BookManager.containsCaseInsensitive(book.getTitle(), title))
+                return false;
+        } else if (!author.equals("")) {
+            if (!BookManager.containsCaseInsensitive(book.getAuthor(), author))
+                return false;
+        } else if (!publisher.equals("")) {
+            if (!BookManager.containsCaseInsensitive(book.getPublisher(), publisher))
+                return false;
+        } else if (!editionYear.equals("")) {
+            if (!BookManager.containsCaseInsensitive(book.getEditionYear(), editionYear))
+                return false;
+        } else if (!conditions.equals("")) {
+            if (!BookManager.containsCaseInsensitive(book.getBookConditions(), conditions))
+                return false;
+        }
+
+        return true;
     }
+
 }
