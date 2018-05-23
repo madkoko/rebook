@@ -39,13 +39,16 @@ public class BookManager {
      * Books managing
      */
     private static String downloadUrl;
+
+    /**
+     * book informations from ISBN scan
+     */
     private static Map<String, String> bookInfo;
+
+    /**
+     * Arraylist with all the books in Firebase
+     */
     private static ArrayList<Book> allBooks;
-    private static ArrayList<Book> userBooks;
-    private static ArrayList<Book> searchBooks;
-    private static ChildEventListener userBooksEventListener;
-    private static ChildEventListener searchBooksEventListener;
-    //private static Map<String,String> searchKeywords;
 
     public BookManager() {
 
@@ -53,229 +56,49 @@ public class BookManager {
         booksDatabaseRef = database.getReference().child("books");
         FirebaseStorage storage = FirebaseStorage.getInstance();
         booksStorageRef = storage.getReference().child("books");
-
-        setUserBooksEventListener();
-        setSearchBooksEventListener();
-    }
-
-    /**
-     * Methods to manage the current user books
-     */
-
-    private void setUserBooksEventListener() {
-        userBooksEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "onChildAdded: " + s);
-                if (dataSnapshot.exists()) {
-                    Log.d(TAG, "datasnapshot: " + dataSnapshot.getValue().toString());
-
-                    Book newBook = new Book();
-                    newBook.setTitle(((HashMap<String, String>) dataSnapshot.getValue()).get("title"));
-                    newBook.setEditionYear(((HashMap<String, String>) dataSnapshot.getValue()).get("editionYear"));
-                    newBook.setBookConditions(((HashMap<String, String>) dataSnapshot.getValue()).get("bookConditions"));
-                    newBook.setUid(((HashMap<String, String>) dataSnapshot.getValue()).get("uid"));
-                    newBook.setISBN(((HashMap<String, String>) dataSnapshot.getValue()).get("isbn"));
-                    newBook.setPublisher(((HashMap<String, String>) dataSnapshot.getValue()).get("publisher"));
-                    newBook.setAuthor(((HashMap<String, String>) dataSnapshot.getValue()).get("author"));
-                    newBook.setImage(((HashMap<String, String>) dataSnapshot.getValue()).get("image"));
-
-                    userBooks.add(newBook);
-
-                    Log.d(TAG, "My books are: " + userBooks.toString());
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-
-            }
-        };
-    }
-
-    public static void removeUserBooksEventListener() {
-
-        booksDatabaseRef.orderByChild("uid").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeEventListener(userBooksEventListener);
-
-    }
-
-    public static void populateUserBookList() {
-        userBooks = new ArrayList<>();
-        userBooks.clear();
-        booksDatabaseRef.orderByChild("uid").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid()).addChildEventListener(userBooksEventListener);
-
-    }
-
-    public static ArrayList<Book> getUserBooks() {
-        return userBooks;
-    }
-
-
-    /**
-     * Methods to manage the book searching
-     */
-    private void setSearchBooksEventListener() {
-
-        searchBooksEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "onChildAdded: " + s);
-
-                if (dataSnapshot.exists()) {
-                    Log.d(TAG, "datasnapshot: " + dataSnapshot.getValue().toString());
-
-                    Book newBook = new Book();
-                    newBook.setTitle(((HashMap<String, String>) dataSnapshot.getValue()).get("title"));
-                    newBook.setEditionYear(((HashMap<String, String>) dataSnapshot.getValue()).get("editionYear"));
-                    newBook.setBookConditions(((HashMap<String, String>) dataSnapshot.getValue()).get("bookConditions"));
-                    newBook.setUid(((HashMap<String, String>) dataSnapshot.getValue()).get("uid"));
-                    newBook.setISBN(((HashMap<String, String>) dataSnapshot.getValue()).get("isbn"));
-                    newBook.setPublisher(((HashMap<String, String>) dataSnapshot.getValue()).get("publisher"));
-                    newBook.setAuthor(((HashMap<String, String>) dataSnapshot.getValue()).get("author"));
-                    newBook.setImage(((HashMap<String, String>) dataSnapshot.getValue()).get("image"));
-
-                    allBooks.add(newBook);
-
-                    //Log.d(TAG, "My search books are: " + searchBooks.toString());
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-    }
-
-    public static void populateSearchBooks(
-            //Book book
-    ) {
-        allBooks = new ArrayList<>();
-        allBooks.clear();
-
-        booksDatabaseRef.addChildEventListener(searchBooksEventListener);
-    }
-
-    public static void setSearchKeywords(String title, String author, String publisher, String editionYear, String conditions) {
-
-        searchBooks = new ArrayList<>();
-        searchBooks.clear();
-
-        boolean checkKeyword=false;
-        for (Book book : allBooks) {
-            if (title != null && author != null && publisher != null && editionYear != null && conditions != null) {
-                if (title.length() != 0) {
-                    checkKeyword=false;
-                    if(containsCaseInsensitive(book.getTitle(), title)) {
-                        checkKeyword = true;
-                    } else continue;
-                }
-                if (author.length()!=0) {
-                    checkKeyword=false;
-                    if(containsCaseInsensitive(book.getAuthor(), author)) {
-                        checkKeyword = true;
-                    }else continue;
-                }
-                if(publisher.length()!=0) {
-                    checkKeyword=false;
-                    if(containsCaseInsensitive(book.getPublisher(), publisher)) {
-                        checkKeyword = true;
-
-                    }else continue;
-                }
-                if(editionYear.length()!=0) {
-                    checkKeyword=false;
-                    if(containsCaseInsensitive(book.getEditionYear(), editionYear)) {
-                        checkKeyword = true;
-                    }else continue;
-                }
-                if(conditions.length()!=0) {
-                    checkKeyword=false;
-                    if(containsCaseInsensitive(book.getBookConditions(), conditions)) {
-                        checkKeyword = true;
-                    }else continue;
-                }
-                if(checkKeyword)
-                    searchBooks.add(book);
-            }
-        }
-
     }
 
     /**
      * Returns true when {@code source} contains at least a case-insensitive
      * occurrence of {@code pattern}
-     * @param source        the string that has to be tested.
-     * @param pattern       the pattern that is looked for.
-     * @return              true when an occurrence is found.
+     *
+     * @param source  the string that has to be tested.
+     * @param pattern the pattern that is looked for.
+     * @return true when an occurrence is found.
      */
-    private static boolean containsCaseInsensitive(String source, String pattern) {
+    public static boolean containsCaseInsensitive(String source, String pattern) {
         return
-            Pattern.compile(
-                Pattern.quote(pattern),
-                Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
-            )
-            .matcher(source)
-            .find()
-        ;
-    }
-
-    public static void removeSearchBooksEventListener() {
-        booksDatabaseRef.removeEventListener(searchBooksEventListener);
-    }
-
-    public static ArrayList<Book> getSearchBooks() {
-        return searchBooks;
+                Pattern.compile(
+                        Pattern.quote(pattern),
+                        Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+                )
+                        .matcher(source)
+                        .find()
+                ;
     }
 
     /**
      * @param scanBookInfo Get Book info after scanning or inserting the ISBN code
      */
-
     public static void setBookInfo(Map<String, String> scanBookInfo) {
         Log.d(TAG, "setBookInfo");
         bookInfo = scanBookInfo;
     }
 
+    /**
+     * @return Book informations from the isbn scan
+     */
     public static Map<String, String> getBookInfo() {
         Log.d(TAG, "getBookInfo");
         //Log.d("debug",bookInfo.toString());
         return bookInfo;
     }
 
+    /**
+     * retrieve all the book informations from the google API
+     *
+     * @param bookSearchString query to the google API in which we append the ISBN
+     */
     public static void retrieveBookInfo(String bookSearchString) {
 
         Log.d(TAG, "retrieveBookInfo");
@@ -283,20 +106,16 @@ public class BookManager {
             bookInfo = new GetBookInfo().execute(bookSearchString).get();
         } catch (Exception e) {
         }
-
     }
 
     /**
      * @param book
      * @param data Insert new Book into Firebase
      */
-
     public static void insertBook(final Book book, byte[] data) {
 
         final String bookKey = booksDatabaseRef.push().getKey();
-        /*StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", bookKey)
-                .build();*/
+
         UploadTask uploadTask = booksStorageRef.child(bookKey).putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -311,17 +130,50 @@ public class BookManager {
         });
 
         Log.d(TAG, book.toString());
-
-
     }
 
+    /**
+     * Create and attach the listener to the child "books" in firebase to retrieve all the books
+     */
 
-     /*public static void printBooks(){
-        Log.d(TAG,books.size()+" "+books.toString());
+    public static void populateAllBooks() {
+
+        booksDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                allBooks = new ArrayList<>();
+                if (dataSnapshot.exists()) {
+
+                    Map<String, Map<String,String>> booksSnapshot = (Map<String, Map<String,String>>) dataSnapshot.getValue();
+
+                    // Retrieve all the books from Firebase
+                    for (String key : booksSnapshot.keySet()) {
+                        Map<String,String> bookValues=booksSnapshot.get(key);
+                        String isbn=bookValues.get("isbn");
+                        String title=bookValues.get("title");
+                        String author=bookValues.get("author");
+                        String publisher=bookValues.get("publisher");
+                        String editionYear=bookValues.get("editionYear");
+                        String conditions=bookValues.get("conditions");
+                        String uid=bookValues.get("uid");
+                        String image=bookValues.get("image");
+                        Book book=new Book(isbn,title,author,publisher,editionYear,conditions,uid,image);
+                        allBooks.add(book);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    public static Map<String,String> getBooks(){
-        return books;
-    }*/
+    /**
+     * @return Arraylist with all the books in Firebase
+     */
 
+    public static ArrayList<Book> getAllBooks() {
+        return allBooks;
+    }
 }

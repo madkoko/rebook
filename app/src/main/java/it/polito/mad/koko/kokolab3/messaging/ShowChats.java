@@ -36,7 +36,6 @@ public class ShowChats extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chats);
 
-
         //Set title.
         setTitle(R.string.chats_activity_title);
 

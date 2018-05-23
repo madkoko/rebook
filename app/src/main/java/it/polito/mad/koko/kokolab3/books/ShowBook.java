@@ -125,7 +125,6 @@ public class ShowBook extends AppCompatActivity
             googleMap.addMarker(new MarkerOptions()
                     .position(position));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-
         }
     }
 

@@ -20,7 +20,11 @@ public class TabBooks extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_books, container, false);
 
-        myBooks = BookManager.getUserBooks();
+
+        /**
+         * TODO: modify the view with Firebase List Adapter (getUserBooks() doesn't work anymore
+         */
+        //myBooks = BookManager.getUserBooks();
         ListView bookListView = view.findViewById(R.id.books_listview);
 
         // set the list view to show all the books
