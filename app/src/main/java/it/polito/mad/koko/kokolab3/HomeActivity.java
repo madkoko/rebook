@@ -22,7 +22,7 @@ import android.widget.ViewSwitcher;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import it.polito.mad.koko.kokolab3.auth.Authenticator;
+import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
@@ -42,11 +42,6 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "HomeActivity";
-
-    /**
-     * Custom class managing the user authentication
-     */
-    private Authenticator authenticator;
 
     /**
      * User profile information
@@ -79,10 +74,6 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        authenticator = new Authenticator(this);
-
-
-
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -109,14 +100,13 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        authenticator.authUI();
-
-        new BookManager();
+        // Launching the authentication UI
+        AuthenticationUI.launch(this);
 
         profileManager = ProfileManager.getInstance();
         profileManager.populateUsersList();
         // creation of the BookManager if the user is authenticated
-        if (authenticator.hasLoggedIn()) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             // Retrieving the ProfileManager singleton
             //BookManager.populateUserBookList();
             //BookManager.populateSearchBooks();
@@ -250,8 +240,6 @@ public class HomeActivity extends AppCompatActivity
             // Inform the user of the successful authentication
 
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-            authenticator.instantiateUser();
-
 
             //profileManager = ProfileManager.getInstance();
 
@@ -267,16 +255,16 @@ public class HomeActivity extends AppCompatActivity
             //
             profileManager.getInstance();
             //profileManager.populateUsersList();
-            profileManager.addProfile(authenticator.getAuth().getUid(), authenticator.getAuth().getCurrentUser().getEmail());
+            profileManager.addProfile(FirebaseAuth.getInstance().getCurrentUser().getUid(), FirebaseAuth.getInstance().getCurrentUser().getEmail());
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
-            //Control if profile is in the map
-            if (profileManager.profileIsNotPresent((authenticator.getAuth().getUid()))) {
-                Intent intent = new Intent(getApplicationContext(), EditProfile.class);
-                startActivity(intent);
+
+            // If this is a new user or the user has not finished the registration
+            if (profileManager.profileIsNotPresent((FirebaseAuth.getInstance().getCurrentUser().getUid()))) {
+                startActivity(new Intent(getApplicationContext(), EditProfile.class));
             } else {
-                if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImage() != null) {
-                    Profile p = profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid());
+                if (profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getImage() != null) {
+                    Profile p = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     ImageManager.loadBitmap(p.getImage());
                 }
             }
@@ -323,7 +311,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.view_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
-            i.putExtra("UserID", authenticator.getUser().getUid());
+            i.putExtra("UserID", FirebaseAuth.getInstance().getCurrentUser().getUid());
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
@@ -348,7 +336,9 @@ public class HomeActivity extends AppCompatActivity
             startActivity(new Intent(getApplicationContext(), ShowChats.class));
 
         } else if (id == R.id.sign_out) {
-            authenticator.signOut();
+            FirebaseAuth.getInstance().signOut();
+
+            AuthenticationUI.launch(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -359,8 +349,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        profileManager.reset();
-
+        profileManager = ProfileManager.getInstance();
     }
 
 }

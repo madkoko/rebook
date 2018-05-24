@@ -50,8 +50,7 @@ public class BookManager {
      */
     private static ArrayList<Book> allBooks;
 
-    public BookManager() {
-
+    static {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         booksDatabaseRef = database.getReference().child("books");
         FirebaseStorage storage = FirebaseStorage.getInstance();

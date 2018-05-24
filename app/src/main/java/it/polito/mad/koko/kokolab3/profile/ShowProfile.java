@@ -30,7 +30,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.profile.tabs.PagerAdapter;
 import it.polito.mad.koko.kokolab3.ui.*;
 
@@ -49,7 +48,6 @@ public class ShowProfile extends AppCompatActivity {
      * User profile information
      */
     private ProfileManager profileManager;
-    private Authenticator authenticator;
     private Bitmap bmp;
     private Profile profile;
     private FloatingActionButton edit;
@@ -66,12 +64,8 @@ public class ShowProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
-
-        authenticator = new Authenticator(this);
-
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
@@ -82,19 +76,15 @@ public class ShowProfile extends AppCompatActivity {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-
-
         // Loading the XML layout file
         setContentView(R.layout.activity_show_profile);
         user_photo=findViewById(R.id.user_photo);
-
-
 
         //Loading UserID from intent
         i = getIntent();
         mFirebaseUser= i.getExtras().getString("UserID");
 
-        profile = profileManager.getProfile(authenticator.getUser().getUid());
+        profile = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             toolbar = findViewById(R.id.technique_three_toolbar);

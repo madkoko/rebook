@@ -23,6 +23,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class EditProfile extends AppCompatActivity {
@@ -79,7 +79,6 @@ public class EditProfile extends AppCompatActivity {
     private Bitmap imageBitmap;
     private boolean flagCamera;
     private boolean flagGallery;
-    private Authenticator authenticator;
     private Button map_button;
     private Profile p;
     private String latLng;
@@ -96,14 +95,12 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        authenticator = new Authenticator(this);
-
         // TODO Debugging
         Log.d(TAG, "onCreate");
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
-        p = profileManager.getProfile(authenticator.getUser().getUid());
+        p = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid());
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -162,7 +159,7 @@ public class EditProfile extends AppCompatActivity {
 
                 //Create a new profileManager
                 profileManager.editProfile(
-                        authenticator.getAuth().getUid(),
+                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
                         et_name.getText().toString(),
                         et_email.getText().toString(),
                         et_phone.getText().toString(),
@@ -170,7 +167,7 @@ public class EditProfile extends AppCompatActivity {
                         et_bio.getText().toString(),
                         shown_image,
                         latLng,
-                        authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
+                        FirebaseStorage.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 );
 
                 // Terminating the activity
@@ -212,8 +209,8 @@ public class EditProfile extends AppCompatActivity {
      */
 
     private boolean infoIsMissingFromUser() {
-        String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
-        String username = profileManager.getProfile(authenticator.getUser().getUid()).getName();
+        String userLocation = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation();
+        String username = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getName();
 
         boolean infoIsMissing = false;
 
@@ -234,8 +231,8 @@ public class EditProfile extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
-        //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
+        //Log.d("location", "profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation(): " + profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation());
+        //Log.d("location", "profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation().equals(""));
 
         if (!infoIsMissingFromUser() && !infoIsMissingFromUI())
             finish();

@@ -17,9 +17,13 @@ public class Profile implements Serializable {
                     position,
                     tokenMessage;
 
+    /**
+     * True upon completing the registration.
+     */
+    private boolean registrationCompleted;
+
     public Profile() {
     }
-
 
     public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage) {
         this.name=name;
@@ -30,8 +34,8 @@ public class Profile implements Serializable {
         this.image =imgUrl;
         this.position = position;
         this.tokenMessage=tokenMessage;
+        this.registrationCompleted = false;
     }
-
 
     public String getName() {
         return name;
@@ -49,8 +53,6 @@ public class Profile implements Serializable {
         return location;
     }
 
-    public String getPosition() {return position;}
-
     public String getBio() {
         return bio;
     }
@@ -59,10 +61,22 @@ public class Profile implements Serializable {
         return image;
     }
 
-    public String getTokenMessage() { return tokenMessage; }
+    public String getPosition() {
+        return position;
+    }
+
+    public String getTokenMessage() {
+        return tokenMessage;
+    }
+
+    public boolean isRegistrationCompleted() {
+        return registrationCompleted;
+    }
 
     public void setName(String name) {
         this.name = name;
+
+        checkCompletedRegistration();
     }
 
     public void setEmail(String email) {
@@ -75,9 +89,9 @@ public class Profile implements Serializable {
 
     public void setLocation(String location) {
         this.location = location;
-    }
 
-    public void setPosition(String latLng) {this.position =latLng;}
+        checkCompletedRegistration();
+    }
 
     public void setBio(String bio) {
         this.bio = bio;
@@ -87,9 +101,35 @@ public class Profile implements Serializable {
         this.image = image;
     }
 
-    public void setTokenMessage(String tokenMessage) { this.tokenMessage = tokenMessage; }
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
+    public void setTokenMessage(String tokenMessage) {
+        this.tokenMessage = tokenMessage;
+    }
 
+    /**
+     * It checks whether this user has completed
+     * the registration.
+     * This is done by checking that all minimum fields
+     * have been properly set.
+     */
+    private void checkCompletedRegistration() {
+        // 'name' field must be set
+        if(name == null || name.isEmpty() || name.compareTo("") == 0) {
+            registrationCompleted = false;
+            return;
+        }
+
+        // 'position field must be set
+        if(position == null || position.isEmpty() || position.compareTo("") == 0) {
+            registrationCompleted = false;
+            return;
+        }
+
+        registrationCompleted = true;
+    }
 
     @Override
     public String toString() {

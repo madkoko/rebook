@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 /**
@@ -48,10 +49,6 @@ public class ProfileManager {
         if(instance == null)
             instance = new ProfileManager();
         return instance;
-    }
-
-    public static void reset() {
-        instance = new ProfileManager();
     }
 
     protected ProfileManager() {
@@ -153,7 +150,6 @@ public class ProfileManager {
         */
     }
 
-
     public boolean profileIsNotPresent(String uid) {
         synchronized (allUsers){
             Iterator it = allUsers.entrySet().iterator();
@@ -168,6 +164,6 @@ public class ProfileManager {
     }
 
     public void addToken(String token, String uid) {
-        usersRef.child(uid).child("tokenMessage").setValue(token);
+        DatabaseManager.set(token, "users", uid, "tokenMessage");
     }
 }
