@@ -55,7 +55,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             // If the book exchange has been accepted
             if (exchangeAccepted) {
                 // Creating a chat with the user
-                String chatId = MessageManager.createChat(intent);
+                String chatId = MessageManager.getChatID();
 
                 // Sending a positive response notification
                 intent.putExtra("chatId", chatId);

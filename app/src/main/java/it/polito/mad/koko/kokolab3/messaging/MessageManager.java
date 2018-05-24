@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.messaging;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.transition.ChangeTransform;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,6 +11,8 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
@@ -20,8 +23,12 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
 import okhttp3.MediaType;
@@ -34,63 +41,55 @@ public class MessageManager {
 
     private static String TAG = "MessageManager";
 
-    /*
-     * All the messages of the current user
-     */
-    private static ArrayList<Message> userMessages;
+    /*      *** CHAT INFO ***   */
+    private static String chatID = null;                            // >>> Chat ID
+    private static String chatIdRetrieved;
 
-    /*
-     * All the chats' ID of the current user
-     */
-    private static Map<String, Map<String, String>> userChatIDs;
+    private static ArrayList<Message> userMessages;                 // >>> All the messages of the current user
+    private static Map<String, Map<String, String>> userChatIDs;    // >>> All the chats' ID of the current user
+    private static ArrayList<Chat> userChats;                       // >>> All the chats of the current user
 
-    /*
-     * All the messages corresponding to a chat ID
+    // private static Map<String,ArrayList<Message>> chatsMessages; // >>> All the messages corresponding to a chat ID
+    private static Map<String, UserChatInfo> chatsInfo;   // = new ConcurrentHashMap<String, UserChatInfo>();
 
-    private static Map<String,ArrayList<Message>> chatsMessages;
-    */
+    private static ValueEventListener userChatIDsListener;          // >>> Listener to all the current user's chats ID
+    private static ChildEventListener userChatsMessagesListener;    // >>> Listener to all the current user's chats
+    private static ValueEventListener chatRefListener;              // >>> Listener to all the current user's chats
 
-    /*
-     * All the chats of the current user
-     */
+    private static DatabaseReference chatsRef;
 
-    private static ArrayList<Chat> userChats;
+    // Sender Data
+    private static String senderId;
+    private static String senderUsername;
+    private static String senderImage;
+    private static String senderToken;
 
-    /*
-     * Listener to all the current user's chats ID
-     */
-
-    private static ValueEventListener userChatIDsListener;
-
-    /*
-     * Listener to all the current user's chats
-     */
-    private static ChildEventListener userChatsMessagesListener;
-
+    // Receiver Data
+    private static String receiverId;
+    private static String receiverUsername;
+    private static String receiverImage;
+    private static String receiverToken;
 
     /**
-     * HTTP client
+     * *** HTTP Client ***
      */
     static OkHttpClient mClient = new OkHttpClient();
 
     /**
      * MediaType of the RequestBody.
-     * If null, UTF-8 will be used.
+     * > if null, UTF-8 will be used.
      */
     private static final MediaType CONTENT_TYPE = null;
 
     /**
-     * Messages placeholders
+     * *** Messages Placeholders ***
      */
     public static final String
-            // Sender's username placeholder
-            SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",
-
-    // Book name placeholder
-    BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%";
+            SENDER_USERNAME_PLACEHOLDER = "%SENDER_USER%",           // >>> Sender's username placeholder
+            BOOK_NAME_PLACEHOLDER = "%BOOK_NAME%";                   // >>> Book name placeholder
 
     /**
-     * Message strings
+     * *** Message Strings ***
      */
     private static final String
             // Message request target URL
@@ -120,8 +119,12 @@ public class MessageManager {
      * First chat message displayed as an intro.
      */
     public static final String FIRST_CHAT_MESSAGE = "You can now start the book exchange negotiation.\n" +
-            "Do not send any personal data such as passwords and credit card numbers.";
+            "Do not send any personal data such as passwords and credit card numbers.\n";
 
+    /**
+     * New Request Message
+     */
+    public static final String NEW_REQUEST_MESSAGE = " would like to borrow your book ";
     /**
      * Firebase server's key access
      */
@@ -129,6 +132,9 @@ public class MessageManager {
             "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJ" +
                     "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD";
     private static String messageID;
+
+
+    /*      Notification' Methods **   */
 
     /**
      * It sends a book exchange request notification to a specific user.
@@ -227,7 +233,7 @@ public class MessageManager {
     }
 
     /**
-     * It sends
+     * It sends a Send Message Notification
      */
     public static void sendMessageNotification(// Sender info
                                                final String senderId,
@@ -441,7 +447,6 @@ public class MessageManager {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-
                     userChatIDs.putAll((Map<String, Map<String, String>>) dataSnapshot.getValue());
                     Log.d(TAG, userChatIDs.toString());
                     MessageManager.populateUserMessages();
@@ -450,7 +455,6 @@ public class MessageManager {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         };
     }
@@ -459,11 +463,7 @@ public class MessageManager {
      * Attach the listener to the chats of the current user
      */
     public static void populateUserChatsID() {
-
-
         DatabaseManager.get("users", FirebaseAuth.getInstance().getCurrentUser().getUid(), "chats").addValueEventListener(userChatIDsListener);
-
-
     }
 
     /**
@@ -476,7 +476,6 @@ public class MessageManager {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (dataSnapshot.exists()) {
-
                     String datasnapshot = dataSnapshot.toString();
                     //Log.d(TAG, datasnapshot);
                     Message message = new Message();
@@ -484,38 +483,27 @@ public class MessageManager {
                     message.setText((String) dataSnapshot.child("text").getValue());
                     message.setTimestamp((String) dataSnapshot.child("timestamp").getValue());
                     //Log.d(TAG, message.toString());
-
-                    /**
-                     * populate the Map with key: chatID and value:message
-                     */
-                    for (Chat chat : userChats)
+                    for (Chat chat : userChats)     // >>> Populate the Map with key:chatID and value:message
                         if (chat.equals(userChat))
                             chat.getChatMessages().add(message);
-
                 }
-
                 //Log.d(TAG, userChat.toString());
-
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         };
     }
@@ -527,14 +515,10 @@ public class MessageManager {
      */
     public static void populateUserMessages() {
         userChats = new ArrayList<>();
-
         for (String chatID : userChatIDs.keySet()) {
-
             userMessages = new ArrayList<>();
             Chat userChat = new Chat(chatID, userMessages);
-
             userChats.add(userChat);
-
             MessageManager.setUserMessagesListener(userChat);
             DatabaseManager.get("chats", chatID, "messages").addChildEventListener(userChatsMessagesListener);
         }
@@ -542,13 +526,10 @@ public class MessageManager {
 
     public static void removeUserChatsMessagesListener() {
         userChats = new ArrayList<>();
-
         for (String chatID : userChatIDs.keySet()) {
             userMessages = new ArrayList<>();
             Chat userChat = new Chat(chatID, userMessages);
-
             userChats.add(userChat);
-
             MessageManager.setUserMessagesListener(userChat);
             DatabaseManager.get("chats", chatID, "messages").removeEventListener(userChatsMessagesListener);
         }
@@ -560,51 +541,108 @@ public class MessageManager {
      * @param intent the intent containing chat information.
      * @return the ID of the just created chat.
      */
-    public static String createChat(Intent intent) {
-        // Retrieving sender data
-        String senderId = intent.getStringExtra("senderId");
-        String senderUsername = intent.getStringExtra("senderUsername");
-        String senderImage = intent.getStringExtra("senderImage");
-        String senderToken = intent.getStringExtra("senderToken");
+    public static void createChat(Intent intent, String bookTitle) {
 
-        // Retrieving Receiver data
-        String receiverId = intent.getStringExtra("receiverId");
-        String receiverUsername = intent.getStringExtra("receiverUsername");
-        String receiverImage = intent.getStringExtra("receiverImage");
-        String receiverToken = intent.getStringExtra("receiverToken");
+        // 1. Retrieve Sender data
+        senderId = intent.getStringExtra("senderId");
+        senderUsername = intent.getStringExtra("senderUsername");
+        senderImage = intent.getStringExtra("senderImage");
+        senderToken = intent.getStringExtra("senderToken");
 
-        // Creating the 'chats' child
+        // 2. Retrieve Receiver data
+        receiverId = intent.getStringExtra("receiverId");
+        receiverUsername = intent.getStringExtra("receiverUsername");
+        receiverImage = intent.getStringExtra("receiverImage");
+        receiverToken = intent.getStringExtra("receiverToken");
+
+        // 3. Create the 'chats' child
         DatabaseReference messagesRef = DatabaseManager.get("chats");
-        String chatID = messagesRef.push().getKey();
 
-        // Creating the 'chats/chat_id/requester' child
-        messagesRef.child(chatID).child("requester").setValue(senderId);
+        // 4. Search if a chat between send & receiver is already existing
+        chatsRef = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(senderId)
+                .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
 
-        // Creating the 'chats/chat_id/bookOwner' child
-        messagesRef.child(chatID).child("bookOwner").setValue(receiverId);
+        chatsRef.addValueEventListener(chatRefListener = new ValueEventListener() {
 
-        // Creating the 'chats/chat_id/messages' child
-        messagesRef.child(chatID).child("messages");
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
 
-        // Creating a chat child under the sender one
-        DatabaseReference usersRefSender = DatabaseManager.get("users", senderId);
-        usersRefSender.child("chats").child(chatID).child("secondPartyUsername").setValue(receiverUsername);
-        usersRefSender.child("chats").child(chatID).child("secondPartyId").setValue(receiverId);
-        usersRefSender.child("chats").child(chatID).child("secondPartyImage").setValue(receiverImage);
-        usersRefSender.child("chats").child(chatID).child("secondPartyToken").setValue(receiverToken);
+                    // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
+                    chatsInfo = new HashMap<String, UserChatInfo>();
+                    chatsInfo.clear();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        UserChatInfo receiverInfo = child.getValue(UserChatInfo.class);
+                        chatsInfo.put(child.getKey(), receiverInfo);
+                    }
 
-        // Creating a chat child under the receiver one
-        DatabaseReference usersRefReceiver = DatabaseManager.get("users").child(receiverId);
-        usersRefReceiver.child("chats").child(chatID).child("secondPartyUsername").setValue(senderUsername);
-        usersRefReceiver.child("chats").child(chatID).child("secondPartyId").setValue(senderId);
-        usersRefReceiver.child("chats").child(chatID).child("secondPartyImage").setValue(senderImage);
-        usersRefReceiver.child("chats").child(chatID).child("secondPartyToken").setValue(senderToken);
+                    // 2. Check if the Sender & Receiver have already chat before
+                    for (String chatKey : chatsInfo.keySet()) {
+                        if (chatsInfo.get(chatKey).getSecondPartyId().equals(receiverId)) {     // >>> Chat between Sender & Receiver is already existing
+                            chatIdRetrieved = chatKey;
+                            Log.d("MessangerManager", "chattavoGiàConMaddalena");
+                            break;
+                        }
+                    }
+                }
 
-        createMessage(chatID, senderId, receiverId, FIRST_CHAT_MESSAGE);
+                if (chatIdRetrieved != null) {
+                    chatID = chatIdRetrieved;
+                    createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
+                            +NEW_REQUEST_MESSAGE
+                            +bookTitle
+                            +".\n");
+                    return;
+                }
 
-        return chatID;
-    }
+                // The receiver ID has not been found -> a new chat between Sender & Receiver must start
+                chatIdRetrieved = messagesRef.push().getKey();
+                chatID = chatIdRetrieved;
+                Log.d("MessangerManager", "nonEsisteLaChat");
 
+                // Creating the 'chats/chat_id/requester' child
+                messagesRef.child(chatIdRetrieved).child("requester").setValue(senderId);
+
+                // Creating the 'chats/chat_id/bookOwner' child
+                messagesRef.child(chatIdRetrieved).child("bookOwner").setValue(receiverId);
+
+                // Creating the 'chats/chat_id/messages' child
+                messagesRef.child(chatIdRetrieved).child("messages");
+
+                // Creating a chat child under the sender one
+                DatabaseReference usersRefSender = DatabaseManager.get("users", senderId);
+                usersRefSender.child("chats").child(chatIdRetrieved).child("secondPartyUsername").setValue(receiverUsername);
+                usersRefSender.child("chats").child(chatIdRetrieved).child("secondPartyId").setValue(receiverId);
+                usersRefSender.child("chats").child(chatIdRetrieved).child("secondPartyImage").setValue(receiverImage);
+                usersRefSender.child("chats").child(chatIdRetrieved).child("secondPartyToken").setValue(receiverToken);
+
+                // Creating a chat child under the receiver one
+                DatabaseReference usersRefReceiver = DatabaseManager.get("users").child(receiverId);
+                usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyUsername").setValue(senderUsername);
+                usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyId").setValue(senderId);
+                usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyImage").setValue(senderImage);
+                usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyToken").setValue(senderToken);
+
+                createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
+                        +senderUsername
+                        +NEW_REQUEST_MESSAGE
+                        +bookTitle
+                        +".\n");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        /*if(chatID != null) {
+            chatsRef.removeEventListener(chatRefListener);
+        }*/
+}
 
     /**
      * Creates a message entry in Firebase
@@ -615,6 +653,7 @@ public class MessageManager {
      * @param messageText content of the message
      */
     public static void createMessage(String chatId, String senderId, String receiverId, String messageText) {
+
         // Creating a message entry
         DatabaseReference messagesRef = DatabaseManager.get("chats", chatId, "messages");
         messageID = messagesRef.push().getKey();
@@ -659,5 +698,53 @@ public class MessageManager {
 
         // Setting if the message has been checked child
         messagesRef.child("check").setValue("true");
+    }
+
+    /*
+        Start Chat Manager
+            -> never talked with that user before   >>> start a new chat
+            -> already chat with that user          >>> resume chat
+     */
+    public static void resumeChat() {
+    }
+
+    public static String getChatID(){
+        return chatID;
+    }
+
+    public static String getSenderId() {
+        return senderId;
+    }
+
+    public static String getSenderUsername() {
+        return senderUsername;
+    }
+
+    public static String getSenderImage() {
+        return senderImage;
+    }
+
+    public static String getSenderToken() {
+        return senderToken;
+    }
+
+    public static String getReceiverId() {
+        return receiverId;
+    }
+
+    public static String getReceiverUsername() {
+        return receiverUsername;
+    }
+
+    public static String getReceiverImage() {
+        return receiverImage;
+    }
+
+    public static String getReceiverToken() {
+        return receiverToken;
+    }
+
+    public static void removeChatRefListener(){
+         chatsRef.removeEventListener(chatRefListener);
     }
 }

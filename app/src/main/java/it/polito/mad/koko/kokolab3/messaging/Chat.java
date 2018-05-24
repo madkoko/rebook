@@ -12,13 +12,14 @@ import java.util.Observable;
 public class Chat {
 
     private String chatID;
-
     private ArrayList<Message> chatMessages;
+
+    // private UserChatInfo secondParty; // PERCHè no?!?!
 
     public Chat(){};
 
     public Chat(String chatID,ArrayList<Message> chatMessages) {
-        this.chatID=chatID;
+        this.chatID = chatID;
         this.chatMessages = chatMessages;
     }
 
@@ -34,20 +35,15 @@ public class Chat {
         return chatMessages;
     }
 
-    public void setChatMessages(ArrayList<Message> chatMessages) {
-        this.chatMessages = chatMessages;
-    }
+    public void setChatMessages(ArrayList<Message> chatMessages) { this.chatMessages = chatMessages; }
 
     // Searching in Lists
     @Override
     public boolean equals(Object o) {
         if(this == o) return true;
         if(!(o instanceof Chat)) return false;
-
         Chat otherChat = (Chat)o;
-
-        return	chatID == otherChat.chatID;
-
+        return	chatID.equals(otherChat.chatID);
     }
 
     @Override

@@ -35,15 +35,22 @@ public class ShowChat extends AppCompatActivity {
     private FirebaseListAdapter<Message> adapter; // All the messages of the selected chat
     private String chatId; // chat ID
     private Bundle savedInstanceState;
+
     private String senderId;
     private Profile senderProfile;
     private String senderUsername;
     private String senderImage;
     private String senderToken;
+
     private String finalReceiverId;
     private String finalReceiverUsername;
     private String finalReceiverImage;
     private String finalReceiverToken;
+    private String receiverId;
+    private String receiverUsername;
+    private String receiverImage;
+    private String receiverToken;
+
     private Button send;
     private EditText messageEditor;
     private LinearLayout sendMsgLayout;
@@ -57,16 +64,39 @@ public class ShowChat extends AppCompatActivity {
         this.savedInstanceState = bundle;
 
         // 1. Retrieve Chat ID
-        chatId = getIntent().getStringExtra("chatId");
+        chatId = MessageManager.getChatID();
 
-        // 2. Retrieve *sender* information
+        // 2. Remove Event Listener
+        if(chatId != null) {
+            MessageManager.removeChatRefListener();
+        }
+
+        // !!!!!!!!!!!!!
+        // *** @Francesco ***
+        // ho modificato il tuo modo di recuperare i parametri: non ti serve l'accesso a Firebase perché hai tutto in locale,
+        // ti basta creare dei G&S e farteli ritornare da MessageManager.
+        // Per il momento ho commnetato il tuo codice, se ti va bene la mia versione cancella i commenti.
+        // !!!!!!!!!!!!!!
+
+        // 2. Retrieve Sender & Receiver information
+        senderId = MessageManager.getSenderId();
+        senderUsername = MessageManager.getSenderUsername();
+        senderImage = MessageManager.getSenderImage();
+        senderToken = MessageManager.getSenderToken();
+        /*
         senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         senderProfile = ProfileManager.getInstance().getProfile(senderId);
         senderUsername = senderProfile.getName();
         senderImage = senderProfile.getImage();
         senderToken = senderProfile.getTokenMessage();
+        */
 
         // 3. Retrieve *receiver* information
+        receiverId = MessageManager.getReceiverId();
+        receiverUsername = MessageManager.getReceiverUsername();
+        receiverImage = MessageManager.getReceiverImage();
+        receiverToken = MessageManager.getReceiverToken();
+        /*
         String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
         Map<String, Map<String, String>> userChatIDs = MessageManager.getUserChatIDs();
         for (String chatIdIterator : userChatIDs.keySet()) {                       // >>> Cycling across all user's chats
@@ -79,6 +109,8 @@ public class ShowChat extends AppCompatActivity {
                 break;
             }
         }
+        */
+
         if (receiverId == null) {                                                   // !! No Receiver found? !!
             AlertManager.noUserDialog(this);                                // >>> Show an error dialog and return
             return;

@@ -190,5 +190,6 @@
 
     <string name="element_text">Element</string>
     <string name="chats_activity_title">Chats</string>
+    <string name="send_message">Send Message</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,6 +23,7 @@ import org.json.JSONArray;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
+import it.polito.mad.koko.kokolab3.messaging.ShowChat;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
@@ -31,9 +33,27 @@ public class ShowBook extends AppCompatActivity
     private static final String TAG = "ShowBook";
     private ProfileManager profileManager;
     private Book book;
-    private Button sendRequest;
-    private String receiverToken;
     private JSONArray regArray;
+
+    private Intent i;
+
+    private Button sendRequest;
+    private Button sendMessage;
+    private LinearLayout sendingLayout;
+
+    private String senderId;
+    private Profile senderProfile;
+    private String senderUsername;
+    private String senderImage;
+    private String senderToken;
+
+    private String receiverId;
+    private Profile receiverProfile;
+    private String receiverUsername;
+    private String receiverImage;
+    private String receiverToken;
+
+    private String chatID = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +72,10 @@ public class ShowBook extends AppCompatActivity
         conditions = findViewById(R.id.show_book_conditions);
         bookImage = findViewById(R.id.show_book_photo);
 
-        Intent i = getIntent();
+        i = getIntent();
+
         if (i.getExtras().get("book") != null) {
             book = (Book) i.getExtras().get("book");
-
             if (book.getISBN() != null) isbn.setText(book.getISBN());
             if (book.getTitle() != null) title.setText(book.getTitle());
             if (book.getAuthor() != null) author.setText(book.getAuthor());
@@ -66,44 +86,77 @@ public class ShowBook extends AppCompatActivity
             //Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
         }
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         if (profileManager.getProfile(book.getUid()).getTokenMessage() != null) {
-            // Sender
-            String senderId = FirebaseAuth.getInstance().getUid();
-            Profile senderProfile = profileManager.getProfile(senderId);
 
-            // Receiver
-            String receiverId = book.getUid();
-            Profile receiverProfile = profileManager.getProfile(receiverId);
+            // Sender Info
+            senderId = FirebaseAuth.getInstance().getUid();
+            senderProfile = profileManager.getProfile(senderId);
+            senderUsername = senderProfile.getName();
+            senderImage = senderProfile.getImage();
+            senderToken = senderProfile.getTokenMessage();
+
+            // Receiver Info
+            receiverId = book.getUid();
+            receiverProfile = profileManager.getProfile(receiverId);
+            receiverUsername = receiverProfile.getName();
+            receiverImage = receiverProfile.getImage();
             receiverToken = receiverProfile.getTokenMessage();
 
             // TODO debugging
             Log.d("device_token", "Token is: " + receiverToken);
             String authUser= FirebaseAuth.getInstance().getCurrentUser().getUid();
-            sendRequest = findViewById(R.id.send_request);
+
+            sendingLayout = findViewById(R.id.sending_layout);  // >>> Start Chat | Send Message Layout
+            sendRequest = findViewById(R.id.send_request);      // >>> Send Request Button
+            sendMessage = findViewById(R.id.send_message);      // >>> Send Message Button
+
             if(authUser.compareTo(book.getUid())!=0) {
-                sendRequest.setVisibility(View.VISIBLE);
+
+                // 1. Set Sending Layout visible
+                sendingLayout.setVisibility(View.VISIBLE);
+
+                // 2. Put Sender & Receiver info into Intent
+                i.putExtra("senderId", this.senderId);
+                i.putExtra("senderUsername", this.senderUsername);
+                i.putExtra("senderImage", this.senderImage);
+                i.putExtra("senderToken", this.senderToken);
+                i.putExtra("receiverId", this.receiverId);
+                i.putExtra("receiverUsername", this.receiverUsername);
+                i.putExtra("receiverImage", this.receiverImage);
+                i.putExtra("receiverToken", this.receiverToken);
+
+                // 3. Send Book Request
                 sendRequest.setOnClickListener(
-                        v -> MessageManager.sendRequestNotification(
+                        v -> MessageManager.sendRequestNotification(    //createMsg
+
                                 // Sender info
-                                senderId,                       // sender ID
-                                senderProfile.getName(),        // sender username
-                                senderProfile.getImage(),      // sender image
-                                senderProfile.getTokenMessage(),// sender token
+                                senderId,                               // Sender ID
+                                senderProfile.getName(),                // Sender Username
+                                senderProfile.getImage(),               // sender Image
+                                senderProfile.getTokenMessage(),        // Sender Token
 
                                 // Receiver info
-                                receiverId,                     // receiver ID
-                                receiverProfile.getName(),      // receiver username
-                                receiverProfile.getImage(),    // receiver image
-                                receiverToken,                  // receiver token
+                                receiverId,                             // Receiver ID
+                                receiverProfile.getName(),              // Receiver Username
+                                receiverProfile.getImage(),             // Receiver Image
+                                receiverToken,                          // Receiver Token
 
                                 // Book info
-                                book.getTitle()                 // book title
+                                book.getTitle()                         // Book Title
                         )
                 );
+
+                // 4. Send Message
+                sendMessage.setOnClickListener(v -> {
+                    MessageManager.createChat(i, book.getTitle());
+                    Intent showChat = new Intent (getApplicationContext(), ShowChat.class);
+                    //showChat.putExtra("chatID",chatID);
+                    startActivity(showChat);
+                    //chatID = MessageManager.getChatID();
+                });
             }
         }
     }

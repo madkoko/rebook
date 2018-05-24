@@ -148,15 +148,35 @@
                     android:layout_below="@+id/text_show_book_conditions"
                     android:hint="@string/book_conditions"
                     android:textSize="20sp" />
+
+                <LinearLayout
+                    android:id="@+id/sending_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/show_book_conditions"
+                    android:visibility="gone"
+                    >
+
                 <Button
                     android:id="@+id/send_request"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/show_book_conditions"
                     android:hint="@string/send_request"
                     android:textSize="20sp"
-                    android:visibility="gone"
-                    android:layout_alignParentRight="true" />
+                    />
+
+                    <Button
+                        android:id="@+id/send_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/show_book_conditions"
+                        android:hint="@string/send_message"
+                        android:textSize="20sp"
+                        android:layout_alignParentRight="true" />
+                </LinearLayout>
+
 
 
             </RelativeLayout>
