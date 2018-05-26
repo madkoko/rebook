@@ -154,6 +154,7 @@ public class ShowBook extends AppCompatActivity
                     MessageManager.createChat(i, book.getTitle());
                     Intent showChat = new Intent (getApplicationContext(), ShowChat.class);
                     //showChat.putExtra("chatID",chatID);
+                    showChat.putExtra("originClass", "showBook");
                     startActivity(showChat);
                     //chatID = MessageManager.getChatID();
                 });

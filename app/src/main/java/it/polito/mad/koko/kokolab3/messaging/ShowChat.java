@@ -1,27 +1,17 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
-import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-
-
-import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.tabShowChat.Conversation;
@@ -56,65 +46,69 @@ public class ShowChat extends AppCompatActivity {
     private LinearLayout sendMsgLayout;
     private Fragment conversation;
 
+    private Intent i;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_show_chat);
 
         this.savedInstanceState = bundle;
+        i = getIntent();
 
-        // 1. Retrieve Chat ID
-        chatId = MessageManager.getChatID();
+        // 1. Check the origin class from whom user is coming
 
-        // 2. Remove Event Listener
-        if(chatId != null) {
-            MessageManager.removeChatRefListener();
-        }
+        // >>> CASE A) User is coming from "ShowBook" [click on "Send Message" button from Book view]
+        if(i.getStringExtra("originClass").equals("showBook")) {
 
-        // !!!!!!!!!!!!!
-        // *** @Francesco ***
-        // ho modificato il tuo modo di recuperare i parametri: non ti serve l'accesso a Firebase perché hai tutto in locale,
-        // ti basta creare dei G&S e farteli ritornare da MessageManager.
-        // Per il momento ho commnetato il tuo codice, se ti va bene la mia versione cancella i commenti.
-        // !!!!!!!!!!!!!!
+            // A1. Retrieve Chat ID
+            chatId = MessageManager.getChatID();
 
-        // 2. Retrieve Sender & Receiver information
-        senderId = MessageManager.getSenderId();
-        senderUsername = MessageManager.getSenderUsername();
-        senderImage = MessageManager.getSenderImage();
-        senderToken = MessageManager.getSenderToken();
-        /*
-        senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        senderProfile = ProfileManager.getInstance().getProfile(senderId);
-        senderUsername = senderProfile.getName();
-        senderImage = senderProfile.getImage();
-        senderToken = senderProfile.getTokenMessage();
-        */
-
-        // 3. Retrieve *receiver* information
-        receiverId = MessageManager.getReceiverId();
-        receiverUsername = MessageManager.getReceiverUsername();
-        receiverImage = MessageManager.getReceiverImage();
-        receiverToken = MessageManager.getReceiverToken();
-        /*
-        String receiverId = null, receiverUsername = null, receiverImage = null, receiverToken = null;
-        Map<String, Map<String, String>> userChatIDs = MessageManager.getUserChatIDs();
-        for (String chatIdIterator : userChatIDs.keySet()) {                       // >>> Cycling across all user's chats
-            if (chatId.compareTo(chatIdIterator) == 0) {                           // >>> The right chat is reached by the iterator
-                Map<String, String> receiver = userChatIDs.get(chatIdIterator);    // >>> Retrieve Receiver's map
-                receiverId = receiver.get("secondPartyId");                        // >>> Retrieve Receiver's informations
-                receiverUsername = receiver.get("secondPartyUsername");
-                receiverImage = receiver.get("secondPartyImage");
-                receiverToken = receiver.get("secondPartyToken");
-                break;
+            // A2. Remove Event Listener
+            if (chatId != null) {
+                MessageManager.removeChatRefListener();
             }
+
+            // A3. Retrieve *Sender* informations
+            senderId = MessageManager.getSenderId();
+            senderUsername = MessageManager.getSenderUsername();
+            senderImage = MessageManager.getSenderImage();
+            senderToken = MessageManager.getSenderToken();
+
+            // A4. Retrieve *Receiver* informations
+            receiverId = MessageManager.getReceiverId();
+            receiverUsername = MessageManager.getReceiverUsername();
+            receiverImage = MessageManager.getReceiverImage();
+            receiverToken = MessageManager.getReceiverToken();
+
         }
-        */
+
+        // >>> CASE B) User is coming from "ShowChat" or "ShowChats" [Click in "Chat" tab or "Chats" menù]
+        else{
+
+            // B1. Retrieve Chat ID
+            chatId = i.getStringExtra("chatId");
+
+            // B2. Retrieve *Sender* informations
+            senderProfile = ProfileManager.getInstance().getCurrentUser();
+            senderId = FirebaseAuth.getInstance().getUid();
+            senderUsername = senderProfile.getName();
+            senderImage = senderProfile.getImage();
+            senderToken = senderProfile.getTokenMessage();
+
+            // B3. Retrieve *Receiver* informations
+            UserChatInfo secondParty = (UserChatInfo) i.getExtras().get("userChatInfo");
+            receiverId = secondParty.getSecondPartyId();
+            receiverUsername = secondParty.getSecondPartyUsername();
+            receiverImage = secondParty.getSecondPartyImage();
+            receiverToken = secondParty.getSecondPartyToken();
+        }
 
         if (receiverId == null) {                                                   // !! No Receiver found? !!
             AlertManager.noUserDialog(this);                                // >>> Show an error dialog and return
             return;
         }
+
         finalReceiverId = receiverId;                                               // !! Receiver infos must be final in order to be used in a lambda function !!
         finalReceiverUsername = receiverUsername;
         finalReceiverImage = receiverImage;
@@ -123,8 +117,13 @@ public class ShowChat extends AppCompatActivity {
         // 4. Set Title (-> the chat title is the receiver Username)
         setTitle(receiverUsername);
 
-        // 5. Send message
+
+        // 5 UI for send message
+
+        messageEditor = findViewById(R.id.send_message);
         send = findViewById(R.id.send);
+
+        // 5.1 Send message
         send.setOnClickListener((View v) -> {
             if (messageEditor.getText().toString() != null && messageEditor.getText().toString().compareTo("") != 0) {
                 String messageText = messageEditor.getText().toString();                        // >>> Get the msg's Text
@@ -227,6 +226,8 @@ public class ShowChat extends AppCompatActivity {
 
             case 0: // *** CHAT TAB ***
                 getFragmentManager().beginTransaction().remove(conversation).commit();
+                sendMsgLayout = findViewById(R.id.send_msg_layout);
+                sendMsgLayout.setVisibility(View.GONE);
                 break;
 
             case 1: // *** BOOK REQ TAB ***

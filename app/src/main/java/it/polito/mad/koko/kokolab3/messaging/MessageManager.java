@@ -162,6 +162,7 @@ public class MessageManager {
 
                                                     // Book info
                                                     final String bookTitle) {
+
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
@@ -277,7 +278,7 @@ public class MessageManager {
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
      * <p>
-     * A JSON exmaple is shown below:
+     * A JSON example is shown below:
      * <p>
      * {
      * "priority": "high",
@@ -566,7 +567,7 @@ public class MessageManager {
                 .child(senderId)
                 .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
 
-        chatsRef.addValueEventListener(chatRefListener = new ValueEventListener() {
+        chatsRef.addListenerForSingleValueEvent(chatRefListener = new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -708,9 +709,7 @@ public class MessageManager {
     public static void resumeChat() {
     }
 
-    public static String getChatID(){
-        return chatID;
-    }
+    public static String getChatID(){ return chatID; }
 
     public static String getSenderId() {
         return senderId;

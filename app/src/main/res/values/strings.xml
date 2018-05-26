@@ -62,7 +62,7 @@
     <string name="book_conditions">Conditions</string>
     <string name="sharing_user">Shared by: Username</string>
     <string name="books_map_button_label">Map</string>
-    <string name="send_request">Send Request</string>
+    <string name="send_request">Request Book</string>
 
 
     <!-- Authentication -->
@@ -190,6 +190,6 @@
 
     <string name="element_text">Element</string>
     <string name="chats_activity_title">Chats</string>
-    <string name="send_message">Send Message</string>
+    <string name="send_message">Open Chat</string>
 
 </resources>

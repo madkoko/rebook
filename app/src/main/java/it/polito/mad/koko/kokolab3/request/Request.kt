@@ -22,7 +22,7 @@ class Request (_senderID: String, _receiverID: String, _bookID: String) {
             this(senderID, receiverID, bookID) {
         this.bookName = bookName;
         this.bookImage = bookImage;
-        this.status = "onBorrow";
+        this.status = "pending";
     }
 
     constructor(senderID: String, receiverID: String, bookID: String, bookName: String, bookImage: String, rating: Int, comment: String):
@@ -31,8 +31,12 @@ class Request (_senderID: String, _receiverID: String, _bookID: String) {
         this.comment = comment;
     }
 
-    fun setReturnBook(){
+    fun returnBook(){
         this.status = "return";
+    }
+
+    fun borrowBook(){
+        this.status = "onBorrow";
     }
 
     fun rate(rating: Int, comment: String){

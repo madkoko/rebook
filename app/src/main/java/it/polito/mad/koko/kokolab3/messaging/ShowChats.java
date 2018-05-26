@@ -22,12 +22,19 @@ public class ShowChats extends AppCompatActivity {
 
     private FirebaseListAdapter<UserChatInfo> adapter;
 
-    /**
-     * create all the views
-     */
+    // Create all the views
     private ImageView userThumbnail;
     private TextView chatDest;
     private TextView lastMessageView;
+
+    // Second party info
+    private String secondPartyUsername;
+    private String secondPartyId;
+    private String secondPartyImage;
+    private String lastMessage;
+    private String chatID;
+
+    private String currentUserID;
 
     private static final String TAG = "ShowChats";
 
@@ -36,24 +43,20 @@ public class ShowChats extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_chats);
 
-        //Set title.
         setTitle(R.string.chats_activity_title);
 
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");
-
         ListView chatsListView = findViewById(R.id.chats_listview);
 
-
-        //FirebaseListOptions<UserChatInfo> to retrieve user chat informations from firebase
-        //query is reference
+        // 1. Retrieve User chat informations from Firebase, Query query is the reference
         FirebaseListOptions<UserChatInfo> options = new FirebaseListOptions.Builder<UserChatInfo>()
                 .setLayout(R.layout.chats_adapter_layout)
                 .setQuery(query, UserChatInfo.class)
                 .build();
 
-        //FirebaseListAdapter to create ListAdapter Ui from firebaseUi
+        // 2. FirebaseListAdapter to create ListAdapter Ui from firebaseUi
         adapter = new FirebaseListAdapter<UserChatInfo>(options) {
 
             @Override
@@ -61,11 +64,12 @@ public class ShowChats extends AppCompatActivity {
 
                 Log.d(TAG, adapter.getRef(position).getKey());
 
-                String secondPartyUsername = model.getSecondPartyUsername();
-                String secondPartyId = model.getSecondPartyId();
-                String secondPartyImage = model.getSecondPartyImage();
-                String lastMessage=model.getLastMessage();
-                String chatID = adapter.getRef(position).getKey();
+                secondPartyUsername = model.getSecondPartyUsername();
+                secondPartyId = model.getSecondPartyId();
+                secondPartyImage = model.getSecondPartyImage();
+                lastMessage = model.getLastMessage();
+
+                chatID = adapter.getRef(position).getKey();
 
                 userThumbnail = (ImageView) view.findViewById(R.id.user_thumbnail);
                 chatDest = (TextView) view.findViewById(R.id.chat_dest);
@@ -79,14 +83,18 @@ public class ShowChats extends AppCompatActivity {
                 view.setOnClickListener(v -> {
                     Intent showChat = new Intent(getApplicationContext(), ShowChat.class);
                     showChat.putExtra("chatId", chatID);
+                    showChat.putExtra("originClass", "showChats");
+                    showChat.putExtra("userChatInfo", model);
+
                     startActivity(showChat);
                 });
+
             }
         };
+
         chatsListView.setAdapter(adapter);
 
     }
-
 
     @Override
     protected void onStart() {

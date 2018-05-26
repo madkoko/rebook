@@ -22,11 +22,15 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Debugging
+
+        // [ Debugging ]
         Log.d(TAG, "New notification. Action: " + intent.getAction());
 
         // Retrieving all chat messages
-        //MessageManager.removeUserChatsMessagesListener();
+        // MessageManager.removeUserChatsMessagesListener();
+
+        // [ Debug ]
+        Log.d(TAG, "New notification. Action II : " + intent.getExtras().get("chatId"));
 
         // In case a book exchange request has been received
         if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
@@ -66,6 +70,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 // Starting the showChat activity
                 Intent showChatIntent = new Intent(context, ShowChat.class);
                 showChatIntent.putExtra("chatId", chatId);
+                //showChatIntent.putExtra("userChatInfo", model);
                 context.startActivity(showChatIntent);
             }
             // If the book exchange has not been accepted
