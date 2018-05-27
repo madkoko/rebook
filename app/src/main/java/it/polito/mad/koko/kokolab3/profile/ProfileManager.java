@@ -34,8 +34,6 @@ public class ProfileManager {
     /**
      * Firebase objects
      */
-    private DatabaseReference usersRef;
-    private StorageReference storageRef;
     private Map<String, Object> childUpdates;
     private String downloadUrl;
 
@@ -52,16 +50,14 @@ public class ProfileManager {
     }
 
     protected ProfileManager() {
-        usersRef = FirebaseDatabase.getInstance().getReference().child("users");
     }
 
-    /* METHOD TO RETRIEVE ALL THE USERS AND USE IT INTO SHOW SEARCHED BOOKS
-     * CREATED BY FRANCESCO PETRO
-     * */
-
+    /**
+     * Retrieving all users (used when showing searched books)
+     */
     public void populateUsersList(){
         synchronized (allUsers) {
-            usersRef.addValueEventListener(
+            DatabaseManager.get("users").addValueEventListener(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -111,18 +107,18 @@ public class ProfileManager {
     public void addProfile(String uid, String email){
         //This is for future implementation of Auth
         /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
-        usersRef.push().setValue(profile);*/
+        DatabaseManager.get("users").push().setValue(profile);*/
 
 
         //Profile profile = new Profile(name,email);
-        //usersRef.setValue(profile);
-        usersRef.child(uid).child("email").setValue(email);
+        //DatabaseManager.get("users").setValue(profile);
+        DatabaseManager.get("users").child(uid).child("email").setValue(email);
     }
 
 
     public void editProfile(String id, String name, String email, String phone, String location, String bio, byte[] data, String latLng, StorageReference storageRef) {
-        DatabaseReference Ref = usersRef.child(id);
-        this.storageRef=storageRef;
+        DatabaseReference Ref = DatabaseManager.get("users").child(id);
+
         childUpdates = new HashMap<>();
         /*
         StorageMetadata metadata = new StorageMetadata.Builder()
