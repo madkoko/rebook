@@ -43,7 +43,6 @@ public class MessageManager {
 
     /*      *** CHAT INFO ***   */
     private static String chatID = null;                            // >>> Chat ID
-    private static String chatIdRetrieved;
 
     private static ArrayList<Message> userMessages;                 // >>> All the messages of the current user
     private static Map<String, Map<String, String>> userChatIDs;    // >>> All the chats' ID of the current user
@@ -166,6 +165,20 @@ public class MessageManager {
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
+        // Creating the new chat intent
+        Intent newChat = new Intent();
+        newChat.putExtra("senderId", senderId);
+        newChat.putExtra("senderUsername", senderUsername);
+        newChat.putExtra("senderImage", senderImage);
+        newChat.putExtra("senderToken", senderToken);
+        newChat.putExtra("receiverId", receiverId);
+        newChat.putExtra("receiverUsername", receiverUsername);
+        newChat.putExtra("receiverImage", receiverImage);
+        newChat.putExtra("receiverToken", receiverToken);
+
+        // Creating a chat object in Firebase
+        createChat(newChat, bookTitle);
+
         sendNotification(
                 notificationTitle,
                 notificationText,
@@ -178,7 +191,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
-                null,
+                chatID, // TODO make sure that it is already initialized
                 "request"
         );
     }
@@ -571,6 +584,8 @@ public class MessageManager {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                String chatIdRetrieved = null;
+
                 if (dataSnapshot.exists()) {
 
                     // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
