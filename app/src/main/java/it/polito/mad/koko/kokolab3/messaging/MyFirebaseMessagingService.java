@@ -116,8 +116,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
         MessageManager.setUserChatsIDListener();
-        ProfileManager profileManager = ProfileManager.getInstance();
-        profileManager.populateUsersList();
+        ProfileManager.populateUsersList();
         MessageManager.populateUserChatsID();
         MessageManager.populateUserMessages();
 
@@ -320,7 +319,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Creating the requestIntent that will open the request sender's profile
                 /*Intent requestIntent = new Intent(this, NotificationReceiver.class);
                 requestIntent.setAction(REQUEST_ACTION);
-                requestIntent.putExtra("UserID", *//* TODO insert sender's ID *//* FirebaseAuth.getInstance().getUid());
+                requestIntent.putExtra("UserID", *//* TODO insert sender's ID *//* ProfileManager.getCurrentUserID());
                 requestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent requestPendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, requestIntent,
                         PendingIntent.FLAG_ONE_SHOT);*/

@@ -17,11 +17,6 @@ public class Profile implements Serializable {
                     position,
                     tokenMessage;
 
-    /**
-     * True upon completing the registration.
-     */
-    private boolean registrationCompleted;
-
     public Profile() {
     }
 
@@ -34,7 +29,6 @@ public class Profile implements Serializable {
         this.image =imgUrl;
         this.position = position;
         this.tokenMessage=tokenMessage;
-        this.registrationCompleted = false;
     }
 
     public String getName() {
@@ -69,14 +63,8 @@ public class Profile implements Serializable {
         return tokenMessage;
     }
 
-    public boolean isRegistrationCompleted() {
-        return registrationCompleted;
-    }
-
     public void setName(String name) {
         this.name = name;
-
-        checkCompletedRegistration();
     }
 
     public void setEmail(String email) {
@@ -89,8 +77,6 @@ public class Profile implements Serializable {
 
     public void setLocation(String location) {
         this.location = location;
-
-        checkCompletedRegistration();
     }
 
     public void setBio(String bio) {
@@ -109,28 +95,6 @@ public class Profile implements Serializable {
         this.tokenMessage = tokenMessage;
     }
 
-    /**
-     * It checks whether this user has completed
-     * the registration.
-     * This is done by checking that all minimum fields
-     * have been properly set.
-     */
-    private void checkCompletedRegistration() {
-        // 'name' field must be set
-        if(name == null || name.isEmpty() || name.compareTo("") == 0) {
-            registrationCompleted = false;
-            return;
-        }
-
-        // 'position field must be set
-        if(position == null || position.isEmpty() || position.compareTo("") == 0) {
-            registrationCompleted = false;
-            return;
-        }
-
-        registrationCompleted = true;
-    }
-
     @Override
     public String toString() {
         return "Profile{" +
@@ -143,6 +107,4 @@ public class Profile implements Serializable {
                 ", position='" + position + '\'' +
                 '}';
     }
-
-
 }

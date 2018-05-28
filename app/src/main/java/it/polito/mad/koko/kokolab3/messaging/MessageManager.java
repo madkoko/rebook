@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -461,7 +462,7 @@ public class MessageManager {
     public static void populateUserChatsID() {
 
 
-        DatabaseManager.get("users", FirebaseAuth.getInstance().getCurrentUser().getUid(), "chats").addValueEventListener(userChatIDsListener);
+        DatabaseManager.get("users", ProfileManager.getCurrentUserID(), "chats").addValueEventListener(userChatIDsListener);
 
 
     }

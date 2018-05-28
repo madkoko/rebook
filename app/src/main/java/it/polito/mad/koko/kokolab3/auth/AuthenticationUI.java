@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import it.polito.mad.koko.kokolab3.auth.custom.ChooserActivity;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class AuthenticationUI {
 
@@ -33,7 +34,7 @@ public class AuthenticationUI {
         Log.d(TAG, "launch() called");
 
         // If the user has not logged in
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        if (!ProfileManager.hasLoggedIn()) {
             Log.d(TAG, "User has not logged in already");
 
             if (FIREBASE_UI)

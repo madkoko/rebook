@@ -29,7 +29,6 @@ public class ShowBook extends AppCompatActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
 
     private static final String TAG = "ShowBook";
-    private ProfileManager profileManager;
     private Book book;
     private Button sendRequest;
     private String receiverToken;
@@ -39,7 +38,6 @@ public class ShowBook extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_book);
-        profileManager = ProfileManager.getInstance();
 
         TextView isbn, title, author, publisher, editionYear, conditions;
         ImageView bookImage;
@@ -70,19 +68,19 @@ public class ShowBook extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        if (profileManager.getProfile(book.getUid()).getTokenMessage() != null) {
+        if (ProfileManager.getProfile(book.getUid()).getTokenMessage() != null) {
             // Sender
-            String senderId = FirebaseAuth.getInstance().getUid();
-            Profile senderProfile = profileManager.getProfile(senderId);
+            String senderId = ProfileManager.getCurrentUserID();
+            Profile senderProfile = ProfileManager.getProfile(senderId);
 
             // Receiver
             String receiverId = book.getUid();
-            Profile receiverProfile = profileManager.getProfile(receiverId);
+            Profile receiverProfile = ProfileManager.getProfile(receiverId);
             receiverToken = receiverProfile.getTokenMessage();
 
             // TODO debugging
             Log.d("device_token", "Token is: " + receiverToken);
-            String authUser= FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String authUser= ProfileManager.getCurrentUserID();
             sendRequest = findViewById(R.id.send_request);
             if(authUser.compareTo(book.getUid())!=0) {
                 sendRequest.setVisibility(View.VISIBLE);
@@ -112,8 +110,8 @@ public class ShowBook extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         // Add a marker in Sydney, Australia,
         // and move the map's camera to the same location.
-        if (profileManager.getProfile(book.getUid()).getPosition() != null) {
-            String pos = profileManager.getProfile(book.getUid()).getPosition();
+        if (ProfileManager.getProfile(book.getUid()).getPosition() != null) {
+            String pos = ProfileManager.getProfile(book.getUid()).getPosition();
             Log.d(TAG, pos);
             String lat = pos.substring(pos.indexOf("(") + 1, pos.indexOf(","));
             String lng = pos.substring(pos.indexOf(",") + 1, pos.indexOf(")"));

@@ -23,7 +23,6 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -60,11 +59,6 @@ public class EditProfile extends AppCompatActivity {
     private ImageView user_photo;
 
     /**
-     * User profile information
-     */
-    private ProfileManager profileManager;
-
-    /**
      * Firebase login profile, firebase database
      */
     private FirebaseUser mFirebaseUser;
@@ -80,7 +74,7 @@ public class EditProfile extends AppCompatActivity {
     private boolean flagCamera;
     private boolean flagGallery;
     private Button map_button;
-    private Profile p;
+    private Profile currentUserProfile;
     private String latLng;
 
     /**
@@ -99,8 +93,7 @@ public class EditProfile extends AppCompatActivity {
         Log.d(TAG, "onCreate");
 
         // Retrieving the ProfileManager singleton
-        profileManager = ProfileManager.getInstance();
-        p = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        currentUserProfile = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -113,12 +106,12 @@ public class EditProfile extends AppCompatActivity {
         et_bio = findViewById(R.id.edit_user_bio);
         user_photo = findViewById(R.id.user_photo);
 
-        et_name.setText(p.getName());
-        et_email.setText(p.getEmail());
-        et_bio.setText(p.getBio());
-        et_location.setText(p.getLocation());
-        et_phone.setText(p.getPhone());
-        latLng = p.getPosition();
+        et_name.setText(currentUserProfile.getName());
+        et_email.setText(currentUserProfile.getEmail());
+        et_bio.setText(currentUserProfile.getBio());
+        et_location.setText(currentUserProfile.getLocation());
+        et_phone.setText(currentUserProfile.getPhone());
+        latLng = currentUserProfile.getPosition();
 
 
         // Restoring from past instanceState
@@ -145,9 +138,7 @@ public class EditProfile extends AppCompatActivity {
         Button save_button = findViewById(R.id.save_button);
 
         save_button.setOnClickListener(v -> {
-            // If the user has selected a location
-
-
+            // If the user has filled up all mandatory fields
             if (!infoIsMissingFromUI()) {
                 // Get the data from an ImageView as bytes
                 user_photo.setDrawingCacheEnabled(true);
@@ -157,9 +148,9 @@ public class EditProfile extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] shown_image = baos.toByteArray();
 
-                //Create a new profileManager
-                profileManager.editProfile(
-                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                //
+                ProfileManager.updateProfile(
+                        ProfileManager.getCurrentUserID(),
                         et_name.getText().toString(),
                         et_email.getText().toString(),
                         et_phone.getText().toString(),
@@ -167,8 +158,10 @@ public class EditProfile extends AppCompatActivity {
                         et_bio.getText().toString(),
                         shown_image,
                         latLng,
-                        FirebaseStorage.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
                 );
+
+                //Log.d(TAG, "User has completed the registration: " + ProfileManager.hasCompletedRegistration());
 
                 // Terminating the activity
                 finish();
@@ -180,24 +173,22 @@ public class EditProfile extends AppCompatActivity {
      * Tests whether the location info and username have been specified or not via the
      * corresponding UI item.
      *
-     * @return true if the user has not specified the location or username yet.
-     * false otherwise.
+     * @return  true if the user has not specified the location or username yet.
+     *          false otherwise.
      */
-
     private boolean infoIsMissingFromUI() {
-
-        boolean checkUIMandatoryInfo = false;
+        boolean infoIsMissing = false;
 
         if (et_name != null && et_name.getText().toString().equals("")) {
-            checkUIMandatoryInfo = true;
+            infoIsMissing = true;
             et_name.setError("Please insert a valid username");
         }
         if (et_location != null && et_location.getText().equals("")) {
-            checkUIMandatoryInfo = true;
+            infoIsMissing = true;
             et_location.setError("Please insert a valid location");
         }
 
-        return checkUIMandatoryInfo;
+        return infoIsMissing;
     }
 
 
@@ -209,8 +200,8 @@ public class EditProfile extends AppCompatActivity {
      */
 
     private boolean infoIsMissingFromUser() {
-        String userLocation = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation();
-        String username = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getName();
+        String userLocation = ProfileManager.getProfile(ProfileManager.getCurrentUserID()).getLocation();
+        String username = ProfileManager.getProfile(ProfileManager.getCurrentUserID()).getName();
 
         boolean infoIsMissing = false;
 
@@ -231,9 +222,6 @@ public class EditProfile extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        //Log.d("location", "profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation(): " + profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation());
-        //Log.d("location", "profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getLocation().equals(""));
-
         if (!infoIsMissingFromUser() && !infoIsMissingFromUI())
             finish();
     }
@@ -396,8 +384,8 @@ public class EditProfile extends AppCompatActivity {
             user_photo.setImageBitmap(tmp);
         } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
-        } else if (p.getImage() != null) {
-            Picasso.get().load(p.getImage()).fit().centerCrop().into(user_photo);
+        } else if (currentUserProfile.getImage() != null) {
+            Picasso.get().load(currentUserProfile.getImage()).fit().centerCrop().into(user_photo);
         }
     }
 }

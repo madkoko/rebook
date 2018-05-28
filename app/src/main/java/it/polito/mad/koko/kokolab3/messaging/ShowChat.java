@@ -60,8 +60,8 @@ public class ShowChat extends AppCompatActivity {
         chatId = getIntent().getStringExtra("chatId");
 
         // 2. Retrieve *sender* information
-        senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        senderProfile = ProfileManager.getInstance().getProfile(senderId);
+        senderId = ProfileManager.getCurrentUserID();
+        senderProfile = ProfileManager.getProfile(senderId);
         senderUsername = senderProfile.getName();
         senderImage = senderProfile.getImage();
         senderToken = senderProfile.getTokenMessage();

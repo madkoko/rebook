@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class SearchBooks extends AppCompatActivity {
 
@@ -100,7 +101,7 @@ public class SearchBooks extends AppCompatActivity {
 
     private boolean bookMatchesKeywords(Book book) {
 
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUserID = ProfileManager.getCurrentUserID();
         String title = this.title.getText().toString();
         String author = this.author.getText().toString();
         String publisher = this.publisher.getText().toString();

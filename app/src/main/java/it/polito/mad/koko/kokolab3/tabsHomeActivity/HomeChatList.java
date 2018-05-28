@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.ShowChat;
 import it.polito.mad.koko.kokolab3.messaging.UserChatInfo;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.ui.CircleTransform;
 
 public class HomeChatList extends Fragment{
@@ -37,7 +38,7 @@ public class HomeChatList extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUserID = ProfileManager.getCurrentUserID();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");
 

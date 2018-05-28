@@ -18,8 +18,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     private static final String TAG = "NotificationReceiver";
 
-    private ProfileManager profileManager;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         // Debugging

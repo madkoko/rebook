@@ -17,6 +17,7 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowChats extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class ShowChats extends AppCompatActivity {
         //Set title.
         setTitle(R.string.chats_activity_title);
 
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUserID = ProfileManager.getCurrentUserID();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");
 

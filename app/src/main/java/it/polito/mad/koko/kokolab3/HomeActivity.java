@@ -23,7 +23,6 @@ import android.widget.ViewSwitcher;
 import com.google.firebase.auth.FirebaseAuth;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
-import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
@@ -33,6 +32,7 @@ import it.polito.mad.koko.kokolab3.messaging.ShowChats;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.profile.ProfileService;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeChatList;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeListBook;
@@ -42,11 +42,6 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "HomeActivity";
-
-    /**
-     * User profile information
-     */
-    private ProfileManager profileManager;
 
     /**
      * Result codes needed to distinguish among all possible activities launched
@@ -69,10 +64,11 @@ public class HomeActivity extends AppCompatActivity
 
     //private int SEARCH_BOOKS = 2;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG,"onCreate() called");
 
         // UI
         setContentView(R.layout.activity_main);
@@ -85,7 +81,7 @@ public class HomeActivity extends AppCompatActivity
                     .setAction("Action", null).show();*/
 
             Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
-            insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+            insertBook.putExtra("uid", ProfileManager.getCurrentUserID());
             //BookManager.removeUserBooksEventListener();
             //BookManager.removeSearchBooksEventListener();
             startActivityForResult(insertBook, INSERT_BOOK);
@@ -103,29 +99,33 @@ public class HomeActivity extends AppCompatActivity
         // Launching the authentication UI
         AuthenticationUI.launch(this);
 
-        profileManager = ProfileManager.getInstance();
-        profileManager.populateUsersList();
-        // creation of the BookManager if the user is authenticated
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            // Retrieving the ProfileManager singleton
-            //BookManager.populateUserBookList();
-            //BookManager.populateSearchBooks();
+        ProfileManager.populateUsersList();
+
+        // If the user has already logged in
+        if (ProfileManager.hasLoggedIn()) {
+            // Attaching the value listener to the current user's Firebase child
+            ProfileManager.attachCurrentUserProfileListener();
+
+            Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
+
+            // If the user has not completed the registration process already
+            if(!ProfileManager.hasCompletedRegistration()) {
+                // Launch the EditProfile activity=
+                startActivity(new Intent(getApplicationContext(), EditProfile.class));
+
+                return;
+            }
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
         }
 
-        //*********//
-        // Final UI implementation
-
+        // UI
         viewSwitcher = findViewById(R.id.home_switcher);
         layoutRecycler = findViewById(R.id.home_recycler_switcher);
         layoutList = findViewById(R.id.home_list_switcher);
-
-
         TabLayout tab_layout = findViewById(R.id.tabs_home);
-
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
         tab_layout.addTab(tab_layout.newTab().setText("home"));
         homeListBook = new HomeListBook();
@@ -133,8 +133,6 @@ public class HomeActivity extends AppCompatActivity
         homeListChats = new HomeChatList();
         tab_layout.addTab(tab_layout.newTab().setText("in progress"));
         selectFragment(0);
-
-
 
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -154,10 +152,7 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
             }
         });
-
-
     }
-
 
     private void removeFragment(int position) {
         switch (position){
@@ -216,6 +211,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d(TAG,"onActivityResult() called");
+
         /*if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
 
             Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
@@ -224,7 +221,6 @@ public class HomeActivity extends AppCompatActivity
         }*/
 
         // Debugging
-        Log.d(TAG, "HomeActivity::onActivityResult() has been called");
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
@@ -238,33 +234,26 @@ public class HomeActivity extends AppCompatActivity
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
             // Inform the user of the successful authentication
-
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-
-            //profileManager = ProfileManager.getInstance();
-
-            // Creating the Firebase user entry in the database
-
-            //BookManager.populateUserBookList();
-            //BookManager.populateSearchBooks();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
 
-            //
-            profileManager.getInstance();
-            //profileManager.populateUsersList();
-            profileManager.addProfile(FirebaseAuth.getInstance().getCurrentUser().getUid(), FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            // Loading the new profile on Firebase
+            ProfileManager.addProfile(ProfileManager.getCurrentUserID(), ProfileManager.getCurrentUser().getEmail());
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
 
+            // Attaching the value listener to the current user's Firebase child
+            ProfileManager.attachCurrentUserProfileListener();
+
             // If this is a new user or the user has not finished the registration
-            if (profileManager.profileIsNotPresent((FirebaseAuth.getInstance().getCurrentUser().getUid()))) {
+            if (ProfileManager.profileIsNotPresent((ProfileManager.getCurrentUserID()))) {
                 startActivity(new Intent(getApplicationContext(), EditProfile.class));
             } else {
-                if (profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid()).getImage() != null) {
-                    Profile p = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                if (ProfileManager.getProfile(ProfileManager.getCurrentUserID()).getImage() != null) {
+                    Profile p = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
                     ImageManager.loadBitmap(p.getImage());
                 }
             }
@@ -273,6 +262,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG,"onBackPressed() called");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -290,6 +281,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG,"onOptionsItemSelected() called");
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -306,18 +299,18 @@ public class HomeActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Log.d(TAG,"onNavigationItemSelected() called");
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.view_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
-            i.putExtra("UserID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+            i.putExtra("UserID", ProfileManager.getCurrentUserID());
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
-            Intent intent = new Intent(getApplicationContext(), EditProfile.class);
-            startActivity(intent);
-
+            startActivity(new Intent(getApplicationContext(), EditProfile.class));
         } else if (id == R.id.my_books) {
 
             Intent showBooks = new Intent(getApplicationContext(), ShowBooks.class);
@@ -336,8 +329,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(new Intent(getApplicationContext(), ShowChats.class));
 
         } else if (id == R.id.sign_out) {
-            FirebaseAuth.getInstance().signOut();
-
+            ProfileManager.logout();
             AuthenticationUI.launch(this);
         }
 
@@ -349,7 +341,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        profileManager = ProfileManager.getInstance();
+
+        Log.d(TAG,"onResume() called");
     }
 
 }

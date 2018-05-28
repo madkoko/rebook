@@ -59,7 +59,6 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
         mMap = googleMap;
 
         // Retrieving user IDs
-        profileManager = ProfileManager.getInstance();
         Intent mapsIntent = getIntent();
         ArrayList<String> users = mapsIntent.getStringArrayListExtra("key");
 
@@ -69,8 +68,8 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
         // For each user ID
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i) != null) {
-                if (profileManager.getProfile(users.get(i)) != null) {
-                    Profile user = profileManager.getProfile(users.get(i));
+                if (ProfileManager.getProfile(users.get(i)) != null) {
+                    Profile user = ProfileManager.getProfile(users.get(i));
                     String pos = user.getPosition();
                     String nameUser = user.getName();
 

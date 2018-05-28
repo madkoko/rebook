@@ -109,7 +109,7 @@ class RequestManager() {
     }
 
 
-    fun editProfile(id: String, name: String, email: String, phone: String, location: String, bio: String, data: ByteArray, latLng: String?, storageRef: StorageReference) {
+    fun updateProfile(id: String, name: String, email: String, phone: String, location: String, bio: String, data: ByteArray, latLng: String?, storageRef: StorageReference) {
         val Ref = usersRef.child(id)
         this.storageRef = storageRef
         childUpdates = HashMap()

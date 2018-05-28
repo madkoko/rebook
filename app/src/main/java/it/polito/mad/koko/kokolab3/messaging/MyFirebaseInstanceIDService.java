@@ -58,9 +58,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
-        String uid = FirebaseAuth.getInstance().getUid();
-        ProfileManager profileManager= ProfileManager.getInstance();
-        profileManager.addToken(token, uid);
+        String uid = ProfileManager.getCurrentUserID();
+
+        // No user has performed a login
+        if(uid != null)
+            ProfileManager.addToken(uid, token);
     }
 }

@@ -47,7 +47,6 @@ public class ShowProfile extends AppCompatActivity {
     /**
      * User profile information
      */
-    private ProfileManager profileManager;
     private Bitmap bmp;
     private Profile profile;
     private FloatingActionButton edit;
@@ -63,9 +62,6 @@ public class ShowProfile extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Retrieving the ProfileManager singleton
-        profileManager = ProfileManager.getInstance();
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
@@ -84,13 +80,13 @@ public class ShowProfile extends AppCompatActivity {
         i = getIntent();
         mFirebaseUser= i.getExtras().getString("UserID");
 
-        profile = profileManager.getProfile(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        profile = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             toolbar = findViewById(R.id.technique_three_toolbar);
             toolbar.setTitle(profile.getName());
 
-            if (mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            if (mFirebaseUser.equals(ProfileManager.getCurrentUserID())) {
                 edit = findViewById(R.id.fab);
                 edit.setOnClickListener(v -> {
                     //Only if Auth user is equal to user from intent, we can use this menu
@@ -144,7 +140,7 @@ public class ShowProfile extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+        if(mFirebaseUser.equals(ProfileManager.getCurrentUserID())) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.menu_main, menu);
             return true;

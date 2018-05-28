@@ -19,15 +19,13 @@ public class ProfileTabAdapter extends BaseAdapter {
 
     private final Context context;
     private final Profile profile;
-    private final ProfileManager profileManager;
     private TextView value;
     private TextView key;
     private ImageView imageView;
 
     public ProfileTabAdapter(Context context){
         this.context=context;
-        profileManager = ProfileManager.getInstance();
-        profile = profileManager.getProfile(FirebaseAuth.getInstance().getUid());
+        profile = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
 
 
     }
