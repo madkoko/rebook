@@ -3,9 +3,12 @@ package it.polito.mad.koko.kokolab3;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,6 +24,9 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.books.BookManager;
@@ -74,14 +80,15 @@ public class HomeActivity extends AppCompatActivity
 
     //private int SEARCH_BOOKS = 2;
 
+    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 30;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         authenticator = new Authenticator(this);
-
-
 
         // UI
         setContentView(R.layout.activity_main);
@@ -95,8 +102,7 @@ public class HomeActivity extends AppCompatActivity
 
             Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
             insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-            //BookManager.removeUserBooksEventListener();
-            //BookManager.removeSearchBooksEventListener();
+
             startActivityForResult(insertBook, INSERT_BOOK);
         });
 
@@ -117,11 +123,6 @@ public class HomeActivity extends AppCompatActivity
         profileManager.populateUsersList();
         // creation of the BookManager if the user is authenticated
         if (authenticator.hasLoggedIn()) {
-            // Retrieving the ProfileManager singleton
-            //BookManager.populateUserBookList();
-            //BookManager.populateSearchBooks();
-
-            ProfileManager.getInstance().retrieveCurrentUser();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
@@ -228,26 +229,14 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        /*if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
-
-            Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
-            showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
-            startActivity(showSearchBooks);
-        }*/
 
         // Debugging
         Log.d(TAG, "HomeActivity::onActivityResult() has been called");
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
-        //if (requestCode == INSERT_BOOK)
-            // Retrieving all user's books
-            //BookManager.populateUserBookList();
-
             // Returning in HomeActivity from an Authentication procedure
         if (resultCode == AUTH) {
-            profileManager.retrieveCurrentUser();
-
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
@@ -256,13 +245,8 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
             authenticator.instantiateUser();
 
-
-            //profileManager = ProfileManager.getInstance();
-
-            // Creating the Firebase user entry in the database
-
-            //BookManager.populateUserBookList();
-            //BookManager.populateSearchBooks();
+            // check if camera and storage are allowed
+            checkAndRequestPermissions();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
@@ -365,6 +349,33 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
         profileManager.reset();
 
+    }
+
+    /**
+     * method to check camera and storage permissions
+     */
+    private void checkAndRequestPermissions() {
+        int camera = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA);
+        int writeStorage = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readStorage = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        List<String> listPermissionsNeeded = new ArrayList<>();
+
+        if (camera != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.CAMERA);
+        }
+        if (writeStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (readStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray
+                    (new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+
+        }
     }
 
 }

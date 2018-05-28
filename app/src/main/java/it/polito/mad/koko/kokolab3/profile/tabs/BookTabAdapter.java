@@ -49,10 +49,10 @@ public class BookTabAdapter extends BaseAdapter {
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if (convertView == null)
-            convertView = mInflater.inflate(R.layout.books_adapter_layout, parent, false);
+            convertView = mInflater.inflate(R.layout.my_books_adapter_layout, parent, false);
 
-        TextView title =  convertView.findViewById(R.id.book_title);
-        ImageView photo =  convertView.findViewById(R.id.book_photo);
+        TextView title =  convertView.findViewById(R.id.my_book_title);
+        ImageView photo =  convertView.findViewById(R.id.my_book_photo);
         title.setText(myBooks.get(position).getTitle());
         Picasso.get().load(myBooks.get(position).getImage()).fit().centerCrop().into(photo);
         convertView.setOnClickListener(v -> {

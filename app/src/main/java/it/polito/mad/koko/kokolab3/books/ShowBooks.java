@@ -1,20 +1,23 @@
 package it.polito.mad.koko.kokolab3.books;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,11 +27,9 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.messaging.MessageManager;
-import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowBooks extends AppCompatActivity
@@ -66,10 +67,7 @@ public class ShowBooks extends AppCompatActivity
 
             book_list = (ArrayList<Book>) getIntent().getExtras().get("searchedBooks");
 
-            if (book_list != null && book_list.size() == 0) {
-                Toast.makeText(getApplicationContext(), "No books found", Toast.LENGTH_LONG).show();
-                finish();
-            } else {
+            if (book_list != null && book_list.size() != 0) {
 
                 bookListView.setAdapter(new BaseAdapter() {
 
@@ -91,19 +89,15 @@ public class ShowBooks extends AppCompatActivity
                     @Override
                     public View getView(final int i, View view, ViewGroup viewGroup) {
                         if (view == null)
-                            view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
+                            view = getLayoutInflater().inflate(R.layout.search_books_adapter_layout, viewGroup, false);
 
-                        createBooksView(view, book_list.get(i));
-
-                        TextView sharingUser = (TextView) view.findViewById(R.id.sharing_user);
-                        String uid = book_list.get(i).getUid();
-                        String sharedBy = "Shared by: " + pm.getProfile(uid).getName();
-                        sharingUser.setText(sharedBy);
+                        createBooksView(view, book_list.get(i), null);
 
                         return view;
                     }
                 });
             }
+
         }
 
         // In case this activity is called by "My Books"
@@ -111,14 +105,14 @@ public class ShowBooks extends AppCompatActivity
             String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             Query userBooksQuery = FirebaseDatabase.getInstance().getReference().child("books").orderByChild("uid").equalTo(currentUserID);
 
-            // FirebaseListOptions<Book> to retrieve books from firebase
-            // query is reference
+            //FirebaseListOptions<Book> to retrieve books from firebase
+            //query is reference
             FirebaseListOptions<Book> booksListOptions = new FirebaseListOptions.Builder<Book>()
-                    .setLayout(R.layout.books_adapter_layout)
+                    .setLayout(R.layout.my_books_adapter_layout)
                     .setQuery(userBooksQuery, Book.class)
                     .build();
 
-            // FirebaseListAdapter to create ListAdapter Ui from firebaseUi
+            //FirebaseListAdapter to create ListAdapter Ui from firebaseUi
             booksAdapter = new FirebaseListAdapter<Book>(booksListOptions) {
 
                 @Override
@@ -126,9 +120,10 @@ public class ShowBooks extends AppCompatActivity
 
                     Log.d(TAG, booksAdapter.getRef(position).getKey());
 
-                    createBooksView(view, model);
+                    createBooksView(view, model, position);
 
                     // Insert the current Book (model) into an array to use it in "showMap"
+                    // IN MY_BOOKS "MAP" BUTTON IS NOT VISIBLE ANYMORE
                     book_list.add(model);
 
                 }
@@ -137,8 +132,6 @@ public class ShowBooks extends AppCompatActivity
         }
         ;
 
-        // Map button click listener
-        findViewById(R.id.books_map_button).setOnClickListener(v -> showMap());
     }
 
     /**
@@ -147,64 +140,95 @@ public class ShowBooks extends AppCompatActivity
      * @param view  view to be created
      * @param model book to populate the views
      */
-    private void createBooksView(View view, Book model) {
-        TextView title = (TextView) view.findViewById(R.id.book_title);
-        ImageView photo = (ImageView) view.findViewById(R.id.book_photo);
-        title.setText(model.getTitle());
-        Picasso.get().load(model.getImage()).fit().centerCrop().into(photo);
+    private void createBooksView(View view, Book model, Integer position) {
 
+        if (requestCode == SEARCH_BOOKS) {
+            TextView searchBookTitle = (TextView) view.findViewById(R.id.search_book_title);
+            ImageView searchBookPhoto = (ImageView) view.findViewById(R.id.search_book_photo);
+            String sharable = model.getSharable();
+            searchBookTitle.setText(model.getTitle());
+            Picasso.get().load(model.getImage()).fit().centerCrop().into(searchBookPhoto);
 
-        // start the activity "Show Book" passing the current book in the Intent
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            TextView sharingUser = (TextView) view.findViewById(R.id.search_book_sharing_user);
+            String sharedBy = "Shared by: " + model.getBookOwner().getName() + "\n---------------------" +
+                    "\n" + model.getBookOwner().getLocation();
+            sharingUser.setText(sharedBy);
 
-                Intent i = getChatInfo(model);
-                Boolean chatFlag = false;
+            // Checks if the book is available for sharing
+            // If it's available, the title is displayed green;
+            // otherwise, the title is displayed red
+            if (sharable.equalsIgnoreCase("yes"))
+                searchBookTitle.setTextColor(Color.GREEN);
 
-                MessageManager.createChat(i, model.getTitle(), chatFlag);
+            else
+                searchBookTitle.setTextColor(Color.RED);
+            // start the activity "Show Book" passing the current book in the Intent
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
+                    Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
 
-                showBook.putExtra("book", model);
-                //showBook.putExtra("bookPhoto",bookVals.get("image"));
-                startActivity(showBook);
+                    showBook.putExtra("book", model);
+                    //showBook.putExtra("bookPhoto",bookVals.get("image"));
+                    startActivity(showBook);
+                }
+            });
 
+            // Map button click listener
+            findViewById(R.id.books_map_button).setOnClickListener(v -> showMap());
 
-            }
-        });
-    }
+        } else if (requestCode == USER_BOOKS) {
+            TextView myBookTitle = (TextView) view.findViewById(R.id.my_book_title);
+            ImageView myBookPhoto = (ImageView) view.findViewById(R.id.my_book_photo);
+            String sharable = model.getSharable();
+            myBookTitle.setText(model.getTitle());
+            Picasso.get().load(model.getImage()).fit().centerCrop().into(myBookPhoto);
 
-    /*  Method to retrieve Sender & Receiver info to Start / Resume their chat  */
-    private Intent getChatInfo(Book book) {
+            Button deleteBookButton = (Button) view.findViewById(R.id.delete_my_book);
 
-        Intent i = new Intent();
+            // set the listener to the delete button with an alert dialog
+            deleteBookButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(ShowBooks.this, android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(ShowBooks.this);
+                    }
+                    builder.setTitle("Delete Book")
+                            .setMessage("Are you sure you want to delete this book?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    BookManager.removeBook(String.valueOf(booksAdapter.getRef(position).getKey()));
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+            });
 
-        // Sender Info
-        String senderId = FirebaseAuth.getInstance().getUid();
-        Profile senderProfile = pm.getProfile(senderId);
-        String senderUsername = senderProfile.getName();
-        String senderImage = senderProfile.getImage();
-        String senderToken = senderProfile.getTokenMessage();
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-        // Receiver Info
-        String receiverId = book.getUid();
-        Profile receiverProfile = pm.getProfile(receiverId);
-        String receiverUsername = receiverProfile.getName();
-        String receiverImage = receiverProfile.getImage();
-        String receiverToken = receiverProfile.getTokenMessage();
+                    Intent editBook = new Intent(getApplicationContext(), EditBook.class);
 
-        // 2. Put Sender & Receiver info into Intent
-        i.putExtra("senderId", senderId);
-        i.putExtra("senderUsername", senderUsername);
-        i.putExtra("senderImage", senderImage);
-        i.putExtra("senderToken", senderToken);
-        i.putExtra("receiverId", receiverId);
-        i.putExtra("receiverUsername", receiverUsername);
-        i.putExtra("receiverImage", receiverImage);
-        i.putExtra("receiverToken", receiverToken);
+                    editBook.putExtra("updatingBook", model);
+                    editBook.putExtra("bookKey", booksAdapter.getRef(position).getKey());
+                    //showBook.putExtra("bookPhoto",bookVals.get("image"));
+                    startActivity(editBook);
+                }
+            });
 
-        return i;
+            findViewById(R.id.books_map_button).setVisibility(View.INVISIBLE);
+        }
 
     }
 
@@ -230,21 +254,26 @@ public class ShowBooks extends AppCompatActivity
         Intent mapsIntent = new Intent(getApplicationContext(), BooksMapActivity.class);
 
         // Retrieving all users IDs
-        ProfileManager profileManager = ProfileManager.getInstance();
-        ArrayList<String> userId = new ArrayList<String>();
+        // ArrayList<String> userId = new ArrayList<String>();
+
+        // Map with key: username - value: user position passed to BooksMapActivity
+        // to show user in google map
+        HashMap<String, String> sharingUsersPositions = new HashMap<>();
+
         for (Book book : book_list) {
             if (book.getUid() != null &&
                     !book.getUid().isEmpty() &&
                     book.getUid() != "") {
 
-                Profile profile = profileManager.getProfile(book.getUid());
-                String userPosition = profile.getPosition();
+                String userPosition = book.getBookOwner().getPosition();
+                String userName = book.getBookOwner().getName();
 
-                if (userPosition != null)
-                    userId.add(book.getUid());
+                /*if (userPosition != null)
+                    userId.add(book.getUid());*/
+                sharingUsersPositions.put(userName, userPosition);
             }
         }
-        mapsIntent.putExtra("key", userId);
+        mapsIntent.putExtra("sharingUsersPositions", sharingUsersPositions);
 
         // Launching the Maps with the right markers
         startActivity(mapsIntent);

@@ -25,6 +25,8 @@ import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class InsertBook extends AppCompatActivity {
@@ -42,14 +44,16 @@ public class InsertBook extends AppCompatActivity {
     private static final int SCAN_BOOK_INFO = 1;
 
     private Uri imageRef;
-    private Bitmap imageBitmap;
-    private boolean flagCamera;
-
+    private ProfileManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_book);
+
+        pm=ProfileManager.getInstance();
+
+        pm.retrieveCurrentUser();
 
         bookIsbn = findViewById(R.id.edit_book_ISBN);
         bookTitle = findViewById(R.id.edit_book_title);
@@ -58,7 +62,6 @@ public class InsertBook extends AppCompatActivity {
         bookEditionYear = findViewById(R.id.edit_book_edition_year);
         bookConditions = findViewById(R.id.edit_book_conditions);
         bookPhoto = findViewById(R.id.insert_book_photo);
-
 
         ImageButton photoButton = findViewById(R.id.book_photo_button);
         photoButton.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +131,11 @@ public class InsertBook extends AppCompatActivity {
         });
     }
 
+    /**
+     * Method to create the book to be inserted in Firebase
+     * @param uid current user ID inserted into the book
+     */
+
     public void createBook(String uid) {
 
         String isbn = bookIsbn.getText().toString();
@@ -137,6 +145,8 @@ public class InsertBook extends AppCompatActivity {
         String editionYear = bookEditionYear.getText().toString();
         String conditions = bookConditions.getText().toString();
 
+        Profile currentUser=pm.getCurrentUser();
+
         bookPhoto.setDrawingCacheEnabled(true);
         bookPhoto.buildDrawingCache();
         Bitmap bitmap = bookPhoto.getDrawingCache();
@@ -144,12 +154,12 @@ public class InsertBook extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] shown_image = baos.toByteArray();
 
-        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, uid, null);
 
-        BookManager.insertBook(book, shown_image);
+        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, null,uid,null,"yes",currentUser);
+
+        BookManager.insertBook(book,shown_image);
 
         finish();
-
     }
 
     @Override
@@ -166,9 +176,9 @@ public class InsertBook extends AppCompatActivity {
             //create a new BitMap
             createImageFile(extras);
             // set flags for future state
-            flagCamera = true;
+            boolean flagCamera = true;
 
-            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             bookPhoto.setImageBitmap(tmp);
 
         }
@@ -195,10 +205,10 @@ public class InsertBook extends AppCompatActivity {
     }
 
     private void createImageFile(Bundle extras) {
-        imageBitmap = (Bitmap) extras.get("data");
+        Bitmap imageBitmap = (Bitmap) extras.get("data");
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();

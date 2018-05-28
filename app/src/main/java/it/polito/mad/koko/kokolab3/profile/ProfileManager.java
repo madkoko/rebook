@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,8 +27,6 @@ public class ProfileManager {
 
     private static final String TAG = "ProfileManager";
 
-    private static Profile currentUser;
-
     /**
      * Unique instance
      */
@@ -41,14 +40,23 @@ public class ProfileManager {
     private Map<String, Object> childUpdates;
     private String downloadUrl;
 
-    private static ConcurrentMap<String,Profile> allUsers = new ConcurrentHashMap<String, Profile>();
+    /**
+     * Map with all the users
+     */
+    private static ConcurrentMap<String, Profile> allUsers = new ConcurrentHashMap<String, Profile>();
+
+    /**
+     * Current user
+     */
+    private static Profile currentUser;
 
     /**
      * synchronized method for different thread
+     *
      * @return ProfileManager instance
      */
     public static synchronized ProfileManager getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new ProfileManager();
         return instance;
     }
@@ -65,7 +73,7 @@ public class ProfileManager {
      * CREATED BY FRANCESCO PETRO
      * */
 
-    public void populateUsersList(){
+    public void populateUsersList() {
         synchronized (allUsers) {
             usersRef.addValueEventListener(
                     new ValueEventListener() {
@@ -75,7 +83,7 @@ public class ProfileManager {
                                 allUsers = new ConcurrentHashMap<>();
                                 allUsers.clear();
 
-                                allUsers.putAll((Map<String, Profile>)dataSnapshot.getValue());
+                                allUsers.putAll((Map<String, Profile>) dataSnapshot.getValue());
                             }
                         }
 
@@ -86,7 +94,7 @@ public class ProfileManager {
         }
     }
 
-    public ConcurrentMap<String, Profile> getAllUsers(){
+    public ConcurrentMap<String, Profile> getAllUsers() {
         synchronized (allUsers) {
             return allUsers;
         }
@@ -109,12 +117,14 @@ public class ProfileManager {
             return profile;
         }
     }
+
     /**
      * Manager for add Profile on Firebase
+     *
      * @param email email of user
      */
     @SuppressLint("LongLogTag")
-    public void addProfile(String uid, String email){
+    public void addProfile(String uid, String email) {
         //This is for future implementation of Auth
         /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
         usersRef.push().setValue(profile);*/
@@ -128,7 +138,7 @@ public class ProfileManager {
 
     public void editProfile(String id, String name, String email, String phone, String location, String bio, byte[] data, String latLng, StorageReference storageRef) {
         DatabaseReference Ref = usersRef.child(id);
-        this.storageRef=storageRef;
+        this.storageRef = storageRef;
         childUpdates = new HashMap<>();
         /*
         StorageMetadata metadata = new StorageMetadata.Builder()
@@ -139,14 +149,14 @@ public class ProfileManager {
         uploadTask.addOnSuccessListener(taskSnapshot -> {
             downloadUrl = taskSnapshot.getDownloadUrl().toString();
             Ref.child("image").setValue(downloadUrl);
-            if(downloadUrl!=null)ImageManager.loadBitmap(downloadUrl);
+            if (downloadUrl != null) ImageManager.loadBitmap(downloadUrl);
         });
         childUpdates.put("name", name);
         childUpdates.put("email", email);
         childUpdates.put("phone", phone);
         childUpdates.put("location", location);
         childUpdates.put("bio", bio);
-        if(latLng!=null)childUpdates.put("position",latLng);
+        if (latLng != null) childUpdates.put("position", latLng);
         Ref.updateChildren(childUpdates);
         /*firebaseUser.updateProfile(new UserProfileChangeRequest
                 .Builder()
@@ -158,11 +168,11 @@ public class ProfileManager {
 
 
     public boolean profileIsNotPresent(String uid) {
-        synchronized (allUsers){
+        synchronized (allUsers) {
             Iterator it = allUsers.entrySet().iterator();
-            while (it.hasNext()){
-                Map.Entry entry = (Map.Entry)it.next();
-                if(entry.getKey().equals(uid)) {
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                if (entry.getKey().equals(uid)) {
                     return false;
                 }
             }
@@ -174,7 +184,9 @@ public class ProfileManager {
         usersRef.child(uid).child("tokenMessage").setValue(token);
     }
 
-    // Listener to retrieve the current user from firebase
+    /**
+     * Listener to retrieve the current user from firebase
+     */
     public void retrieveCurrentUser() {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -203,6 +215,9 @@ public class ProfileManager {
 
     }
 
+    /**
+     * @return current user
+     */
     public Profile getCurrentUser() {
         return currentUser;
     }

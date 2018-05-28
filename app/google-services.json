@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "761234817977",
-    "firebase_url": "https://kokolab2-a0129.firebaseio.com",
-    "project_id": "kokolab2-a0129",
-    "storage_bucket": "kokolab2-a0129.appspot.com"
+    "project_number": "143521046601",
+    "firebase_url": "https://kokolab-smartquerybook.firebaseio.com",
+    "project_id": "kokolab-smartquerybook",
+    "storage_bucket": "kokolab-smartquerybook.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:761234817977:android:613f1944f60012a6",
+        "mobilesdk_app_id": "1:143521046601:android:be8ee89ca58dfc4c",
         "android_client_info": {
           "package_name": "it.polito.mad.koko.kokolab3"
         }
       },
       "oauth_client": [
         {
-          "client_id": "761234817977-84ikbbjsjdm39fddbatnos18nbgkn2uu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "it.polito.mad.koko.kokolab3",
-            "certificate_hash": "d9accb0bda48489213e9744f4716d7c2107271f8"
-          }
-        },
-        {
-          "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+          "client_id": "143521046601-h77lmmuocg58kkdsbeg4dafqh4srms7c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDrTztQPbOmc9C09g1hJMWFR-Q8A5-Ingw"
+          "current_key": "AIzaSyAdQa514xj4nRmFfRteVvtWw9wrud_zUDQ"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

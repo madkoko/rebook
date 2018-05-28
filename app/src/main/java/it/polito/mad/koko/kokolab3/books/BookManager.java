@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+
 /**
  * Created by Francesco on 13/04/2018.
  */
@@ -112,9 +115,9 @@ public class BookManager {
      * @param book
      * @param data Insert new Book into Firebase
      */
-    public static void insertBook(final Book book, byte[] data) {
+    public static void insertBook(Book book, byte[] data) {
 
-        final String bookKey = booksDatabaseRef.push().getKey();
+        String bookKey = booksDatabaseRef.push().getKey();
 
         UploadTask uploadTask = booksStorageRef.child(bookKey).putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -135,6 +138,7 @@ public class BookManager {
     /**
      * Create and attach the listener to the child "books" in firebase to retrieve all the books
      */
+
     public static void populateAllBooks() {
 
         booksDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -143,24 +147,17 @@ public class BookManager {
                 allBooks = new ArrayList<>();
                 if (dataSnapshot.exists()) {
 
-                    Map<String, Map<String,String>> booksSnapshot = (Map<String, Map<String,String>>) dataSnapshot.getValue();
-
                     // Retrieve all the books from Firebase
-                    for (String key : booksSnapshot.keySet()) {
-                        Map<String,String> bookValues=booksSnapshot.get(key);
-                        String isbn=bookValues.get("isbn");
-                        String title=bookValues.get("title");
-                        String author=bookValues.get("author");
-                        String publisher=bookValues.get("publisher");
-                        String editionYear=bookValues.get("editionYear");
-                        String conditions=bookValues.get("conditions");
-                        String uid=bookValues.get("uid");
-                        String image=bookValues.get("image");
-                        Book book=new Book(isbn,title,author,publisher,editionYear,conditions,uid,image);
+                    Iterator<DataSnapshot> bookIterator = dataSnapshot.getChildren().iterator();
+
+                    while (bookIterator.hasNext()) {
+                        Book book = bookIterator.next().getValue(Book.class);
                         allBooks.add(book);
                     }
+
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -171,9 +168,41 @@ public class BookManager {
     /**
      * @return Arraylist with all the books in Firebase
      */
-    public static ArrayList<Book> getAllBooks() {
 
+    public static ArrayList<Book> getAllBooks() {
         return allBooks;
     }
-}
 
+    /**
+     * Method to remove a book from Firebase
+     *
+     * @param bookId id of the book to be removed
+     */
+    public static void removeBook(String bookId) {
+        booksDatabaseRef.child(bookId).removeValue();
+    }
+
+    /**
+     * Method to update in Firebase when is edited by the owner
+     * @param bookId Id of the book to be updated
+     * @param bookValues Map with all the values to be updated in Firebase
+     */
+    public static void updateBook(String bookId, Map<String, Object> bookValues, byte[] data) {
+
+        Map<String, Object> bookUpdates = new HashMap<>();
+        UploadTask uploadTask = booksStorageRef.child(bookId).putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                //Log.d(TAG,downloadUrl);
+                bookValues.put("image",downloadUrl);
+                bookUpdates.put(bookId, bookValues);
+                //ref.child(bookKey).child("image").setValue(downloadUrl);
+                booksDatabaseRef.updateChildren(bookUpdates);
+            }
+        });
+
+    }
+
+}
