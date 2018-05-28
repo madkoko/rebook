@@ -129,44 +129,46 @@ public class ShowBook extends AppCompatActivity
                 i.putExtra("receiverImage", this.receiverImage);
                 i.putExtra("receiverToken", this.receiverToken);
 
-                // 3. Send Book Request
+                // 3. Click on "Book Request"
                 sendRequest.setOnClickListener(
-                        v -> MessageManager.sendRequestNotification(    //createMsg
+                        v -> {
+                            MessageManager.sendRequestNotification(    //createMsg
 
-                                // Sender info
-                                senderId,                               // Sender ID
-                                senderProfile.getName(),                // Sender Username
-                                senderProfile.getImage(),               // sender Image
-                                senderProfile.getTokenMessage(),        // Sender Token
+                                    // Sender info
+                                    senderId,                               // Sender ID
+                                    senderProfile.getName(),                // Sender Username
+                                    senderProfile.getImage(),               // sender Image
+                                    senderProfile.getTokenMessage(),        // Sender Token
 
-                                // Receiver info
-                                receiverId,                             // Receiver ID
-                                receiverProfile.getName(),              // Receiver Username
-                                receiverProfile.getImage(),             // Receiver Image
-                                receiverToken,                          // Receiver Token
+                                    // Receiver info
+                                    receiverId,                             // Receiver ID
+                                    receiverProfile.getName(),              // Receiver Username
+                                    receiverProfile.getImage(),             // Receiver Image
+                                    receiverToken,                          // Receiver Token
 
-                                // Book info
-                                book.getTitle(),                        // Book Title
+                                    // Book info
+                                    book.getTitle(),                        // Book Title
 
-                                // Chat info
-                                MessageManager.getChatID()
-                        )
-                );
+                                    // Chat info
+                                    MessageManager.getChatID()
+                            );
 
-                // 4. Open Chat
+                            boolean chatFlag = true;
+                            MessageManager.createChat(i, book.getTitle(), chatFlag);
+                        });
+
+                // 4. Click on "Open Chat"
                 sendMessage.setOnClickListener(v -> {
 
-                    Boolean chatFlag = true;
+                    boolean chatFlag = false;
                     MessageManager.createChat(i, book.getTitle(), chatFlag);
 
                     Intent showChat = new Intent (getApplicationContext(), ShowChat.class);
-                    //showChat.putExtra("chatID",chatID);
                     showChat.putExtra("originClass", "showBook");
                     startActivity(showChat);
-                    //chatID = MessageManager.getChatID();
-                }); // chiedi a Fra voglio far triggerare il listener in showbook e poi far triggerare l'activity in show book
-                // attacca il listener (createChat) poi fai ricreare dell'activity showbook e così quando schiacci il bottone
-                // crea verify in messageManager
+
+                });
+
             }
         }
     }
@@ -192,6 +194,5 @@ public class ShowBook extends AppCompatActivity
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
-    }
+    public void onMapClick(LatLng latLng) { }
 }

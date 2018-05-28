@@ -21,7 +21,7 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
     private ProfileManager profileManager;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent){
 
         // [ Debugging ]
         Log.d(TAG, "New notification. Action: " + intent.getAction());
@@ -30,7 +30,7 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
         // MessageManager.removeUserChatsMessagesListener();
 
         // [ Debug ]
-        Log.d(TAG, "New notification. Action II : " + intent.getExtras().get("chatID"));
+        Log.d(TAG, "New notification. Action II : " + intent.getStringExtra("chatID"));
 
         // In case a book exchange request has been received
         if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
@@ -61,10 +61,10 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             // If the book exchange has been accepted
             if (exchangeAccepted) {
                 // Creating a chat with the user
-                String chatID = MessageManager.getChatID();
+                String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
 
                 // Sending a positive response notification
-                intent.putExtra("chatID", chatID);
+                //intent.putExtra("chatID", chatID);
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
                 //MessageManager.populateUserMessages();
@@ -72,7 +72,11 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 // Starting the showChat activity
                 Intent showChatIntent = new Intent(context, ShowChat.class);
                 showChatIntent.putExtra("chatID", chatID);
-                //showChatIntent.putExtra("userChatInfo", model);
+                showChatIntent.putExtra("originClass", "notificationReceiver");
+                // Qua devo puttare le userChatInfo
+                showChatIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
+                showChatIntent.putExtra("userChatInfo", receiverInfo);
                 context.startActivity(showChatIntent);
             }
             // If the book exchange has not been accepted

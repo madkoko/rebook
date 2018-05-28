@@ -65,8 +65,8 @@ public class Conversation extends Fragment {
         //senderId = getArguments().getString("senderId");
         senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        savedInstanceState = this.getArguments();
-        if (savedInstanceState != null) {
+        //savedInstanceState = this.getArguments();
+        //if (savedInstanceState != null) {
             /*senderUsername = getArguments().getString("senderUsername");
             senderImage = getArguments().getString("senderImage");
             senderToken = getArguments().getString("senderToken");
@@ -75,7 +75,7 @@ public class Conversation extends Fragment {
             receiverImage = getArguments().getString("receiverImage");
             receiverToken = getArguments().getString("receiverToken");*/
             chatID = getArguments().getString("chatID");
-        }
+        //}
 
         Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatID).child("messages");
 

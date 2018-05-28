@@ -111,14 +111,14 @@ public class ShowBooks extends AppCompatActivity
             String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             Query userBooksQuery = FirebaseDatabase.getInstance().getReference().child("books").orderByChild("uid").equalTo(currentUserID);
 
-            //FirebaseListOptions<Book> to retrieve books from firebase
-            //query is reference
+            // FirebaseListOptions<Book> to retrieve books from firebase
+            // query is reference
             FirebaseListOptions<Book> booksListOptions = new FirebaseListOptions.Builder<Book>()
                     .setLayout(R.layout.books_adapter_layout)
                     .setQuery(userBooksQuery, Book.class)
                     .build();
 
-            //FirebaseListAdapter to create ListAdapter Ui from firebaseUi
+            // FirebaseListAdapter to create ListAdapter Ui from firebaseUi
             booksAdapter = new FirebaseListAdapter<Book>(booksListOptions) {
 
                 @Override
@@ -155,7 +155,6 @@ public class ShowBooks extends AppCompatActivity
 
 
         // start the activity "Show Book" passing the current book in the Intent
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -176,6 +175,7 @@ public class ShowBooks extends AppCompatActivity
         });
     }
 
+    /*  Method to retrieve Sender & Receiver info to Start / Resume their chat  */
     private Intent getChatInfo(Book book) {
 
         Intent i = new Intent();
@@ -194,7 +194,6 @@ public class ShowBooks extends AppCompatActivity
         String receiverImage = receiverProfile.getImage();
         String receiverToken = receiverProfile.getTokenMessage();
 
-
         // 2. Put Sender & Receiver info into Intent
         i.putExtra("senderId", senderId);
         i.putExtra("senderUsername", senderUsername);
@@ -206,6 +205,7 @@ public class ShowBooks extends AppCompatActivity
         i.putExtra("receiverToken", receiverToken);
 
         return i;
+
     }
 
     @Override

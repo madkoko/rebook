@@ -13,11 +13,15 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.ShowBook;
+import it.polito.mad.koko.kokolab3.messaging.MessageManager;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapter.BookHolder>{
 
@@ -25,6 +29,8 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
     private static final String TAG = "HomeBookAdapter";
     private final Activity activity;
     private int flag=0;
+    private ProfileManager pm;
+
 
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
@@ -48,6 +54,9 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
 
         holder.coverBook.setOnClickListener((View v) ->{
             Log.d(TAG, String.valueOf(getRef(position).getKey()));
+            Boolean chatFlag = false;
+            Intent i = getChatInfo(model);
+            MessageManager.createChat(i, model.getTitle(), chatFlag);
             Intent showBook = new Intent(activity, ShowBook.class);
             showBook.putExtra("book", model);
             activity.startActivity(showBook);
@@ -71,5 +80,39 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
             coverBook =  view.findViewById(R.id.book_cover);
         }
     }
+
+    private Intent getChatInfo(Book book) {
+
+        Intent i = new Intent();
+        pm = ProfileManager.getInstance();
+
+        // Sender Info
+        String senderId = FirebaseAuth.getInstance().getUid();
+        Profile senderProfile = pm.getProfile(senderId);
+        String senderUsername = senderProfile.getName();
+        String senderImage = senderProfile.getImage();
+        String senderToken = senderProfile.getTokenMessage();
+
+        // Receiver Info
+        String receiverId = book.getUid();
+        Profile receiverProfile = pm.getProfile(receiverId);
+        String receiverUsername = receiverProfile.getName();
+        String receiverImage = receiverProfile.getImage();
+        String receiverToken = receiverProfile.getTokenMessage();
+
+
+        // 2. Put Sender & Receiver info into Intent
+        i.putExtra("senderId", senderId);
+        i.putExtra("senderUsername", senderUsername);
+        i.putExtra("senderImage", senderImage);
+        i.putExtra("senderToken", senderToken);
+        i.putExtra("receiverId", receiverId);
+        i.putExtra("receiverUsername", receiverUsername);
+        i.putExtra("receiverImage", receiverImage);
+        i.putExtra("receiverToken", receiverToken);
+
+        return i;
+    }
+
 
 }

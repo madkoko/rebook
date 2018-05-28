@@ -622,7 +622,7 @@ public class MessageManager {
                 if (chatIdRetrieved != null) {
                     chatID = chatIdRetrieved;
 
-                    // Create a new message (if click is on button "Start Chat")
+                    // Create a new message (if click is on button "Request Book")
                     if(chatFlag) {
                         createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
                                 + NEW_REQUEST_MESSAGE
@@ -661,7 +661,7 @@ public class MessageManager {
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyImage").setValue(senderImage);
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyToken").setValue(senderToken);
 
-                // Create first message (if click is on button "Start Chat")
+                // Create first message (if click is on button "Request Book")
                 if(chatFlag) {
                     createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
                             + senderUsername

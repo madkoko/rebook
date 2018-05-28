@@ -87,7 +87,7 @@ public class ShowChat extends AppCompatActivity {
         else{
 
             // B1. Retrieve Chat ID
-            chatID = i.getStringExtra("chatID");
+            chatID = (String) i.getExtras().get("chatID");
 
             // B2. Retrieve *Sender* informations
             senderProfile = ProfileManager.getInstance().getCurrentUser();
