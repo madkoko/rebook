@@ -2,14 +2,11 @@ package it.polito.mad.koko.kokolab3.messaging.tabShowChat;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,15 +17,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.util.Map;
-
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.Message;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService;
-import it.polito.mad.koko.kokolab3.profile.Profile;
-import it.polito.mad.koko.kokolab3.profile.ProfileManager;
-import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 /**
  * Created by Franci on 22/05/18.
@@ -39,7 +31,7 @@ public class Conversation extends Fragment {
     private static final String TAG = "ConversationFragment";
 
     private FirebaseListAdapter<Message> adapter;     // All the messages of the selected chat
-    private String chatId;
+    private String chatID;
     private String senderId;
     private String senderUsername;
     private String senderImage;
@@ -82,10 +74,10 @@ public class Conversation extends Fragment {
             receiverUsername = getArguments().getString("receiverUsername");
             receiverImage = getArguments().getString("receiverImage");
             receiverToken = getArguments().getString("receiverToken");*/
-            chatId = getArguments().getString("chatId");
+            chatID = getArguments().getString("chatID");
         }
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatId).child("messages");
+        Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatID).child("messages");
 
         //FirebaseListOptions<Message> for retrieving data from firebase
         //query is reference
@@ -114,7 +106,7 @@ public class Conversation extends Fragment {
                 } else {
                     //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
                     messageText.setGravity(Gravity.LEFT);
-                    MessageManager.setFirebaseCheck(chatId, adapter.getRef(position).getKey());
+                    MessageManager.setFirebaseCheck(chatID, adapter.getRef(position).getKey());
 
                 }
             }
@@ -125,7 +117,7 @@ public class Conversation extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        MyFirebaseMessagingService.setActiveChat(chatId);
+        MyFirebaseMessagingService.setActiveChat(chatID);
     }
 
     @Override

@@ -164,7 +164,11 @@ public class MessageManager {
                                                     final String receiverToken,
 
                                                     // Book info
-                                                    final String bookTitle) {
+                                                    final String bookTitle,
+
+                                                    // Chat info
+                                                    final String chatID
+    ) {
 
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
@@ -212,8 +216,8 @@ public class MessageManager {
      * @param accepted       whether the exchange response was positive or not.
      */
     public static void sendResponseNotification(Intent responseIntent, boolean accepted) {
-        // Chat data
-        String chatId = responseIntent.getStringExtra("chatId");
+        // Chat data << !! l'intent ha tutto ma ha il chatID null !! >>
+        String chatID = responseIntent.getStringExtra("chatID");
 
         // Sender data
         String receiverId = responseIntent.getStringExtra("senderId");
@@ -250,7 +254,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
-                chatId,
+                chatID,
                 accepted ? "accept" : "decline"
         );
     }
@@ -274,7 +278,7 @@ public class MessageManager {
                                                final String bookTitle,
 
                                                // Chat info
-                                               final String chatId,
+                                               final String chatID,
 
                                                // Message info
                                                final String messageText) {
@@ -290,7 +294,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
-                chatId,
+                chatID,
                 "message"
         );
     }
@@ -315,7 +319,7 @@ public class MessageManager {
      * <p>
      * "type": "request" | "accept" | "decline" | "message",
      * <p>
-     * "chatId": chat_id,
+     * "chatID": chat_id,
      * <p>
      * "sender": {
      * "id": "kE3ErSqw...",
@@ -367,7 +371,7 @@ public class MessageManager {
                                              final String bookTitle,
 
                                              // Chat info
-                                             final String chatId,
+                                             final String chatID,
 
                                              // Notification info
                                              final String notificationType) {
@@ -402,7 +406,7 @@ public class MessageManager {
                     JSONObject data = new JSONObject();
                     data.put("notification", notification);
                     data.put("type", notificationType);
-                    data.put("chatId", chatId);
+                    data.put("chatID", chatID);
                     data.put("sender", sender);
                     data.put("receiver", receiver);
                     data.put("book", book);
@@ -681,15 +685,15 @@ public class MessageManager {
     /**
      * Creates a message entry in Firebase
      *
-     * @param chatId      id of the chat which the message belongs to
+     * @param chatID      id of the chat which the message belongs to
      * @param senderId    id of the sender of the message
      * @param receiverId  id of the receiver of the message
      * @param messageText content of the message
      */
-    public static void createMessage(String chatId, String senderId, String receiverId, String messageText) {
+    public static void createMessage(String chatID, String senderId, String receiverId, String messageText) {
 
         // Creating a message entry
-        DatabaseReference messagesRef = DatabaseManager.get("chats", chatId, "messages");
+        DatabaseReference messagesRef = DatabaseManager.get("chats", chatID, "messages");
         messageID = messagesRef.push().getKey();
         Message message = new Message();
         message.setSender(senderId);
@@ -700,8 +704,8 @@ public class MessageManager {
         messagesRef.child(messageID).setValue(message);
 
         // Creating the last message entry on both receiver and sender
-        DatabaseManager.set(messageText, "users/" + senderId + "/chats/" + chatId + "/lastMessage");
-        DatabaseManager.set(messageText, "users/" + receiverId + "/chats/" + chatId + "/lastMessage");
+        DatabaseManager.set(messageText, "users/" + senderId + "/chats/" + chatID + "/lastMessage");
+        DatabaseManager.set(messageText, "users/" + receiverId + "/chats/" + chatID + "/lastMessage");
     }
 
     /**

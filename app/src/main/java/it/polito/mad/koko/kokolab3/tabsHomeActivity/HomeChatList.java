@@ -76,7 +76,7 @@ public class HomeChatList extends Fragment{
 
                 view.setOnClickListener(v -> {
                     Intent showChat = new Intent(getActivity(), ShowChat.class);
-                    showChat.putExtra("chatId", chatID);
+                    showChat.putExtra("chatID", chatID);
                     showChat.putExtra("originClass", "showChats");
                     showChat.putExtra("userChatInfo", model);
                     startActivity(showChat);

@@ -99,7 +99,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     // [START receive_message]
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(RemoteMessage remoteMessage) { //meglio cambiare nome in onNotificationReceived
         // [START_EXCLUDE]
         // There are two types of messages: data messages and notification messages. Data messages are handled
         // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
@@ -213,7 +213,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString())); // [Debug]
 
         // 2.   Retrieving * Chat * informations
-        String chatId = receivedMessage.getData().get("chatId");
+        String chatID = receivedMessage.getData().get("chatID");
 
         // 3.   Retrieving the * Sender * data object
         String senderJsonString = receivedMessage.getData().get("sender");
@@ -250,11 +250,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Intent used upon tapping the notification
         // ?? missing ??
 
-        // Intent used upon accepting the book exchange request
+        // Intent used upon accepting the book exchange request NOOOO DA SPOSTARE a quando ACCETTA (invece compare quando riceve la notifica)
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
         acceptIntent.setAction(ACCEPT_ACTION);
         acceptIntent.putExtra("notificationID", counterNotificationId);
-        acceptIntent.putExtra("chatID", chatId);
+        acceptIntent.putExtra("chatID", chatID);
         acceptIntent.putExtra("bookTitle", bookTitle);
         acceptIntent.putExtra("receiverInfo", receiverInfo);
         // acceptIntent.putExtra(); mi serve mettere qua dentro userchatinfo e chatinfo
@@ -334,7 +334,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Creating the messageIntent that will open the chat with the request's sender
                 Intent messageIntent = new Intent(this, NotificationReceiver.class);
                 messageIntent.setAction(MESSAGE_ACTION);
-                messageIntent.putExtra("chatId", chatId);
+                messageIntent.putExtra("chatID", chatID);
                 PendingIntent messagePendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, messageIntent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
 

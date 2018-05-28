@@ -14,7 +14,7 @@ import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.D
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.MESSAGE_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.REQUEST_ACTION;
 
-public class NotificationReceiver extends BroadcastReceiver {
+public class NotificationReceiver extends BroadcastReceiver { //entra come prima cosa dopo che clicco accetta
 
     private static final String TAG = "NotificationReceiver";
 
@@ -30,20 +30,22 @@ public class NotificationReceiver extends BroadcastReceiver {
         // MessageManager.removeUserChatsMessagesListener();
 
         // [ Debug ]
-        Log.d(TAG, "New notification. Action II : " + intent.getExtras().get("chatId"));
+        Log.d(TAG, "New notification. Action II : " + intent.getExtras().get("chatID"));
 
         // In case a book exchange request has been received
         if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
             // TODO a summarized ShowProfile activity should be started here
 
             // Starting the showProfile activity
-            /*Intent showProfileIntent = new Intent(context, ShowProfile.class);
+            /* Intent showProfileIntent = new Intent(context, ShowProfile.class);
             showProfileIntent.putExtra("UserID", intent.getStringExtra("UserID"));
             context.startActivity(showProfileIntent);*/
+
         } else if (intent.getAction().compareTo(MESSAGE_ACTION) == 0) {
+
             // Starting the showChat activity
             Intent showChatIntent = new Intent(context, ShowChat.class);
-            showChatIntent.putExtra("chatId", intent.getStringExtra("chatId"));
+            showChatIntent.putExtra("chatID", intent.getStringExtra("chatID"));
             context.startActivity(showChatIntent);
         }
         // In case a book exchange response has been received, whether it's positive or not
@@ -53,23 +55,23 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             // If the book exchange has not been accepted
             if (!exchangeAccepted)
-                // Sending a negative response notification
+                // Sending a negative response notification : !!! l'intent ha chatId nll!!!!
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
             // If the book exchange has been accepted
             if (exchangeAccepted) {
                 // Creating a chat with the user
-                String chatId = MessageManager.getChatID();
+                String chatID = MessageManager.getChatID();
 
                 // Sending a positive response notification
-                intent.putExtra("chatId", chatId);
+                intent.putExtra("chatID", chatID);
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
                 //MessageManager.populateUserMessages();
 
                 // Starting the showChat activity
                 Intent showChatIntent = new Intent(context, ShowChat.class);
-                showChatIntent.putExtra("chatId", chatId);
+                showChatIntent.putExtra("chatID", chatID);
                 //showChatIntent.putExtra("userChatInfo", model);
                 context.startActivity(showChatIntent);
             }

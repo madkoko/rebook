@@ -23,7 +23,7 @@ public class ShowChat extends AppCompatActivity {
 
     private static final String TAG = "ShowChatActivity";
     private FirebaseListAdapter<Message> adapter; // All the messages of the selected chat
-    private String chatId; // chat ID
+    private String chatID; // chat ID
     private Bundle savedInstanceState;
 
     private String senderId;
@@ -62,10 +62,10 @@ public class ShowChat extends AppCompatActivity {
         if(i.getStringExtra("originClass").equals("showBook")) {
 
             // A1. Retrieve Chat ID
-            chatId = MessageManager.getChatID();
+            chatID = MessageManager.getChatID();
 
             // A2. Remove Event Listener
-            if (chatId != null) {
+            if (chatID != null) {
                 MessageManager.removeChatRefListener();
             }
 
@@ -87,7 +87,7 @@ public class ShowChat extends AppCompatActivity {
         else{
 
             // B1. Retrieve Chat ID
-            chatId = i.getStringExtra("chatId");
+            chatID = i.getStringExtra("chatID");
 
             // B2. Retrieve *Sender* informations
             senderProfile = ProfileManager.getInstance().getCurrentUser();
@@ -127,7 +127,7 @@ public class ShowChat extends AppCompatActivity {
         send.setOnClickListener((View v) -> {
             if (messageEditor.getText().toString() != null && messageEditor.getText().toString().compareTo("") != 0) {
                 String messageText = messageEditor.getText().toString();                        // >>> Get the msg's Text
-                MessageManager.createMessage(chatId, senderId, finalReceiverId, messageText);   // >>> Create a new message entry in Firebase
+                MessageManager.createMessage(chatID, senderId, finalReceiverId, messageText);   // >>> Create a new message entry in Firebase
                 MessageManager.sendMessageNotification(                                         // >>> Send the corresponding notification
                         senderId,
                         senderUsername,
@@ -138,7 +138,7 @@ public class ShowChat extends AppCompatActivity {
                         finalReceiverImage,
                         finalReceiverToken,
                         null,
-                        chatId,
+                        chatID,
                         messageText
                 );
                 messageEditor.setText("");                                                      // >>> Clear the text editor
@@ -160,7 +160,7 @@ public class ShowChat extends AppCompatActivity {
         savedInstanceState.putString("receiverImage", finalReceiverImage);
         savedInstanceState.putString("receiverToken", finalReceiverToken);
         */
-        bun.putString("chatId", chatId);
+        bun.putString("chatID", chatID);
 
         // set Fragmentclass Arguments
         conversation.setArguments(bun);

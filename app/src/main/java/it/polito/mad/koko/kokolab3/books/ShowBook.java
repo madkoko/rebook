@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -145,7 +146,10 @@ public class ShowBook extends AppCompatActivity
                                 receiverToken,                          // Receiver Token
 
                                 // Book info
-                                book.getTitle()                         // Book Title
+                                book.getTitle(),                        // Book Title
+
+                                // Chat info
+                                MessageManager.getChatID()
                         )
                 );
 

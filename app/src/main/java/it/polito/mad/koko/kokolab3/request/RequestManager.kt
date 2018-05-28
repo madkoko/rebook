@@ -1,8 +1,10 @@
 package it.polito.mad.koko.kokolab3.request
 
 import android.annotation.SuppressLint
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.*
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import it.polito.mad.koko.kokolab3.profile.Profile
 import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.ui.ImageManager
@@ -107,17 +109,44 @@ class RequestManager() {
         //usersRef.setValue(profile);
         usersRef.child(uid).child("email").setValue(email)
     }
+ */
 
+    fun newRequest(req: Request) {
 
-    fun editProfile(id: String, name: String, email: String, phone: String, location: String, bio: String, data: ByteArray, latLng: String?, storageRef: StorageReference) {
+        var senderID: String? = null;
+        var receiverID: String? = null;
+        var bookID: String? = null;
+
+        var bookName: String? = null;
+        var bookImage: String? = null;
+        var status: String? = null;
+
+        var rating: Int? = null;
+         var comment: String? = null;
+        /*
+
+        val bookKey = booksDatabaseRef.push().getKey()
+
+        val uploadTask = booksStorageRef.child(bookKey).putBytes(data)
+        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
+            downloadUrl = taskSnapshot.downloadUrl!!.toString()
+            //Log.d(TAG,downloadUrl);
+            book.setImage(downloadUrl)
+            //ref.child(bookKey).child("image").setValue(downloadUrl);
+            booksDatabaseRef.child(bookKey).setValue(book)
+        })
+*/
+
+        /*
         val Ref = usersRef.child(id)
         this.storageRef = storageRef
         childUpdates = HashMap()
-        /*
+
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setCustomMetadata("text", profileId.toString())
                 .build();
-                */
+
+
         val uploadTask = storageRef.putBytes(data)
         uploadTask.addOnSuccessListener { taskSnapshot ->
             downloadUrl = taskSnapshot.downloadUrl!!.toString()
@@ -131,7 +160,7 @@ class RequestManager() {
         childUpdates!!.put("bio", bio)
         if (latLng != null) childUpdates!!.put("position", latLng)
         Ref.updateChildren(childUpdates!!)
-        /*firebaseUser.updateProfile(new UserProfileChangeRequest
+        firebaseUser.updateProfile(new UserProfileChangeRequest
                 .Builder()
                 .setDisplayName(name)
                 .build()
@@ -139,7 +168,7 @@ class RequestManager() {
         */
     }
 
-
+/*
     fun profileIsNotPresent(uid: String): Boolean {
         synchronized(allUsers) {
             val it = allUsers.entries.iterator()
