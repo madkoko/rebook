@@ -169,7 +169,7 @@ public class MessageManager {
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
-        // Creating the new chat intent >>> CANCELLA TUTTO
+        // Creating the new chat intent >>> Spostato i ShowBooks -> Tutto da Cancellare!
         /*
 
         Intent newChat = new Intent();

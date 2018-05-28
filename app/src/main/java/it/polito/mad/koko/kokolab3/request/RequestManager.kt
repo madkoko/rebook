@@ -16,52 +16,51 @@ import java.util.concurrent.ConcurrentMap
 class RequestManager() {
     private val TAG = "RequestManager"
 
-/*
-    private var instance: ProfileManager? = null
+
+    private var instance: RequestManager? = null
 
     /**
      * Firebase objects
      */
-    private var usersRef: DatabaseReference
+    private var requestsRef: DatabaseReference? = null
     private var storageRef: StorageReference? = null
     private var childUpdates: MutableMap<String, Any>? = null
     private var downloadUrl: String? = null
 
-    private var allUsers: ConcurrentMap<String, Profile> = ConcurrentHashMap()
+    /*
+    //private var allRequests: Map<String, Request>? = HashMap<String, Request>();
 
     /**
      * synchronized method for different thread
      * @return ProfileManager instance
      */
     @Synchronized
-    fun getInstance(): ProfileManager {
+    fun getInstance(): RequestManager {
         if (instance == null)
-            instance = it.polito.mad.koko.kokolab3.profile.ProfileManager()
+            instance = it.polito.mad.koko.kokolab3.request.RequestManager()
         return instance
     }
 
     fun reset() {
-        instance = it.polito.mad.koko.kokolab3.profile.ProfileManager()
+        instance = it.polito.mad.koko.kokolab3.request.RequestManager()
     }
 
-    protected fun ProfileManager(): ??? {
-        usersRef = FirebaseDatabase.getInstance().reference.child("users")
+    protected fun RequestManager() {
+        requestsRef = FirebaseDatabase.getInstance().reference.child("requests")
     }
 
     /* METHOD TO RETRIEVE ALL THE USERS AND USE IT INTO SHOW SEARCHED BOOKS
-     * CREATED BY FRANCESCO PETRO
-     * */
 
     fun populateUsersList() {
-        synchronized(allUsers) {
-            usersRef.addValueEventListener(
+        synchronized(allRequests) {
+            requestsRef?.addValueEventListener(
                     object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.exists()) {
-                                allUsers = ConcurrentHashMap()
-                                allUsers.clear()
+                                allRequests = HashMap<String, Request>()
+                                allRequests.clear()
 
-                                allUsers.putAll((dataSnapshot.value as Map<String, Profile>?)!!)
+                                allRequests.putAll((dataSnapshot.value as Map<String, Request>?)!!)
                             }
                         }
 
@@ -75,6 +74,7 @@ class RequestManager() {
             return allUsers
         }
     }
+*/
 
     fun getProfile(Uid: String): Profile {
         synchronized(allUsers) {
@@ -157,4 +157,5 @@ class RequestManager() {
         usersRef.child(uid).child("tokenMessage").setValue(token)
     }
     */
+
 }
