@@ -135,7 +135,6 @@ public class BookManager {
     /**
      * Create and attach the listener to the child "books" in firebase to retrieve all the books
      */
-
     public static void populateAllBooks() {
 
         booksDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -172,8 +171,9 @@ public class BookManager {
     /**
      * @return Arraylist with all the books in Firebase
      */
-
     public static ArrayList<Book> getAllBooks() {
+
         return allBooks;
     }
 }
+

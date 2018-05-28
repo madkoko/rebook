@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.transition.ChangeTransform;
@@ -37,13 +38,15 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.support.v4.content.ContextCompat.startActivity;
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+
 public class MessageManager {
 
     private static String TAG = "MessageManager";
 
     /*      *** CHAT INFO ***   */
     private static String chatID = null;                            // >>> Chat ID
-    private static String chatIdRetrieved;
 
     private static ArrayList<Message> userMessages;                 // >>> All the messages of the current user
     private static Map<String, Map<String, String>> userChatIDs;    // >>> All the chats' ID of the current user
@@ -162,8 +165,28 @@ public class MessageManager {
 
                                                     // Book info
                                                     final String bookTitle) {
+
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
+
+        // Creating the new chat intent >>> Spostato i ShowBooks -> Tutto da Cancellare!
+        /*
+
+        Intent newChat = new Intent();
+
+        newChat.putExtra("senderId", senderId);
+        newChat.putExtra("senderUsername", senderUsername);
+        newChat.putExtra("senderImage", senderImage);
+        newChat.putExtra("senderToken", senderToken);
+        newChat.putExtra("receiverId", receiverId);
+        newChat.putExtra("receiverUsername", receiverUsername);
+        newChat.putExtra("receiverImage", receiverImage);
+        newChat.putExtra("receiverToken", receiverToken);
+
+        // Creating a chat object in Firebase
+        createChat(newChat, bookTitle, false);
+
+        */
 
         sendNotification(
                 notificationTitle,
@@ -177,7 +200,7 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
                 bookTitle,
-                null,
+                chatID, // TODO make sure that it is already initialized
                 "request"
         );
     }
@@ -277,7 +300,7 @@ public class MessageManager {
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
      * <p>
-     * A JSON exmaple is shown below:
+     * A JSON example is shown below:
      * <p>
      * {
      * "priority": "high",
@@ -541,7 +564,7 @@ public class MessageManager {
      * @param intent the intent containing chat information.
      * @return the ID of the just created chat.
      */
-    public static void createChat(Intent intent, String bookTitle) {
+    public static void createChat(Intent intent, String bookTitle, boolean chatFlag) {
 
         // 1. Retrieve Sender data
         senderId = intent.getStringExtra("senderId");
@@ -566,10 +589,12 @@ public class MessageManager {
                 .child(senderId)
                 .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
 
-        chatsRef.addValueEventListener(chatRefListener = new ValueEventListener() {
+        chatsRef.addListenerForSingleValueEvent(chatRefListener = new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                String chatIdRetrieved = null;
+
                 if (dataSnapshot.exists()) {
 
                     // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
@@ -592,10 +617,15 @@ public class MessageManager {
 
                 if (chatIdRetrieved != null) {
                     chatID = chatIdRetrieved;
-                    createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
-                            +NEW_REQUEST_MESSAGE
-                            +bookTitle
-                            +".\n");
+
+                    // Create a new message (if click is on button "Start Chat")
+                    if(chatFlag) {
+                        createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
+                                + NEW_REQUEST_MESSAGE
+                                + bookTitle
+                                + ".\n");
+                    }
+
                     return;
                 }
 
@@ -627,11 +657,15 @@ public class MessageManager {
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyImage").setValue(senderImage);
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyToken").setValue(senderToken);
 
-                createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
-                        +senderUsername
-                        +NEW_REQUEST_MESSAGE
-                        +bookTitle
-                        +".\n");
+                // Create first message (if click is on button "Start Chat")
+                if(chatFlag) {
+                    createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
+                            + senderUsername
+                            + NEW_REQUEST_MESSAGE
+                            + bookTitle
+                            + ".\n");
+                }
+
             }
 
             @Override
@@ -708,9 +742,7 @@ public class MessageManager {
     public static void resumeChat() {
     }
 
-    public static String getChatID(){
-        return chatID;
-    }
+    public static String getChatID(){ return chatID; }
 
     public static String getSenderId() {
         return senderId;

@@ -1,23 +1,26 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by Francesco on 17/05/2018.
  */
 
-public class UserChatInfo {
+public class UserChatInfo implements Serializable {
     private String secondPartyId;
     private String secondPartyUsername;
     private String secondPartyImage;
+    private String secondPartyToken;
     private String lastMessage;
 
     public UserChatInfo(){}
 
-    public UserChatInfo(String secondPartyId, String secondPartyUsername, String secondPartyImage,String lastMessage) {
+    public UserChatInfo(String secondPartyId, String secondPartyUsername, String secondPartyImage, String lastMessage, String secondPartyToken) {
         this.secondPartyId = secondPartyId;
         this.secondPartyUsername = secondPartyUsername;
         this.secondPartyImage = secondPartyImage;
+        this.secondPartyToken = secondPartyToken;
         this.lastMessage=lastMessage;
     }
 
@@ -45,6 +48,14 @@ public class UserChatInfo {
         this.secondPartyImage = secondPartyImage;
     }
 
+    public String getSecondPartyToken() {
+        return secondPartyToken;
+    }
+
+    public void setSecondPartyToken(String secondPartyToken) {
+        this.secondPartyToken = secondPartyToken;
+    }
+
     public String getLastMessage() {
         return lastMessage;
     }
@@ -59,6 +70,7 @@ public class UserChatInfo {
                 "secondPartyId='" + secondPartyId + '\'' +
                 ", secondPartyUsername='" + secondPartyUsername + '\'' +
                 ", secondPartyImage='" + secondPartyImage + '\'' +
+                ", secondPartyToken='" + secondPartyToken + '\''+
                 ", lastMessage='" + lastMessage + '\'' +
                 '}';
     }

@@ -121,6 +121,8 @@ public class HomeActivity extends AppCompatActivity
             //BookManager.populateUserBookList();
             //BookManager.populateSearchBooks();
 
+            ProfileManager.getInstance().retrieveCurrentUser();
+
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
@@ -244,6 +246,8 @@ public class HomeActivity extends AppCompatActivity
 
             // Returning in HomeActivity from an Authentication procedure
         if (resultCode == AUTH) {
+            profileManager.retrieveCurrentUser();
+
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 

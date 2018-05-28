@@ -2,6 +2,7 @@ package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +25,8 @@ import it.polito.mad.koko.kokolab3.ui.ImageManager;
 public class ProfileManager {
 
     private static final String TAG = "ProfileManager";
+
+    private static Profile currentUser;
 
     /**
      * Unique instance
@@ -169,5 +172,38 @@ public class ProfileManager {
 
     public void addToken(String token, String uid) {
         usersRef.child(uid).child("tokenMessage").setValue(token);
+    }
+
+    // Listener to retrieve the current user from firebase
+    public void retrieveCurrentUser() {
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        usersRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Map<String, String> currentUserSnapshot = (Map<String, String>) dataSnapshot.getValue();
+                    String bio = currentUserSnapshot.get("bio");
+                    String email = currentUserSnapshot.get("email");
+                    String image = currentUserSnapshot.get("image");
+                    String location = currentUserSnapshot.get("location");
+                    String name = currentUserSnapshot.get("name");
+                    String phone = currentUserSnapshot.get("phone");
+                    String position = currentUserSnapshot.get("position");
+                    String tokenMessage = currentUserSnapshot.get("tokenMessage");
+                    currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public Profile getCurrentUser() {
+        return currentUser;
     }
 }

@@ -120,6 +120,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         profileManager.populateUsersList();
         MessageManager.populateUserChatsID();
         MessageManager.populateUserMessages();
+        // MessageManager.createChat(Intent intent, String bookTitle); // DA FARE -> dov'è l'intent? dov'è book title?!
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
@@ -199,68 +200,66 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *                              1: the sender's profile has to be shown
      *                              2: the chat with the sender has to be opened
      */
-    private void showNotification(RemoteMessage receivedMessage,
-                                  boolean showResponseButtons,
-                                  int onTapAction
-    ) {
-        // Retrieving the notification data object
+    private void showNotification(RemoteMessage receivedMessage, boolean showResponseButtons, int onTapAction) {
+
+        // 1.   Retrieving the * Notification * data object
         String notificationJsonString = receivedMessage.getData().get("notification");
         Map<String, String> notificationObject = // De-serializing the "object" JSON object
                 new Gson().fromJson(notificationJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
-
-        // Retrieving notificaiton information
+        //      Retrieving Notification informations
         String notificationTitle = notificationObject.get("title");
         String notificationBody = notificationObject.get("body");
+        Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString())); // [Debug]
 
-
-        // Debugging
-        Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString()));
-
-        // Retrieving chat info
+        // 2.   Retrieving * Chat * informations
         String chatId = receivedMessage.getData().get("chatId");
 
-        // Retrieving the sender data object
+        // 3.   Retrieving the * Sender * data object
         String senderJsonString = receivedMessage.getData().get("sender");
         Map<String, String> senderObject = // De-serializing the "sender" JSON object
                 new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
-
-        // Retrieving sender information
+        //      Retrieving sender informations
         String senderId = senderObject.get("id");
         String senderUsername = senderObject.get("username");
         String senderImageURL = senderObject.get("image");
         String senderToken = senderObject.get("token");
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
 
-        // Retrieving the receiver data object
+        // 4.   Retrieving the * Receiver * data object
         String receiverJsonString = receivedMessage.getData().get("receiver");
         Map<String, String> receiverObject = // De-serializing the "sender" JSON object
                 new Gson().fromJson(receiverJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
-
-        // Retrieving receiver information
+        //      Retrieving Receiver informations
         String receiverId = receiverObject.get("id");
         String receiverUsername = receiverObject.get("username");
         String receiverImageURL = receiverObject.get("image");
+        String receiverToken = receiverObject.get("token");
+        UserChatInfo receiverInfo = new UserChatInfo(receiverId, receiverUsername, receiverImageURL, null, receiverToken); // risolvere lastMessage null?!
 
-        // Retrieving the book data object
+        // 5.   Retrieving the * Book * data object
         String bookJsonString = receivedMessage.getData().get("book");
         Map<String, String> bookObject = // De-serializing the "book" JSON object
                 new Gson().fromJson(bookJsonString, new TypeToken<Map<String, String>>() {
                 }.getType());
-
-        // Retrieving book information
+        //      Retrieving Book informations
         String bookTitle = bookObject.get("title");
 
         // Intent used upon tapping the notification
-
+        // ?? missing ??
 
         // Intent used upon accepting the book exchange request
         Intent acceptIntent = new Intent(this, NotificationReceiver.class);
         acceptIntent.setAction(ACCEPT_ACTION);
-        acceptIntent.putExtra("notificationID",counterNotificationId);
-        loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject);
+        acceptIntent.putExtra("notificationID", counterNotificationId);
+        acceptIntent.putExtra("chatID", chatId);
+        acceptIntent.putExtra("bookTitle", bookTitle);
+        acceptIntent.putExtra("receiverInfo", receiverInfo);
+        // acceptIntent.putExtra(); mi serve mettere qua dentro userchatinfo e chatinfo
+
+        loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject); //metti tutta sta roba in userchatinfo
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 

@@ -59,8 +59,6 @@ public class Conversation extends Fragment {
 
         // UI elements
         chatListView = rootConversationView.findViewById(R.id.list_chat);
-        EditText messageEditor = rootConversationView.findViewById(R.id.send_message);
-        Button send = rootConversationView.findViewById(R.id.send);
 
         return rootConversationView;
     }
