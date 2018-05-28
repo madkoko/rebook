@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.transition.ChangeTransform;
@@ -36,6 +37,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static android.support.v4.content.ContextCompat.startActivity;
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MessageManager {
 
@@ -165,8 +169,11 @@ public class MessageManager {
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
-        // Creating the new chat intent
+        // Creating the new chat intent >>> CANCELLA TUTTO
+        /*
+
         Intent newChat = new Intent();
+
         newChat.putExtra("senderId", senderId);
         newChat.putExtra("senderUsername", senderUsername);
         newChat.putExtra("senderImage", senderImage);
@@ -177,7 +184,9 @@ public class MessageManager {
         newChat.putExtra("receiverToken", receiverToken);
 
         // Creating a chat object in Firebase
-        createChat(newChat, bookTitle);
+        createChat(newChat, bookTitle, false);
+
+        */
 
         sendNotification(
                 notificationTitle,
@@ -555,7 +564,7 @@ public class MessageManager {
      * @param intent the intent containing chat information.
      * @return the ID of the just created chat.
      */
-    public static void createChat(Intent intent, String bookTitle) {
+    public static void createChat(Intent intent, String bookTitle, boolean chatFlag) {
 
         // 1. Retrieve Sender data
         senderId = intent.getStringExtra("senderId");
@@ -608,10 +617,15 @@ public class MessageManager {
 
                 if (chatIdRetrieved != null) {
                     chatID = chatIdRetrieved;
-                    createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
-                            +NEW_REQUEST_MESSAGE
-                            +bookTitle
-                            +".\n");
+
+                    // Create a new message (if click is on button "Start Chat")
+                    if(chatFlag) {
+                        createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
+                                + NEW_REQUEST_MESSAGE
+                                + bookTitle
+                                + ".\n");
+                    }
+
                     return;
                 }
 
@@ -643,11 +657,15 @@ public class MessageManager {
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyImage").setValue(senderImage);
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyToken").setValue(senderToken);
 
-                createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
-                        +senderUsername
-                        +NEW_REQUEST_MESSAGE
-                        +bookTitle
-                        +".\n");
+                // Create first message (if click is on button "Start Chat")
+                if(chatFlag) {
+                    createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
+                            + senderUsername
+                            + NEW_REQUEST_MESSAGE
+                            + bookTitle
+                            + ".\n");
+                }
+
             }
 
             @Override

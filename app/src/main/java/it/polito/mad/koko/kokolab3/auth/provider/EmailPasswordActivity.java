@@ -130,7 +130,7 @@ public class EmailPasswordActivity extends BaseActivity implements
         showProgressDialog();
 
         // [START sign_in_with_email]
-        mAuth.signInWithEmailAndPassword(email, password)
+        mAuth.signInWithEmailAndPassword(email, password) // C'è sua mail che password ma crasha
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information

@@ -149,15 +149,20 @@ public class ShowBook extends AppCompatActivity
                         )
                 );
 
-                // 4. Send Message
+                // 4. Open Chat
                 sendMessage.setOnClickListener(v -> {
-                    MessageManager.createChat(i, book.getTitle());
+
+                    Boolean chatFlag = true;
+                    MessageManager.createChat(i, book.getTitle(), chatFlag);
+
                     Intent showChat = new Intent (getApplicationContext(), ShowChat.class);
                     //showChat.putExtra("chatID",chatID);
                     showChat.putExtra("originClass", "showBook");
                     startActivity(showChat);
                     //chatID = MessageManager.getChatID();
-                });
+                }); // chiedi a Fra voglio far triggerare il listener in showbook e poi far triggerare l'activity in show book
+                // attacca il listener (createChat) poi fai ricreare dell'activity showbook e così quando schiacci il bottone
+                // crea verify in messageManager
             }
         }
     }
