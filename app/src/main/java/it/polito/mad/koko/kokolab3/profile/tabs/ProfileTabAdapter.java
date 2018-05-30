@@ -25,7 +25,7 @@ public class ProfileTabAdapter extends BaseAdapter {
 
     public ProfileTabAdapter(Context context){
         this.context=context;
-        profile = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
+        profile = ProfileManager.getProfile();
 
 
     }

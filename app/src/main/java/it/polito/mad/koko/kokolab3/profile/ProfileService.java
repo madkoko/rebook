@@ -18,6 +18,8 @@ public class ProfileService extends Service {
 
     private static final String TAG = "ProfileService";
 
+    private static final String PACKAGE_NAME = "it.polito.mad.koko.kokolab3";
+
     /**
      * Current user's Profile
      */
@@ -45,8 +47,9 @@ public class ProfileService extends Service {
 
                 /*  Saving the updated user info into a SharedPreference in case the
                     application will be closed */
-                SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                SharedPreferences.Editor sharedPreferencesEditor = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE).edit();
                 sharedPreferencesEditor.putString("Profile", new Gson().toJson(currentUserProfile)).commit();
+                sharedPreferencesEditor.apply();
 
                 // Checking whether the user has completed the registration process
                 Log.d(TAG, "Registration completed: " + hasCompletedRegistration());
@@ -59,6 +62,8 @@ public class ProfileService extends Service {
         };
     }
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -70,7 +75,7 @@ public class ProfileService extends Service {
 
     public static Profile getCurrentUserProfile() {
         // Retrieving the current profile object from the SharedPreferences
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
         return new Gson().fromJson(sharedPreferences.getString("Profile", ""), Profile.class);
     }
 

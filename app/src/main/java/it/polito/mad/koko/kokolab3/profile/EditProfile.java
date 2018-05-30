@@ -93,7 +93,7 @@ public class EditProfile extends AppCompatActivity {
         Log.d(TAG, "onCreate");
 
         // Retrieving the ProfileManager singleton
-        currentUserProfile = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
+        currentUserProfile = ProfileManager.getProfile();
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -200,8 +200,8 @@ public class EditProfile extends AppCompatActivity {
      */
 
     private boolean infoIsMissingFromUser() {
-        String userLocation = ProfileManager.getProfile(ProfileManager.getCurrentUserID()).getLocation();
-        String username = ProfileManager.getProfile(ProfileManager.getCurrentUserID()).getName();
+        String userLocation = ProfileManager.getProfile().getLocation();
+        String username = ProfileManager.getProfile().getName();
 
         boolean infoIsMissing = false;
 

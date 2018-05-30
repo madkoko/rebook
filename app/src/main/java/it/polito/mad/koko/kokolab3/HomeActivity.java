@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
@@ -43,6 +45,8 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "HomeActivity";
+
+    private static final String PACKAGE_NAME = "it.polito.mad.koko.kokolab3";
 
     /**
      * Result codes needed to distinguish among all possible activities launched
@@ -70,15 +74,6 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         Log.d(TAG,"onCreate() called");
-
-        // Handling app's uncaught exceptions
-        Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
-            /*  Performing a logout operation: this can be useful in case the app
-                crashes after that the user has logged in. */
-            ProfileManager.logout();
-
-            System.exit(2);
-        });
 
         // UI
         setContentView(R.layout.activity_main);
@@ -265,8 +260,8 @@ public class HomeActivity extends AppCompatActivity
             if (ProfileManager.profileIsNotPresent((ProfileManager.getCurrentUserID()))) {
                 startActivity(new Intent(getApplicationContext(), EditProfile.class));
             } else {
-                if (ProfileManager.getProfile(ProfileManager.getCurrentUserID()).getImage() != null) {
-                    Profile p = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
+                if (ProfileManager.getProfile().getImage() != null) {
+                    Profile p = ProfileManager.getProfile();
                     ImageManager.loadBitmap(p.getImage());
                 }
             }

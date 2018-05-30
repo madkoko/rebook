@@ -98,7 +98,7 @@ public class ProfileManager {
     }
 
     public static Profile getProfile(String Uid) {
-        /*synchronized (allUsers) {
+        synchronized (allUsers) {
             Map<String, String> userInfo = (Map<String, String>) allUsers.get(Uid);
 
             Profile profile = new Profile(
@@ -112,8 +112,10 @@ public class ProfileManager {
                     userInfo.get("tokenMessage"));
 
             return profile;
-        }*/
+        }
+    }
 
+    public static Profile getProfile() {
         return ProfileService.getCurrentUserProfile();
     }
 

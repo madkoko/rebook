@@ -80,7 +80,7 @@ public class ShowProfile extends AppCompatActivity {
         i = getIntent();
         mFirebaseUser= i.getExtras().getString("UserID");
 
-        profile = ProfileManager.getProfile(ProfileManager.getCurrentUserID());
+        profile = ProfileManager.getProfile();
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             toolbar = findViewById(R.id.technique_three_toolbar);
