@@ -20,10 +20,13 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
 
     private ProfileManager profileManager;
 
+    private static String activeChatId = ""; // Currently active chat
+    private static boolean isActive = true;
+
     @Override
     public void onReceive(Context context, Intent intent){
 
-        // [ Debugging ]
+        // [ Debug ]
         Log.d(TAG, "New notification. Action: " + intent.getAction());
 
         // Retrieving all chat messages
@@ -31,6 +34,15 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
 
         // [ Debug ]
         Log.d(TAG, "New notification. Action II : " + intent.getStringExtra("chatID"));
+
+        synchronized (activeChatId) {
+            // Retrieving the chat ID corresponding to this new notification
+            String chatID = intent.getStringExtra("chatID");
+            // If the chat corresponding to this notification is not currently active
+            if((chatID != null) && (chatID.compareTo(activeChatId) != 0)) {
+                isActive = false;
+            }
+        }
 
         // In case a book exchange request has been received
         if (intent.getAction().compareTo(REQUEST_ACTION) == 0) {
@@ -45,8 +57,17 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
 
             // Starting the showChat activity
             Intent showChatIntent = new Intent(context, ShowChat.class);
+            intent.getExtras();
             showChatIntent.putExtra("chatID", intent.getStringExtra("chatID"));
-            context.startActivity(showChatIntent);
+            showChatIntent.putExtra("originClass", "NotificationReceiver");
+            UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
+            showChatIntent.putExtra("userChatInfo", receiverInfo);
+            showChatIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            if(!isActive) {
+                context.startActivity(showChatIntent);
+            }
+
         }
         // In case a book exchange response has been received, whether it's positive or not
         else if (intent.getAction().compareTo(ACCEPT_ACTION) == 0 || intent.getAction().compareTo(DECLINE_ACTION) == 0) {
@@ -55,13 +76,14 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
 
             // If the book exchange has not been accepted
             if (!exchangeAccepted)
-                // Sending a negative response notification : !!! l'intent ha chatId nll!!!!
+                // Sending a negative response notification : !!! l'intent ha chatID nll!!!!
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
 
             // If the book exchange has been accepted
             if (exchangeAccepted) {
                 // Creating a chat with the user
                 String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
+                UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
 
                 // Sending a positive response notification
                 //intent.putExtra("chatID", chatID);
@@ -75,9 +97,12 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 showChatIntent.putExtra("originClass", "notificationReceiver");
                 // Qua devo puttare le userChatInfo
                 showChatIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
                 showChatIntent.putExtra("userChatInfo", receiverInfo);
-                context.startActivity(showChatIntent);
+
+                if(!isActive) {
+                    context.startActivity(showChatIntent);
+                }
+
             }
             // If the book exchange has not been accepted
             else if (intent.getAction().compareTo(DECLINE_ACTION) == 0) {

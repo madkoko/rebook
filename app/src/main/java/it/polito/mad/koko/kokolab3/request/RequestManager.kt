@@ -1,10 +1,13 @@
 package it.polito.mad.koko.kokolab3.request
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import it.polito.mad.koko.kokolab3.books.Book
 import it.polito.mad.koko.kokolab3.profile.Profile
 import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.ui.ImageManager
@@ -24,7 +27,9 @@ class RequestManager() {
     /**
      * Firebase objects
      */
-    private var requestsRef: DatabaseReference? = null
+    //private var requestsRef: DatabaseReference? = null
+    //private val reqStorageRef: StorageReference? = null
+
     private var storageRef: StorageReference? = null
     private var childUpdates: MutableMap<String, Any>? = null
     private var downloadUrl: String? = null
@@ -111,7 +116,9 @@ class RequestManager() {
     }
  */
 
-    fun newRequest(req: Request) {
+    fun newRequest(req: Request, data: ByteArray) {
+
+        /* non mi serve perché recupero tutto da req
 
         var senderID: String? = null;
         var receiverID: String? = null;
@@ -122,7 +129,31 @@ class RequestManager() {
         var status: String? = null;
 
         var rating: Int? = null;
-         var comment: String? = null;
+        var comment: String? = null;
+    */
+
+        val database = FirebaseDatabase.getInstance()
+        val storage = FirebaseStorage.getInstance()
+
+        val reqDatabaseRef = database.reference.child("requests")
+
+        val reqKey = reqDatabaseRef.push().getKey()
+
+        val reqStorageRef = storage.reference.child("requests")
+        val uploadTask = reqStorageRef!!.child(reqKey).putBytes(data)
+
+        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
+            downloadUrl = taskSnapshot.downloadUrl!!.toString()
+            //Log.d(TAG,downloadUrl);
+            //req.image = downloadUrl
+            //ref.child(bookKey).child("image").setValue(downloadUrl);
+            reqDatabaseRef.child(reqKey).setValue(req)
+        })
+
+        Log.d(TAG, req.toString())
+
+
+
         /*
 
         val bookKey = booksDatabaseRef.push().getKey()

@@ -30,6 +30,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import it.polito.mad.koko.kokolab3.R;
 
+
+/**
+ *          !!!!! QUESTA CLASSE SI PUò ELIMINARE !!!!!
+ * */
+
 public class MessagingActivity extends AppCompatActivity {
 
     private static final String TAG = "MessagingActivity";

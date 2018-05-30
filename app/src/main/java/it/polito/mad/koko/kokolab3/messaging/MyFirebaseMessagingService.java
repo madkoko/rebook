@@ -114,7 +114,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-
         MessageManager.setUserChatsIDListener();
         ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.populateUsersList();
@@ -144,10 +143,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if(notificationType.compareTo("message") == 0) {
                 synchronized (activeChatId) {
                     // Retrieving the chat ID corresponding to this new notification
-                    String chatId = remoteMessage.getData().get("chatId");
+                    String chatID = remoteMessage.getData().get("chatID");
 
-                    // If the chat corresponding to this notification is not currently active
-                    if(chatId.compareTo(activeChatId) != 0)
+                    // !! If the chat corresponding to this notification is not currently active
+                    if(chatID.compareTo(activeChatId) != 0)
                         // Show the new message notification
                         showNotification(remoteMessage, showResponseButtons, onTapAction);
                 }
@@ -262,8 +261,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject); //metti tutta sta roba in userchatinfo
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-
         // Intent used upon declining the book exchange request
         Intent declineIntent = new Intent(this, NotificationReceiver.class);
         declineIntent.setAction(DECLINE_ACTION);
@@ -299,9 +296,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setOnlyAlertOnce(false)
                         .setColorized(true);
 
-
-
-
         // Notification action buttons
         if (showResponseButtons)
             notificationBuilder
@@ -316,7 +310,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             // The sender's profile has to be shown
             case 1:
+
                 // Creating the requestIntent that will open the request sender's profile
+                Intent requestIntent = new Intent(this, NotificationReceiver.class);
+                requestIntent.setAction(REQUEST_ACTION);
+                requestIntent.putExtra("chatID", chatID); // * serve davvero?!
+                requestIntent.putExtra("UserID", FirebaseAuth.getInstance().getUid()); //serve ?! /* TODO insert sender's ID */
+                // !!!! puttare qua userChaTInfo?!
+                PendingIntent requestPendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, requestIntent,
+                        PendingIntent.FLAG_ONE_SHOT);
+
+                // Setting the onTap intent
+                notificationBuilder.setContentIntent(requestPendingIntent);
+
+
                 /*Intent requestIntent = new Intent(this, NotificationReceiver.class);
                 requestIntent.setAction(REQUEST_ACTION);
                 requestIntent.putExtra("UserID", *//* TODO insert sender's ID *//* FirebaseAuth.getInstance().getUid());
@@ -335,6 +342,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Intent messageIntent = new Intent(this, NotificationReceiver.class);
                 messageIntent.setAction(MESSAGE_ACTION);
                 messageIntent.putExtra("chatID", chatID);
+                messageIntent.putExtra("receiverInfo", receiverInfo);
                 PendingIntent messagePendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, messageIntent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
 

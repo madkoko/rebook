@@ -597,9 +597,16 @@ public class MessageManager {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String chatIdRetrieved = null;
 
-                if (dataSnapshot.exists()) {
+                String chatIdRetrieved;
+                if(chatID!=null){
+                    chatIdRetrieved = chatID;
+                }
+                else{
+                    chatIdRetrieved = null;
+                }
+
+                if (dataSnapshot.exists() && chatIdRetrieved != null) {
 
                     // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
                     chatsInfo = new HashMap<String, UserChatInfo>();
@@ -613,6 +620,7 @@ public class MessageManager {
                     for (String chatKey : chatsInfo.keySet()) {
                         if (chatsInfo.get(chatKey).getSecondPartyId().equals(receiverId)) {     // >>> Chat between Sender & Receiver is already existing
                             chatIdRetrieved = chatKey;
+                            chatID = chatIdRetrieved;
                             Log.d("MessangerManager", "chattavoGiàConMaddalena");
                             break;
                         }
@@ -620,7 +628,6 @@ public class MessageManager {
                 }
 
                 if (chatIdRetrieved != null) {
-                    chatID = chatIdRetrieved;
 
                     // Create a new message (if click is on button "Request Book")
                     if(chatFlag) {
@@ -675,12 +682,66 @@ public class MessageManager {
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
+
         });
 
         /*if(chatID != null) {
             chatsRef.removeEventListener(chatRefListener);
         }*/
 }
+
+
+// Metodo che contiene il controllo già implementato in CreateChat (da cancellare in createChat?!)
+    // >>> chatId valorizzato e da prendere con getter nel caso in cui esiste già la chat
+    public static void checkExistingChat(String senderId, String receiverId){
+
+        // 1. Create the 'chats' child
+        DatabaseReference messagesRef = DatabaseManager.get("chats");
+
+        // 2. Search if a chat between send & receiver is already existing
+        chatsRef = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(senderId)
+                .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
+
+        chatsRef.addListenerForSingleValueEvent(chatRefListener = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String chatIdRetrieved = null;
+
+                if (dataSnapshot.exists()) {
+
+                    // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
+                    chatsInfo = new HashMap<String, UserChatInfo>();
+                    chatsInfo.clear();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        UserChatInfo receiverInfo = child.getValue(UserChatInfo.class);
+                        chatsInfo.put(child.getKey(), receiverInfo);
+                    }
+
+                    // 2. Check if the Sender & Receiver have already chat before
+                    for (String chatKey : chatsInfo.keySet()) {
+                        if (chatsInfo.get(chatKey).getSecondPartyId().equals(receiverId)) {     // >>> Chat between Sender & Receiver is already existing
+                            chatIdRetrieved = chatKey;
+                            chatID = chatIdRetrieved;
+                            Log.d("MessangerManager", "chattavoGiàConMaddalena");
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+             }
+        });
+    }
+
 
     /**
      * Creates a message entry in Firebase

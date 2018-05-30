@@ -82,7 +82,7 @@ public class ShowChats extends AppCompatActivity {
 
                 view.setOnClickListener(v -> {
                     Intent showChat = new Intent(getApplicationContext(), ShowChat.class);
-                    showChat.putExtra("chatId", chatID);
+                    showChat.putExtra("chatID", chatID);
                     showChat.putExtra("originClass", "showChats");
                     showChat.putExtra("userChatInfo", model);
 

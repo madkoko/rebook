@@ -166,14 +166,15 @@ public class ShowBooks extends AppCompatActivity
                 Intent i = getChatInfo(model);
                 Boolean chatFlag = false;
 
-                MessageManager.createChat(i, model.getTitle(), chatFlag);
+                //MessageManager.createChat(i, model.getTitle(), chatFlag);
+                MessageManager.checkExistingChat(i.getExtras().getString("senderId"), i.getExtras().getString("receiverId"));
+                // * Ho messo in MessageManager.chatID il chatID nel caso in cui sia stato trovato, se no è null.
 
                 Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
-
                 showBook.putExtra("book", model);
+
                 //showBook.putExtra("bookPhoto",bookVals.get("image"));
                 startActivity(showBook);
-
 
             }
         });
@@ -263,5 +264,4 @@ public class ShowBooks extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
 
     }
-
 }

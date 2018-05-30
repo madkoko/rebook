@@ -54,11 +54,16 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
 
         holder.coverBook.setOnClickListener((View v) ->{
             Log.d(TAG, String.valueOf(getRef(position).getKey()));
+
             Boolean chatFlag = false;
             Intent i = getChatInfo(model);
-            MessageManager.createChat(i, model.getTitle(), chatFlag);
+            i.putExtra("originClass", "homeBookAdapter");
+
+            MessageManager.checkExistingChat(i.getExtras().getString("senderId"), i.getExtras().getString("receiverId"));
+
             Intent showBook = new Intent(activity, ShowBook.class);
             showBook.putExtra("book", model);
+
             activity.startActivity(showBook);
             //getRef(position).getKey()
         });
@@ -99,7 +104,6 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
         String receiverUsername = receiverProfile.getName();
         String receiverImage = receiverProfile.getImage();
         String receiverToken = receiverProfile.getTokenMessage();
-
 
         // 2. Put Sender & Receiver info into Intent
         i.putExtra("senderId", senderId);
