@@ -1,65 +1,42 @@
 package it.polito.mad.koko.kokolab3.profile.tabs;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.view.LayoutInflater;
+import android.support.annotation.NonNull;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.ShowBook;
 
-public class BookTabAdapter extends BaseAdapter {
+public class BookTabAdapter extends FirebaseListAdapter<Book> {
 
-
-    private final ArrayList<Book> myBooks;
     private Context context;
 
-    public BookTabAdapter(ArrayList<Book> myBooks, Context context){
-        this.myBooks=myBooks;
-        this.context=context;
-
-    }
-    @Override
-    public int getCount() {
-        return myBooks.size();
+    public BookTabAdapter(@NonNull FirebaseListOptions<Book> options, Context context) {
+        super(options);
+        this.context = context;
     }
 
     @Override
-    public Object getItem(int position) {
-        return myBooks.get(position);
-    }
+    protected void populateView(View view, Book model, int position) {
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
+        ImageView coverBook = (ImageView) view.findViewById(R.id.book_photo);
+        TextView titleBook = (TextView) view.findViewById(R.id.book_title);
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater mInflater = (LayoutInflater) context
-                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        if (convertView == null)
-            convertView = mInflater.inflate(R.layout.books_adapter_layout, parent, false);
+        titleBook.setText(model.getTitle());
+        Picasso.get().load(model.getImage()).into(coverBook);
 
-        TextView title =  convertView.findViewById(R.id.book_title);
-        ImageView photo =  convertView.findViewById(R.id.book_photo);
-        title.setText(myBooks.get(position).getTitle());
-        Picasso.get().load(myBooks.get(position).getImage()).fit().centerCrop().into(photo);
-        convertView.setOnClickListener(v -> {
+        view.setOnClickListener(v -> {
             Intent showBook = new Intent(context, ShowBook.class);
-            showBook.putExtra("book", myBooks.get(position));
+            showBook.putExtra("book", model);
             context.startActivity(showBook);
         });
-        return convertView;
     }
 }

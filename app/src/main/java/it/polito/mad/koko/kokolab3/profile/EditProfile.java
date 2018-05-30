@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -53,11 +54,12 @@ public class EditProfile extends AppCompatActivity {
      * Profile profile data.
      */
     private EditText et_name;
-    private EditText et_email;
+    private TextView et_email;
     private EditText et_phone;
-    private TextView et_location;
+    private EditText et_location;
     private EditText et_bio;
     private ImageView user_photo;
+    //private android.support.design.widget.TextInputLayout text_user_location;
 
     /**
      * User profile information
@@ -80,7 +82,7 @@ public class EditProfile extends AppCompatActivity {
     private boolean flagCamera;
     private boolean flagGallery;
     private Authenticator authenticator;
-    private Button map_button;
+    private EditText map_button;
     private Profile p;
     private String latLng;
 
@@ -103,7 +105,7 @@ public class EditProfile extends AppCompatActivity {
 
         // Retrieving the ProfileManager singleton
         profileManager = ProfileManager.getInstance();
-        p = profileManager.getProfile(authenticator.getUser().getUid());
+        p = profileManager.getCurrentUser();
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -111,10 +113,14 @@ public class EditProfile extends AppCompatActivity {
         et_name = findViewById(R.id.edit_user_name);
         //et_password=findViewById(R.id.edit_user_password);
         et_email = findViewById(R.id.edit_user_email);
+        //
+        et_email.setPaintFlags(et_email.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        //
         et_phone = findViewById(R.id.edit_user_phone);
-        et_location = findViewById(R.id.edit_user_location);
+        et_location = findViewById(R.id.button_map);
         et_bio = findViewById(R.id.edit_user_bio);
-        user_photo = findViewById(R.id.user_photo);
+        user_photo = findViewById(R.id.user_photo_edit);
+
 
         et_name.setText(p.getName());
         et_email.setText(p.getEmail());
@@ -132,8 +138,8 @@ public class EditProfile extends AppCompatActivity {
                 imageRef = Uri.parse(savedInstanceState.getString("imageRef"));
         }
 
-        map_button = findViewById(R.id.button_map);
-        map_button.setOnClickListener(v -> PlaceApi());
+        //map_button = findViewById(R.id.button_map);
+        et_location.setOnClickListener(v -> PlaceApi());
 
         // Edit profile pic button
         ImageButton user_photo_button = findViewById(R.id.user_photo_button);

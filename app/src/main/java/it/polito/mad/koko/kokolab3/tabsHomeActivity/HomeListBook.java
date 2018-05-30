@@ -2,6 +2,7 @@ package it.polito.mad.koko.kokolab3.tabsHomeActivity;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,8 +14,16 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
@@ -41,12 +50,32 @@ public class HomeListBook extends Fragment {
         RecyclerView mRecyclerViewBottom =getActivity().findViewById(R.id.list_home_recyclerViewBottom);
         Query queryRecycler = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("books")
-                .orderByKey();
-        FirebaseRecyclerOptions<Book> optionsRecycler =
-                new FirebaseRecyclerOptions.Builder<Book>()
-                        .setQuery(queryRecycler, Book.class)
-                        .build();
+                .child("books");
+
+        /*queryRecycler.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Book> uidBooks= new ArrayList<>();
+                for(DataSnapshot postDataSnapshot: dataSnapshot.getChildren() ){
+                    String uid = postDataSnapshot.child("uid").getValue(String.class);
+                    //Log.d(TAG, "auth"+FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    if(uid.compareTo(FirebaseAuth.getInstance().getCurrentUser().getUid())!=0) {
+                        uidBooks.add(postDataSnapshot.getValue(Book.class));
+                        Log.d(TAG, postDataSnapshot.child("uid").getValue(String.class));
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });*/
+
+        FirebaseRecyclerOptions<Book> optionsRecycler = new FirebaseRecyclerOptions.Builder<Book>()
+                .setQuery(queryRecycler, Book.class)
+                .build();
         adapterReycler = new HomeBookAdapter(optionsRecycler, 0,getActivity());
 
         // use a linear layout manager

@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,12 +23,12 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 
 public class ShowBooks extends AppCompatActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
@@ -99,7 +98,12 @@ public class ShowBooks extends AppCompatActivity
                         String uid = book_list.get(i).getUid();
                         String sharedBy = "Shared by: " + pm.getProfile(uid).getName();
                         sharingUser.setText(sharedBy);
-
+                        sharingUser.setOnClickListener(v -> {
+                            Intent showProfile = new Intent(getApplicationContext(), ShowProfile.class);
+                            showProfile.putExtra("UserID", uid);
+                            pm.retriveInformationUser(uid);
+                            startActivity(showProfile);
+                        });
                         return view;
                     }
                 });
@@ -249,7 +253,6 @@ public class ShowBooks extends AppCompatActivity
         // Launching the Maps with the right markers
         startActivity(mapsIntent);
     }
-
 
     @Override
     public void onMapClick(LatLng latLng) {

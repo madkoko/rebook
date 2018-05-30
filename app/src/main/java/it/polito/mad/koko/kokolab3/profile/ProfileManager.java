@@ -28,6 +28,8 @@ public class ProfileManager {
 
     private static Profile currentUser;
 
+    private static Profile otherUser;
+
     /**
      * Unique instance
      */
@@ -206,4 +208,32 @@ public class ProfileManager {
     public Profile getCurrentUser() {
         return currentUser;
     }
+
+    public void retriveInformationUser(String uid) {
+        usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Map<String, String> otherUserSnapshot = (Map<String, String>) dataSnapshot.getValue();
+                    String bio = otherUserSnapshot.get("bio");
+                    String email = otherUserSnapshot.get("email");
+                    String image = otherUserSnapshot.get("image");
+                    String location = otherUserSnapshot.get("location");
+                    String name = otherUserSnapshot.get("name");
+                    String phone = otherUserSnapshot.get("phone");
+                    String position = otherUserSnapshot.get("position");
+                    String tokenMessage = otherUserSnapshot.get("tokenMessage");
+                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public Profile getOtherUser() {return otherUser;}
 }

@@ -114,6 +114,7 @@ public class HomeActivity extends AppCompatActivity
         new BookManager();
 
         profileManager = ProfileManager.getInstance();
+        //profileManager.retrieveCurrentUser();
         profileManager.populateUsersList();
         // creation of the BookManager if the user is authenticated
         if (authenticator.hasLoggedIn()) {
@@ -166,8 +167,6 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
             }
         });
-
-
     }
 
 
@@ -177,12 +176,11 @@ public class HomeActivity extends AppCompatActivity
                 getFragmentManager().beginTransaction().remove(homeListBook).commit();
                 break;
             case 1:
-                    getFragmentManager().beginTransaction().remove(homeListChats).commit();
+                getFragmentManager().beginTransaction().remove(homeListChats).commit();
                 break;
             case 2:
                 break;
             default:
-
                 break;
         }
 
@@ -326,6 +324,7 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.view_profile) {
+            ProfileManager.getInstance().retriveInformationUser(authenticator.getUser().getUid());
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
             i.putExtra("UserID", authenticator.getUser().getUid());
             startActivity(i);

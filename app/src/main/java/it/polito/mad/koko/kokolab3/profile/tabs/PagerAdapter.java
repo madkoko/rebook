@@ -4,12 +4,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import it.polito.mad.koko.kokolab3.profile.Profile;
+
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
+    String uid;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, String uid) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
+        this.uid=uid;
     }
 
     @Override
@@ -17,9 +21,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                return new TabProfile();
+                return new TabProfile(uid);
             case 1:
-                return new TabBooks();
+                return new TabBooks(uid);
             default:
                 return null;
         }
@@ -29,4 +33,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return mNumOfTabs;
     }
+
+
 }

@@ -1,75 +1,85 @@
 package it.polito.mad.koko.kokolab3.profile.tabs;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.LayoutInflater;
+import android.support.constraint.Guideline;
+import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
-import com.google.firebase.auth.FirebaseAuth;
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.Profile;
-import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
-public class ProfileTabAdapter extends BaseAdapter {
+public class ProfileTabAdapter extends FirebaseListAdapter<Profile> {
 
     private final Context context;
-    private final Profile profile;
-    private final ProfileManager profileManager;
-    private TextView value;
-    private TextView key;
-    private ImageView imageView;
+    private TextView valueEmail;
+    private TextView valueLocation;
+    private TextView valueBio;
+    private EditText editBio;
+    private ViewSwitcher switcherBio;
+    private ImageView ratingView;
+    private TextView ratingText;
+    private Guideline guideLine;
 
-    public ProfileTabAdapter(Context context){
+
+    public ProfileTabAdapter(Context context, FirebaseListOptions<Profile> options){
+        super(options);
         this.context=context;
-        profileManager = ProfileManager.getInstance();
-        profile = profileManager.getProfile(FirebaseAuth.getInstance().getUid());
 
-
-    }
-    @Override
-    public int getCount() {
-        return 3;
     }
 
     @Override
-    public Object getItem(int position) {
-        return position;
+    protected void populateView(View v, Profile model, int position) {
+
+
+        ratingView = v.findViewById(R.id.ratingView);
+        ratingText = v.findViewById(R.id.ratingText);
+
+        valueEmail = v.findViewById(R.id.value_email);
+        valueEmail.setText(model.getEmail());
+
+        valueLocation = v.findViewById(R.id.value_location);
+        valueLocation.setText(model.getLocation());
+        //valueLocation.setOnClickListener(vPlace -> PlaceApi());
+
+        valueBio = v.findViewById(R.id.value_bio);
+        valueBio.setText(model.getBio());
+
+        //WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        //Display display=  windowManager.getDefaultDisplay();
+
+        //guideLine = v.findViewById(R.id.guideline);
+        //guideLine.setGuidelineBegin(display.getWidth());
+
+
+        /*
+        switcherBio.setOnKeyListener((View v1, int keyCode, KeyEvent event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_ENTER:
+                        if (valueBio.getText() != null && valueBio.getText().toString() != "") {
+                            valueBio.setText(valueBio.getText().toString());
+                            switcherBio.showPrevious();
+                        }
+                        return true;
+                    default:
+                        break;
+                }
+            }
+            return false;
+        });
+        */
+
+        //valueBio.setOnClickListener(vBio -> switcherBio.showNext());
+
     }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater mInflater = (LayoutInflater) context
-                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        if (convertView == null)
-            convertView = mInflater.inflate(R.layout.adapter_tab_profile, parent, false);
-
-        value = convertView.findViewById(R.id.value);
-        key = convertView.findViewById(R.id.key);
-        imageView = convertView.findViewById(R.id.imageViewProfileAd);
-
-        if(position==0){
-            value.setText(profile.getEmail());
-            key.setText(R.string.user_email);
-            imageView.setImageResource(R.drawable.ic_menu_send);
-        }else if(position==1){
-            value.setText(profile.getLocation());
-            key.setText(R.string.user_location);
-            imageView.setImageResource(R.mipmap.position);
-        }if(position==2){
-            value.setText(profile.getBio());
-            key.setText(R.string.user_bio);
-            imageView.setImageResource(R.drawable.com_facebook_profile_picture_blank_portrait);
-        }
-        return convertView;
-    }
 }
