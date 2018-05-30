@@ -3,28 +3,23 @@ package it.polito.mad.koko.kokolab3.request
 /**
  * Created by Franci on 23/05/18.
  */
-class Request (_senderID: String, _receiverID: String, _bookName: String) {
+class Request (_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String) {
 
     private val TAG = "Request"
 
-    private var senderID: String? = null;
-    private var receiverID: String? = null;
-    var bookName: String? = null;
-    var bookImage: String? = null;
-    private var status: String? = null;
+    var senderId: String? = _senderId;
+    var receiverId: String? = _receiverId;
+    var bookId: String? = _bookId;
 
-    private var rating: Int? = null;
-    private var comment: String? = null;
+    var bookName = _bookName;
+    var bookImage = _bookImage;
+    var status = "pending";
 
-    constructor(senderID: String, receiverID: String, bookName: String, bookImage: String):
-            this(senderID, receiverID, bookName) {
-        this.bookName = bookName;
-        this.bookImage = bookImage;
-        this.status = "pending";
-    }
+    var rating: Int? = null;
+    var comment: String? = null;
 
-    constructor(senderID: String, receiverID: String, bookName: String, bookImage: String, rating: Int, comment: String):
-            this(senderID, receiverID, bookName, bookImage) {
+    constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, rating: Int, comment: String):
+            this(senderId, receiverId, bookId, bookName, bookImage) {
         this.rating = rating;
         this.comment = comment;
     }
@@ -45,8 +40,8 @@ class Request (_senderID: String, _receiverID: String, _bookName: String) {
 
     override fun toString(): String {
         return "Request{" +
-                "Sender ID='" + senderID + '\'' +
-                ", Receiver ID='" + receiverID + '\'' +
+                "Sender Id='" + senderId + '\'' +
+                ", Receiver Id='" + receiverId + '\'' +
                 ", Book Name='" + bookName + '\'' +
                 ", Book Image='" + bookImage + '\'' +
                 ", Status ='" + status + '\'' +

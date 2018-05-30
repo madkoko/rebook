@@ -59,6 +59,9 @@ public class ShowBook extends AppCompatActivity
     private String receiverImage;
     private String receiverToken;
 
+    private String bookId;
+    private String bookName;
+
     private String chatID = null;
 
     @Override
@@ -83,11 +86,15 @@ public class ShowBook extends AppCompatActivity
         if (i.getExtras().get("book") != null) {
             book = (Book) i.getExtras().get("book");
             if (book.getISBN() != null) isbn.setText(book.getISBN());
-            if (book.getTitle() != null) title.setText(book.getTitle());
+            if (book.getTitle() != null) {
+                bookName = book.getTitle();
+                title.setText(bookName);
+            }
             if (book.getAuthor() != null) author.setText(book.getAuthor());
             if (book.getPublisher() != null) publisher.setText(book.getPublisher());
             if (book.getEditionYear() != null) editionYear.setText(book.getEditionYear());
             if (book.getBookConditions() != null) conditions.setText(book.getBookConditions());
+            bookId = i.getStringExtra("bookId");
             Picasso.get().load(book.getImage()).into(bookImage);
             //Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
         }
@@ -169,8 +176,9 @@ public class ShowBook extends AppCompatActivity
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
                             //      >>> Create a new Request
-                            Request req = new Request(senderId, receiverId, book.getTitle(), book.getImage());
-                            RequestManager.Companion.newRequest(req, shown_image);
+                            Request req = new Request(senderId, receiverId, bookId, bookName, book.getImage());
+                            String reqId = senderId+""+bookId;
+                            RequestManager.Companion.newRequest(req, shown_image, reqId);
 
                             // 3C. Create or resume Chat
                             boolean chatFlag = true;

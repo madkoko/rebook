@@ -92,7 +92,7 @@ public class ShowBooks extends AppCompatActivity
                         if (view == null)
                             view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
-                        createBooksView(view, book_list.get(i));
+                        createBooksView(view, book_list.get(i), i);
 
                         TextView sharingUser = (TextView) view.findViewById(R.id.sharing_user);
                         String uid = book_list.get(i).getUid();
@@ -130,7 +130,7 @@ public class ShowBooks extends AppCompatActivity
 
                     Log.d(TAG, booksAdapter.getRef(position).getKey());
 
-                    createBooksView(view, model);
+                    createBooksView(view, model, position);
 
                     // Insert the current Book (model) into an array to use it in "showMap"
                     book_list.add(model);
@@ -151,7 +151,7 @@ public class ShowBooks extends AppCompatActivity
      * @param view  view to be created
      * @param model book to populate the views
      */
-    private void createBooksView(View view, Book model) {
+    private void createBooksView(View view, Book model, int position) {
         TextView title = (TextView) view.findViewById(R.id.book_title);
         ImageView photo = (ImageView) view.findViewById(R.id.book_photo);
         title.setText(model.getTitle());
@@ -172,6 +172,7 @@ public class ShowBooks extends AppCompatActivity
 
                 Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
                 showBook.putExtra("book", model);
+                showBook.putExtra("bookId", booksAdapter.getRef(position).getKey());
 
                 //showBook.putExtra("bookPhoto",bookVals.get("image"));
                 startActivity(showBook);

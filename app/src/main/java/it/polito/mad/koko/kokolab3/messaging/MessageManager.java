@@ -695,7 +695,7 @@ public class MessageManager {
 }
 
 
-// Metodo che contiene il controllo già implementato in CreateChat (da cancellare in createChat?!)
+    // Metodo che contiene il controllo già implementato in CreateChat (da cancellare in createChat?!)
     // >>> chatId valorizzato e da prendere con getter nel caso in cui esiste già la chat
     public static void checkExistingChat(String senderId, String receiverId){
 
