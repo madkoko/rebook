@@ -225,6 +225,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String senderImageURL = senderObject.get("image");
         String senderToken = senderObject.get("token");
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
+        UserChatInfo senderInfo = new UserChatInfo(senderId, senderUsername, senderImageURL, null, senderToken); // risolvere lastMessage null?!
 
         // 4.   Retrieving the * Receiver * data object
         String receiverJsonString = receivedMessage.getData().get("receiver");
@@ -256,6 +257,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         acceptIntent.putExtra("chatID", chatID);
         acceptIntent.putExtra("bookTitle", bookTitle);
         acceptIntent.putExtra("receiverInfo", receiverInfo);
+        acceptIntent.putExtra("senderInfo", senderInfo);
         // acceptIntent.putExtra(); mi serve mettere qua dentro userchatinfo e chatinfo
 
         loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject); //metti tutta sta roba in userchatinfo

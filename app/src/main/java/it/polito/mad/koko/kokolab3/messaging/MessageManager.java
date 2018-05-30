@@ -283,16 +283,20 @@ public class MessageManager {
                                                // Message info
                                                final String messageText) {
         sendNotification(
+
                 senderUsername,
                 messageText,
+
                 senderId,
                 senderUsername,
                 senderImage,
                 senderToken,
+
                 receiverId,
                 receiverUsername,
                 receiverImage,
                 receiverToken,
+
                 bookTitle,
                 chatID,
                 "message"

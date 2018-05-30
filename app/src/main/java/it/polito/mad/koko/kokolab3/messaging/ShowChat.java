@@ -97,8 +97,7 @@ public class ShowChat extends AppCompatActivity {
             senderToken = senderProfile.getTokenMessage();
 
             // B3. Retrieve *Receiver* informations
-
-            UserChatInfo secondParty = (UserChatInfo) i.getExtras().get("userChatInfo");
+            UserChatInfo secondParty = (UserChatInfo) i.getExtras().get("receiverInfo"); // SWAP >>> correttp!?
             receiverId = secondParty.getSecondPartyId();
             receiverUsername = secondParty.getSecondPartyUsername();
             receiverImage = secondParty.getSecondPartyImage();
@@ -128,16 +127,16 @@ public class ShowChat extends AppCompatActivity {
         send.setOnClickListener((View v) -> {
             if (!messageEditor.getText().toString().isEmpty()) { // Ho tolto il controllo su null perché non era mai possibile fosse vero
                 String messageText = messageEditor.getText().toString();                        // >>> Get the msg's Text
-                MessageManager.createMessage(chatID, senderId, finalReceiverId, messageText);   // >>> Create a new message entry in Firebase
+                MessageManager.createMessage(chatID, senderId, receiverId, messageText);   // >>> Create a new message entry in Firebase
                 MessageManager.sendMessageNotification(                                         // >>> Send the corresponding notification
                         senderId,
                         senderUsername,
                         senderImage,
                         senderToken,
-                        finalReceiverId,
-                        finalReceiverUsername,
-                        finalReceiverImage,
-                        finalReceiverToken,
+                        receiverId,
+                        receiverUsername,
+                        receiverImage,
+                        receiverToken,
                         null, // perchè?
                         chatID,
                         messageText

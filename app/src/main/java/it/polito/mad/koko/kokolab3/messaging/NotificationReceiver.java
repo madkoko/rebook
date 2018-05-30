@@ -60,8 +60,13 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             intent.getExtras();
             showChatIntent.putExtra("chatID", intent.getStringExtra("chatID"));
             showChatIntent.putExtra("originClass", "NotificationReceiver");
+
             UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
-            showChatIntent.putExtra("userChatInfo", receiverInfo);
+            showChatIntent.putExtra("receiverInfo", receiverInfo);
+
+            UserChatInfo senderInfo = (UserChatInfo) intent.getExtras().get("senderInfo");
+            showChatIntent.putExtra("senderInfo", senderInfo);
+
             showChatIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             if(!isActive) {
@@ -84,7 +89,9 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             if (exchangeAccepted) {
                 // Creating a chat with the user
                 String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
+
                 UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
+                UserChatInfo senderInfo = (UserChatInfo) intent.getExtras().get("senderInfo");
 
                 // Sending a positive response notification
                 //intent.putExtra("chatID", chatID);
@@ -98,7 +105,9 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 showChatIntent.putExtra("originClass", "notificationReceiver");
                 // Qua devo puttare le userChatInfo
                 showChatIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                showChatIntent.putExtra("userChatInfo", receiverInfo);
+
+                showChatIntent.putExtra("receiverInfo", receiverInfo);
+                showChatIntent.putExtra("senderInfo", senderInfo);
 
                 if(!isActive) {
                     context.startActivity(showChatIntent);

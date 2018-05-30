@@ -21,6 +21,8 @@ import com.squareup.picasso.Picasso;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.ShowChat;
 import it.polito.mad.koko.kokolab3.messaging.UserChatInfo;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.ui.CircleTransform;
 
 public class HomeChatList extends Fragment{
@@ -59,11 +61,20 @@ public class HomeChatList extends Fragment{
 
                 Log.d(TAG, adapter.getRef(position).getKey());
 
+                // Receiver info
                 String secondPartyUsername = model.getSecondPartyUsername();
                 String secondPartyId = model.getSecondPartyId();
                 String secondPartyImage = model.getSecondPartyImage();
                 String lastMessage=model.getLastMessage();
                 String chatID = adapter.getRef(position).getKey();
+
+                // My info
+                Profile senderProfile = ProfileManager.getInstance().getCurrentUser();
+                String senderId = FirebaseAuth.getInstance().getUid();
+                String senderUsername = senderProfile.getName();
+                String senderImage = senderProfile.getImage();
+                String senderToken = senderProfile.getTokenMessage();
+                UserChatInfo senderInfo = new UserChatInfo(senderId, senderUsername, senderImage, lastMessage, senderToken);
 
                 ImageView userThumbnail = (ImageView) view.findViewById(R.id.user_thumbnail);
                 TextView chatDest = (TextView) view.findViewById(R.id.chat_dest);
@@ -78,7 +89,9 @@ public class HomeChatList extends Fragment{
                     Intent showChat = new Intent(getActivity(), ShowChat.class);
                     showChat.putExtra("chatID", chatID);
                     showChat.putExtra("originClass", "showChats");
-                    showChat.putExtra("userChatInfo", model);
+                    showChat.putExtra("receiverInfo", model);
+                    showChat.putExtra("senderInfo", senderInfo);
+
                     startActivity(showChat);
                 });
             }
