@@ -99,12 +99,12 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         authenticator = new Authenticator(this);
+        profileManager= ProfileManager.getInstance();
 
         // TODO Debugging
         Log.d(TAG, "onCreate");
 
         // Retrieving the ProfileManager singleton
-        profileManager = ProfileManager.getInstance();
         p = profileManager.getCurrentUser();
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
@@ -122,12 +122,6 @@ public class EditProfile extends AppCompatActivity {
         user_photo = findViewById(R.id.user_photo_edit);
 
 
-        et_name.setText(p.getName());
-        et_email.setText(p.getEmail());
-        et_bio.setText(p.getBio());
-        et_location.setText(p.getLocation());
-        et_phone.setText(p.getPhone());
-        latLng = p.getPosition();
 
 
         // Restoring from past instanceState
@@ -398,6 +392,14 @@ public class EditProfile extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        et_name.setText(p.getName());
+        et_email.setText(p.getEmail());
+        et_bio.setText(p.getBio());
+        et_location.setText(p.getLocation());
+        et_phone.setText(p.getPhone());
+        latLng = p.getPosition();
 
 
         if (flagCamera) {

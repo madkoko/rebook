@@ -324,12 +324,13 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.view_profile) {
-            ProfileManager.getInstance().retriveInformationUser(authenticator.getUser().getUid());
+            ProfileManager.getInstance().retrieveCurrentUser();
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
             i.putExtra("UserID", authenticator.getUser().getUid());
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
+            ProfileManager.getInstance().retrieveCurrentUser();
             Intent intent = new Intent(getApplicationContext(), EditProfile.class);
             startActivity(intent);
 

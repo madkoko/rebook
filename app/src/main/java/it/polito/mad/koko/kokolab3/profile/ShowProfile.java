@@ -70,12 +70,13 @@ public class ShowProfile extends AppCompatActivity {
     private TabLayout tabs;
     private ImageView user_photo;
     private ViewPager viewPager;
-    private int position=0;
+    private int position = 0;
     private LinearLayout ln;
 
     /**
      * Instantiating the activity for the first time.
-     * @param savedInstanceState    activity's previously saved state.
+     *
+     * @param savedInstanceState activity's previously saved state.
      */
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -100,33 +101,36 @@ public class ShowProfile extends AppCompatActivity {
         actionBar.hide();
 
 
-
         // Loading the XML layout file
         setContentView(R.layout.activity_show_profile);
         ln = findViewById(R.id.Linear);
-        user_photo=findViewById(R.id.user_photo);
-
+        user_photo = findViewById(R.id.user_photo);
 
 
         //Loading UserID from intent
         i = getIntent();
-        mFirebaseUser= i.getExtras().getString("UserID");
+        mFirebaseUser = i.getExtras().getString("UserID");
+        edit = findViewById(R.id.fab);
 
-        profile = profileManager.getOtherUser();
+        if (mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            profile = profileManager.getCurrentUser();
+            edit.setVisibility(View.VISIBLE);
+        } else {
+            edit.setVisibility(View.INVISIBLE);
+            profile = profileManager.getOtherUser();
+        }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             toolbar = findViewById(R.id.technique_three_toolbar);
             toolbar.setTitle(profile.getName());
+            edit.setOnClickListener(v -> {
+                //Only if Auth user is equal to user from intent, we can use this menu
+                ProfileManager.getInstance().retrieveCurrentUser();
+                Intent i = new Intent(getApplicationContext(), EditProfile.class);
+                startActivity(i);
+                finish();
+            });
 
-            if (mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                edit = findViewById(R.id.fab);
-                edit.setOnClickListener(v -> {
-                    //Only if Auth user is equal to user from intent, we can use this menu
-                    Intent i = new Intent(getApplicationContext(), EditProfile.class);
-                    startActivity(i);
-                    finish();
-                });
-            }
         }
 
         tabs = (TabLayout) findViewById(R.id.tabs);
@@ -176,9 +180,9 @@ public class ShowProfile extends AppCompatActivity {
         }*/
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        bmp=ImageManager.getBitmapFromURL(profile.getImage());
+        bmp = ImageManager.getBitmapFromURL(profile.getImage());
 
-        if(bmp != null) {
+        if (bmp != null) {
             Bitmap bitmap = BlurBuilder.blur(this, bmp);
             Drawable drawable = new BitmapDrawable(getResources(), bitmap);
             user_photo.setBackground(drawable);
@@ -186,7 +190,7 @@ public class ShowProfile extends AppCompatActivity {
 
         //
 
-        if(profile.getImage()!=null) {
+        if (profile.getImage() != null) {
             //Picasso.get().load(profile.getImage()).into(user_photo);
             // Get the data from an ImageView and apply blur effect
             Picasso.get().load(profile.getImage()).transform(new CircleTransform()).into(user_photo);
@@ -194,8 +198,8 @@ public class ShowProfile extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed(){
-            super.onBackPressed();
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void setPosition(int position) {
@@ -207,11 +211,11 @@ public class ShowProfile extends AppCompatActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private boolean setScroll(MotionEvent event){
-            float distanceX = event.getX();
-            if (getPosition()== 0 && distanceX > 350.00)
-                onBackPressed();
-            return false;
+    private boolean setScroll(MotionEvent event) {
+        float distanceX = event.getX();
+        if (getPosition() == 0 && distanceX > 350.00)
+            onBackPressed();
+        return false;
     }
 }
 
