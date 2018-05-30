@@ -1,9 +1,15 @@
 package it.polito.mad.koko.kokolab3.profile;
 
-
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
 
+/**
+ * Properties that don't map to class fields are ignored when
+ * serializing to a class annotated with this annotation.
+ * https://firebase.google.com/docs/reference/android/com/google/firebase/database/IgnoreExtraProperties
+ */
+@IgnoreExtraProperties
 public class Profile implements Serializable {
 
     private static final String TAG = "Profile";
@@ -20,15 +26,22 @@ public class Profile implements Serializable {
     public Profile() {
     }
 
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage) {
-        this.name=name;
-        this.email=email;
-        this.phone=phone;
-        this.location=location;
-        this.bio=bio;
-        this.image =imgUrl;
+    public Profile(String name,
+                   String email,
+                   String phone,
+                   String location,
+                   String bio,
+                   String imgUrl,
+                   String position,
+                   String tokenMessage) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.location = location;
+        this.bio = bio;
+        this.image = imgUrl;
         this.position = position;
-        this.tokenMessage=tokenMessage;
+        this.tokenMessage = tokenMessage;
     }
 
     public String getName() {

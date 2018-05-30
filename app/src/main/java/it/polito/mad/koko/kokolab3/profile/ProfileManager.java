@@ -32,36 +32,8 @@ public class ProfileManager {
 
     private static ConcurrentMap<String, Profile> allUsers;
 
-    /**
-     * Current user's Profile
-     */
-    private static Profile currentUserProfile;
-    private static final ValueEventListener currentUserProfileListener;
-
-    /**
-     * True upon completing the registration
-     */
-    private static boolean registrationCompleted;
-
     static {
         allUsers = new ConcurrentHashMap<>();
-
-        currentUserProfileListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                currentUserProfile = dataSnapshot.getValue(Profile.class);
-                Log.d(TAG, "This user profile has been updated: " + currentUserProfile.toString());
-
-                // Checking whether the user has completed the registration process
-                checkRegistrationCompleted();
-                Log.d(TAG, "Registration completed: " + registrationCompleted);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "The read failed: " + databaseError.getCode());
-            }
-        };
     }
 
     /**
@@ -109,14 +81,14 @@ public class ProfileManager {
      * @return the current user ID on Firebase.
      */
     public static String getCurrentUserID() {
-        return getCurrentUser().getUid();
+        return hasLoggedIn() ? getCurrentUser().getUid() : null;
     }
 
     /**
      * @return the current user database reference on Firebase.
      */
     public static DatabaseReference getCurrentUserReference() {
-        return DatabaseManager.get("users", getCurrentUserID());
+        return hasLoggedIn() ? DatabaseManager.get("users", getCurrentUserID()) : null;
     }
 
     public static ConcurrentMap<String, Profile> getAllUsers() {
@@ -142,7 +114,7 @@ public class ProfileManager {
             return profile;
         }*/
 
-        return currentUserProfile;
+        return ProfileService.getCurrentUserProfile();
     }
 
     /**
@@ -181,7 +153,7 @@ public class ProfileManager {
             newImageURL = taskSnapshot.getDownloadUrl().toString();
 
             // Updating the current user profile offline object
-            currentUserProfile.setImage(newImageURL);
+            ProfileService.getCurrentUserProfile().setImage(newImageURL);
 
             // Updating it on Firebase
             userChildFirebaseReference.child("image").setValue(newImageURL);
@@ -223,56 +195,17 @@ public class ProfileManager {
         DatabaseManager.set(token, "users", uid, "tokenMessage");
     }
 
-    /**
-     * It checks whether this user has completed the registration.
-     * This is done by checking that all minimum fields have been properly set.
-     */
-    private static void checkRegistrationCompleted() {
-        // 'name' field must be set
-        String name = currentUserProfile.getName();
-        if (name == null || name.isEmpty() || name.compareTo("") == 0) {
-            registrationCompleted = false;
-            return;
-        }
 
-        // 'position field must be set
-        String position = currentUserProfile.getPosition();
-        if (position == null || position.isEmpty() || position.compareTo("") == 0) {
-            registrationCompleted = false;
-            return;
-        }
-
-        registrationCompleted = true;
-    }
-
-    /**
-     * @return  true if the user has completed the registration.
-     *          false otherwise.
-     */
-    public static boolean hasCompletedRegistration() {
-        return registrationCompleted;
-    }
-
-    /**
-     * Attaching the value listener to the current user's Firebase child
-     */
-    public static void attachCurrentUserProfileListener() {
-        getCurrentUserReference().addValueEventListener(currentUserProfileListener);
-    }
 
     /**
      * It performs the logout operation.
      */
     public static void logout() {
-        //detachCurrentUserProfileListener();
-        FirebaseAuth.getInstance().signOut();
-        currentUserProfile = null;
-    }
+        Log.d(TAG, "Logging out...");
 
-    /**
-     * Detaching the value listener to the current user's Firebase child
-     */
-    public static void detachCurrentUserProfileListener() {
-        getCurrentUserReference().removeEventListener(currentUserProfileListener);
+        FirebaseAuth.getInstance().signOut();
+        ProfileService.detachCurrentUserProfileListener();
+
+        Log.d(TAG, "Logged out.");
     }
 }

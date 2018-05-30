@@ -2,6 +2,7 @@ package it.polito.mad.koko.kokolab3;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -70,6 +71,15 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG,"onCreate() called");
 
+        // Handling app's uncaught exceptions
+        Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
+            /*  Performing a logout operation: this can be useful in case the app
+                crashes after that the user has logged in. */
+            ProfileManager.logout();
+
+            System.exit(2);
+        });
+
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -103,13 +113,13 @@ public class HomeActivity extends AppCompatActivity
 
         // If the user has already logged in
         if (ProfileManager.hasLoggedIn()) {
-            // Attaching the value listener to the current user's Firebase child
-            ProfileManager.attachCurrentUserProfileListener();
+            // Starting the profile management service
+            startService(new Intent(getApplicationContext(), ProfileService.class));
 
-            Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
+            Log.d(TAG, "Registration completed: " + ProfileService.hasCompletedRegistration());
 
             // If the user has not completed the registration process already
-            if(!ProfileManager.hasCompletedRegistration()) {
+            if(!ProfileService.hasCompletedRegistration()) {
                 // Launch the EditProfile activity=
                 startActivity(new Intent(getApplicationContext(), EditProfile.class));
 
@@ -236,6 +246,10 @@ public class HomeActivity extends AppCompatActivity
             // Inform the user of the successful authentication
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
 
+            if(!ProfileService.isRunning())
+                // Starting the profile management service
+                startService(new Intent(getApplicationContext(), ProfileService.class));
+
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
@@ -245,8 +259,7 @@ public class HomeActivity extends AppCompatActivity
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
 
-            // Attaching the value listener to the current user's Firebase child
-            ProfileManager.attachCurrentUserProfileListener();
+            ProfileService.refreshCurrentUserProfileListener();
 
             // If this is a new user or the user has not finished the registration
             if (ProfileManager.profileIsNotPresent((ProfileManager.getCurrentUserID()))) {
@@ -344,5 +357,4 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG,"onResume() called");
     }
-
 }

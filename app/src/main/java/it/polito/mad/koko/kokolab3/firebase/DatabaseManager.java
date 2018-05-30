@@ -18,6 +18,7 @@ public class DatabaseManager {
      * Initializing Firebase variables
      */
     static {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         database = FirebaseDatabase.getInstance().getReference();
     }
 
