@@ -84,7 +84,7 @@ public class ShowChat extends AppCompatActivity {
         }
 
         // >>> CASE B) User is coming from "ShowChat" or "ShowChats" [Click in "Chat" tab or "Chats" menù]
-        else{
+        else if (i.getStringExtra("originClass").equals("showChats")){
 
             // B1. Retrieve Chat ID
             chatID = (String) i.getExtras().get("chatID");
@@ -102,6 +102,11 @@ public class ShowChat extends AppCompatActivity {
             receiverUsername = secondParty.getSecondPartyUsername();
             receiverImage = secondParty.getSecondPartyImage();
             receiverToken = secondParty.getSecondPartyToken();
+        }
+
+        // >>> CASE C) Default case: user is coming from anywhere else (Tapping the notification)
+        else{
+
         }
 
         if (receiverId == null) {                                                   // !! No Receiver found? !!

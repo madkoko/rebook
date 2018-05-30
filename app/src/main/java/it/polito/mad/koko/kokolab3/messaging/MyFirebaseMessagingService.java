@@ -16,10 +16,12 @@
 
 package it.polito.mad.koko.kokolab3.messaging;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -38,12 +40,15 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.List;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
+
+import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -52,7 +57,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Counter to increment notification ID
      */
-    private static int counterNotificationId=0;
+    private static int counterNotificationId = 0;
 
     /**
      * Currently active chat
@@ -134,24 +139,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             // Figuring out what action should be performed upon tapping the notification
             int onTapAction = 0; // nothing has to be performed
-            if(notificationType.compareTo("request") == 0)
+            if (notificationType.compareTo("request") == 0)
                 onTapAction = 1; // the sender's profile has to be shown
-            else if(notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
+            else if (notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
                 onTapAction = 2; // the chat with the sender has to be opened
 
             // If this is a new message notification
-            if(notificationType.compareTo("message") == 0) {
+            if (notificationType.compareTo("message") == 0) {
                 synchronized (activeChatId) {
                     // Retrieving the chat ID corresponding to this new notification
                     String chatID = remoteMessage.getData().get("chatID");
 
                     // !! If the chat corresponding to this notification is not currently active
-                    if(chatID.compareTo(activeChatId) != 0)
+                    if (chatID.compareTo(activeChatId) != 0)
                         // Show the new message notification
                         showNotification(remoteMessage, showResponseButtons, onTapAction);
                 }
-            }
-            else {
+            } else {
                 // Always show the notification
                 showNotification(remoteMessage, showResponseButtons, onTapAction);
             }
@@ -191,15 +195,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param receivedMessage       the received remote message.
-     * @param showResponseButtons   whether the response buttons should be displayed or not.
-     * @param onTapAction           the action that must be performed upon tapping on the
-     *                              notification. Possible values:
-     *                              0: nothing has to be performed
-     *                              1: the sender's profile has to be shown
-     *                              2: the chat with the sender has to be opened
+     * @param receivedMessage     the received remote message.
+     * @param showResponseButtons whether the response buttons should be displayed or not.
+     * @param onTapAction         the action that must be performed upon tapping on the
+     *                            notification. Possible values:
+     *                            0: nothing has to be performed
+     *                            1: the sender's profile has to be shown
+     *                            2: the chat with the sender has to be opened
      */
     private void showNotification(RemoteMessage receivedMessage, boolean showResponseButtons, int onTapAction) {
+
+        //DEBUG THE VALUE OF "IMPORTANCE_FOREGROUND" TO CHECK IF ANY ACTIVITY IS RUNNING ON FOREGROUND
+
+        Log.d(TAG, "IMPORTANCE_FOREGROUND= " + isApplicationSentToBackground(MyFirebaseMessagingService.this));
 
         // 1.   Retrieving the * Notification * data object
         String notificationJsonString = receivedMessage.getData().get("notification");
@@ -266,7 +274,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Intent used upon declining the book exchange request
         Intent declineIntent = new Intent(this, NotificationReceiver.class);
         declineIntent.setAction(DECLINE_ACTION);
-        declineIntent.putExtra("notificationID",counterNotificationId);
+        declineIntent.putExtra("notificationID", counterNotificationId);
         loadExchangeIntentData(declineIntent, senderObject, receiverObject, bookObject);
         PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -305,7 +313,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent);
 
         // Action to be performed upon tapping the notification
-        switch(onTapAction) {
+        switch (onTapAction) {
             // Nothing has to be performed
             case 0:
                 break;
@@ -324,7 +332,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 // Setting the onTap intent
                 notificationBuilder.setContentIntent(requestPendingIntent);
-
 
                 /*Intent requestIntent = new Intent(this, NotificationReceiver.class);
                 requestIntent.setAction(REQUEST_ACTION);
@@ -373,7 +380,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
         Notification builtNotification = notificationBuilder.build();
-        notificationManager.notify(counterNotificationId++/* notification ID */, builtNotification );
+        notificationManager.notify(counterNotificationId++/* notification ID */, builtNotification);
         //notificationManager.cancelAll();
     }
 
@@ -399,10 +406,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     /**
      * Setting the currently active chat ID
-     * @param activeChatId  the currently active chat ID
+     *
+     * @param activeChatId the currently active chat ID
      */
     public static void setActiveChat(String activeChatId) {
-        if(activeChatId != null)
+        if (activeChatId != null)
             synchronized (MyFirebaseMessagingService.activeChatId) {
                 MyFirebaseMessagingService.activeChatId = activeChatId;
             }
@@ -413,5 +421,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     public static void clearActiveChat() {
         setActiveChat("");
+    }
+
+    /**
+     * check if the activity is running on background or foreground
+     *
+     * @param context context of this method (the service in this case)
+     * @return false if any of your activity is in foreground; true otherwise.
+     */
+    public static boolean isApplicationSentToBackground(final Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName topActivity = tasks.get(0).topActivity;
+
+            Log.d(TAG, "top activity: " + topActivity.getShortClassName().substring(1));
+
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
