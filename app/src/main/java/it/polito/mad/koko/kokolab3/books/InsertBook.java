@@ -18,9 +18,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
@@ -122,6 +126,12 @@ public class InsertBook extends AppCompatActivity {
                         bookAuthor.setText(bookInfo.get("authors"));
                         bookPublisher.setText((bookInfo.get("publisher")));
                         bookEditionYear.setText(bookInfo.get("editionYear"));
+                        String bookThumbnail=bookInfo.get("bookThumbnail");
+                        if(bookThumbnail!=null&&!bookThumbnail.equals("")) {
+                            bookPhoto.setImageBitmap(BitmapFactory.decodeFile(bookThumbnail));
+
+                        }
+
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
@@ -153,7 +163,6 @@ public class InsertBook extends AppCompatActivity {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] shown_image = baos.toByteArray();
-
 
         Book book = new Book(isbn, title, author, publisher, editionYear, conditions, null,uid,null,"yes",currentUser);
 
@@ -198,6 +207,22 @@ public class InsertBook extends AppCompatActivity {
                 bookAuthor.setText(bookInfo.get("authors"));
                 bookPublisher.setText((bookInfo.get("publisher")));
                 bookEditionYear.setText(bookInfo.get("editionYear"));
+                String bookThumbnail=bookInfo.get("bookThumbnail");
+                if(bookThumbnail!=null&&!bookThumbnail.equals("")) {
+                    URL url = null;
+                    try {
+                        url = new URL(bookThumbnail);
+                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        Log.d(TAG,bmp.toString());
+                        bookPhoto.setImageBitmap(bmp);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
             } else {
                 Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
             }
