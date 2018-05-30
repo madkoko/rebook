@@ -115,10 +115,11 @@ class RequestManager() {
         usersRef.child(uid).child("email").setValue(email)
     }
  */
+    companion object {
 
-    fun newRequest(req: Request, data: ByteArray) {
+        fun newRequest(req: Request, data: ByteArray) {
 
-        /* non mi serve perché recupero tutto da req
+            /* non mi serve perché recupero tutto da req
 
         var senderID: String? = null;
         var receiverID: String? = null;
@@ -132,29 +133,28 @@ class RequestManager() {
         var comment: String? = null;
     */
 
-        val database = FirebaseDatabase.getInstance()
-        val storage = FirebaseStorage.getInstance()
+            val database = FirebaseDatabase.getInstance()
+            val storage = FirebaseStorage.getInstance()
+            var downloadUrl: String;
 
-        val reqDatabaseRef = database.reference.child("requests")
+            val reqDatabaseRef = database.reference.child("requests")
 
-        val reqKey = reqDatabaseRef.push().getKey()
+            val reqKey = reqDatabaseRef.push().getKey()
 
-        val reqStorageRef = storage.reference.child("requests")
-        val uploadTask = reqStorageRef!!.child(reqKey).putBytes(data)
+            val reqStorageRef = storage.reference.child("requests")
+            val uploadTask = reqStorageRef!!.child(reqKey).putBytes(data)
 
-        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
-            downloadUrl = taskSnapshot.downloadUrl!!.toString()
-            //Log.d(TAG,downloadUrl);
-            //req.image = downloadUrl
-            //ref.child(bookKey).child("image").setValue(downloadUrl);
-            reqDatabaseRef.child(reqKey).setValue(req)
-        })
+            uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
+                downloadUrl = taskSnapshot.downloadUrl!!.toString()
+                //Log.d(TAG,downloadUrl);
+                req.bookImage = downloadUrl
+                //ref.child(bookKey).child("image").setValue(downloadUrl);
+                reqDatabaseRef.child(reqKey).setValue(req)
+            })
 
-        Log.d(TAG, req.toString())
+           // Log.d(TAG, req.toString())
 
-
-
-        /*
+            /*
 
         val bookKey = booksDatabaseRef.push().getKey()
 
@@ -168,7 +168,7 @@ class RequestManager() {
         })
 */
 
-        /*
+            /*
         val Ref = usersRef.child(id)
         this.storageRef = storageRef
         childUpdates = HashMap()
@@ -197,6 +197,7 @@ class RequestManager() {
                 .build()
         );
         */
+        }
     }
 
 /*

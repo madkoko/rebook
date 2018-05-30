@@ -69,6 +69,7 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             }
 
         }
+
         // In case a book exchange response has been received, whether it's positive or not
         else if (intent.getAction().compareTo(ACCEPT_ACTION) == 0 || intent.getAction().compareTo(DECLINE_ACTION) == 0) {
             // Retrieving the book exchange outcome
@@ -104,6 +105,7 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 }
 
             }
+
             // If the book exchange has not been accepted
             else if (intent.getAction().compareTo(DECLINE_ACTION) == 0) {
                 // Showing a book exchange declined message

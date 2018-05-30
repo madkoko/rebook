@@ -349,7 +349,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_chats) {
             //DefaultDialogsActivity.open(this);
 
-            startActivity(new Intent(getApplicationContext(), ShowChats.class));
+            /*startActivity(new Intent(getApplicationContext(), ShowChats.class));*/
 
         } else if (id == R.id.sign_out) {
             authenticator.signOut();

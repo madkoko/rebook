@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,11 +23,15 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 
+import java.io.ByteArrayOutputStream;
+
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.ShowChat;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.request.Request;
+import it.polito.mad.koko.kokolab3.request.RequestManager;
 
 public class ShowBook extends AppCompatActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
@@ -132,6 +137,8 @@ public class ShowBook extends AppCompatActivity
                 // 3. Click on "Book Request"
                 sendRequest.setOnClickListener(
                         v -> {
+
+                            // 3A. Sen a Request Notification
                             MessageManager.sendRequestNotification(    //createMsg
 
                                     // Sender info
@@ -153,6 +160,19 @@ public class ShowBook extends AppCompatActivity
                                     MessageManager.getChatID()
                             );
 
+                            // 3B. Create a new Request
+                            //      >>> Create a ByteArray to save the image of the book on FireBase
+                            bookImage.setDrawingCacheEnabled(true);
+                            bookImage.buildDrawingCache();
+                            Bitmap bitmap = bookImage.getDrawingCache();
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            byte[] shown_image = baos.toByteArray();
+                            //      >>> Create a new Request
+                            Request req = new Request(senderId, receiverId, book.getTitle(), book.getImage());
+                            RequestManager.Companion.newRequest(req, shown_image);
+
+                            // 3C. Create or resume Chat
                             boolean chatFlag = true;
                             MessageManager.createChat(i, book.getTitle(), chatFlag);
                         });
