@@ -106,7 +106,8 @@ public class ProfileManager {
                     userInfo.get("bio"),
                     userInfo.get("image"),
                     userInfo.get("position"),
-                    userInfo.get("tokenMessage"));
+                    userInfo.get("tokenMessage"),
+                    userInfo.get("rating"));
 
             return profile;
         }
@@ -193,7 +194,8 @@ public class ProfileManager {
                     String phone = currentUserSnapshot.get("phone");
                     String position = currentUserSnapshot.get("position");
                     String tokenMessage = currentUserSnapshot.get("tokenMessage");
-                    currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
+                    String rating = currentUserSnapshot.get("rating");
+                    currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, rating);
                 }
             }
 
@@ -223,7 +225,8 @@ public class ProfileManager {
                     String phone = otherUserSnapshot.get("phone");
                     String position = otherUserSnapshot.get("position");
                     String tokenMessage = otherUserSnapshot.get("tokenMessage");
-                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
+                    String rating = otherUserSnapshot.get("rating");
+                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, rating);
                 }
 
             }
@@ -236,4 +239,23 @@ public class ProfileManager {
     }
 
     public Profile getOtherUser() {return otherUser;}
+
+    public void setRating(String uid, int valutation){
+        usersRef.child(uid).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String rating = (String) dataSnapshot.getValue();
+                if(rating!= null && !rating.isEmpty()){
+                    int ratingNum = Integer.parseInt(rating);
+                    ratingNum+=valutation;
+                    //usersRef.child()
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

@@ -91,7 +91,7 @@ class RequestManager() {
 
         // *** ACCEPT a BOOK REQUEST ***
         //      >>> Change Request status
-        private fun acceptRequest(reqId: String, myId: String){
+        public fun acceptRequest(reqId: String){
             if (reqId != null) {
                 val reqDatabaseRef = database.reference.child("requests")
                         .child(reqId)
@@ -103,12 +103,31 @@ class RequestManager() {
         // *** DECLINE a BOOK REQUEST ***
         //      >>> Delete the Request on Firebase
         //      >>> Delete the Request on Book Requests List in the Tab Menu
-        private fun declineRequest(reqId: String, myId: String){
+        public fun declineRequest(reqId: String){
             if (reqId != null) {
                 val reqDatabaseRef = database.reference.child("requests")
                         .child(reqId)
                         .removeValue()
             }
+        }
+
+        public fun retunRequest(reqId: String){
+            if(reqId != null){
+                val reqDatabaseRef = database.reference.child("requests")
+                        .child(reqId)
+                        .child("status")
+                        .setValue("returning")
+            }
+        }
+
+        fun retunBook(reqId: String?) {
+            if (reqId != null){
+                val reqDatabaseRef = database.reference.child("requests")
+                        .child(reqId)
+                        .child("status")
+                        .setValue("reutn")
+            }
+
         }
 
     }

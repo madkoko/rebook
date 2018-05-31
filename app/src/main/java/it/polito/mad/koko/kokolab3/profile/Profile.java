@@ -15,13 +15,14 @@ public class Profile implements Serializable {
                     bio,
                     image,
                     position,
-                    tokenMessage;
+                    tokenMessage,
+                    rating;
 
     public Profile() {
     }
 
 
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage) {
+    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage, String rating) {
         this.name=name;
         this.email=email;
         this.phone=phone;
@@ -30,6 +31,7 @@ public class Profile implements Serializable {
         this.image =imgUrl;
         this.position = position;
         this.tokenMessage=tokenMessage;
+        this.rating=rating;
     }
 
 
@@ -61,6 +63,8 @@ public class Profile implements Serializable {
 
     public String getTokenMessage() { return tokenMessage; }
 
+    public String getRating() {return rating;}
+
     public void setName(String name) {
         this.name = name;
     }
@@ -89,6 +93,8 @@ public class Profile implements Serializable {
 
     public void setTokenMessage(String tokenMessage) { this.tokenMessage = tokenMessage; }
 
+    public void setRating(String rating) {this.rating=rating;}
+
 
 
     @Override
@@ -101,6 +107,7 @@ public class Profile implements Serializable {
                 ", bio='" + bio + '\'' +
                 ", image='" + image + '\'' +
                 ", position='" + position + '\'' +
+                ", rating='" + rating + '\'' +
                 '}';
     }
 

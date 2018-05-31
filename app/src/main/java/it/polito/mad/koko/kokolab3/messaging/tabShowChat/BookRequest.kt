@@ -20,6 +20,8 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.koko.kokolab3.R
 import it.polito.mad.koko.kokolab3.request.Request
 import kotlin.reflect.KClass
+import it.polito.mad.koko.kokolab3.request.RequestManager
+
 
 /**
  * Created by Franci on 22/05/18.
@@ -36,22 +38,22 @@ class BookRequest() : Fragment() {
     var reqId: String? = null
     var bookId: String? = null
 
-   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
+    /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
 
-       val rootBookReqView = inflater.inflate(R.layout.request_fragment, container, false)
-       val listBookReqView = rootBookReqView.findViewById<ListView>(R.id.list_chat) // Carica parte grafica lista
+        val rootBookReqView = inflater.inflate(R.layout.request_fragment, container, false)
+        val listBookReqView = rootBookReqView.findViewById<ListView>(R.id.list_chat) // Carica parte grafica lista
 
-       // UI elements
-       reqListView = rootBookReqView.findViewById<ListView>(R.id.list_chat)
+        // UI elements
+        reqListView = rootBookReqView.findViewById<ListView>(R.id.list_chat)
 
-       return rootBookReqView
-    }
+        return rootBookReqView
+     }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
-        val myListView = activity.findViewById<ListView>(R.id.list_chat)
+        val myListView = activity.findViewById(R.id.list_chat) as ListView
 
         val myReqClass = Request::class
 
@@ -70,26 +72,38 @@ class BookRequest() : Fragment() {
         Log.d(TAG, "siamo tra options e populate")
 
 
-        adapter =  object: FirebaseListAdapter<Request>(options) { //ok not null
+        adapter = object : FirebaseListAdapter<Request>(options) { //ok not null
 
             override fun populateView(v: View?, model: Request?, position: Int) {
 
-                val bookTitle = view.findViewById<TextView>(R.id.req_book_title)
-                val bookRequest = view.findViewById<ImageView>(R.id.book_request)
+                val bookTitle = v!!.findViewById(R.id.req_book_title) as TextView
+                val bookRequest = v.findViewById(R.id.book_request) as ImageView
 
                 Log.d(TAG, "siamo in populate")
 
                 bookTitle.text = model!!.bookName
                 Picasso.get().load(model.bookImage).into(bookRequest)
 
-                val acceptButton = view.findViewById<Button>(R.id.accept)
-                val declineButton = view.findViewById<Button>(R.id.decline)
+                val acceptButton = v.findViewById<Button>(R.id.accept)
+                val declineButton = v.findViewById<Button>(R.id.decline)
 
-                if(model.status.equals("pending")) {
+                if (model.status.equals("pending")) {
                     acceptButton.setVisibility(View.VISIBLE)
                     declineButton.setVisibility(View.VISIBLE)
-                }
-                else{
+                    declineButton.setOnClickListener {
+                        RequestManager.declineRequest(getRef(position).key)
+                    }
+                    acceptButton.setOnClickListener {
+                        RequestManager.acceptRequest(getRef(position).key)
+                    }
+                } else if (model.status.equals("returning")) {
+                    acceptButton.setVisibility(View.VISIBLE)
+                    declineButton.setVisibility(View.INVISIBLE)
+                    acceptButton.setText(R.string.check_if_return)
+                    acceptButton.setOnClickListener {
+                        RequestManager.retunBook(getRef(position).key)
+                    }
+                } else {
                     acceptButton.setVisibility(View.INVISIBLE)
                     declineButton.setVisibility(View.INVISIBLE)
                 }
@@ -97,8 +111,8 @@ class BookRequest() : Fragment() {
             }
         }
 
-        if(adapter != null) {
-            myListView?.adapter = adapter
+        if (adapter != null) {
+            myListView!!.adapter = adapter
         }
 
     }

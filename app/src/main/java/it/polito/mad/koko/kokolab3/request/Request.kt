@@ -18,6 +18,10 @@ class Request {
     var rating: Int? = null;
     var comment: String? = null;
 
+    constructor() : this("",
+                    "",
+                    "", "","")
+
     constructor(_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String) {
         senderId = _senderId;
         receiverId = _receiverId;

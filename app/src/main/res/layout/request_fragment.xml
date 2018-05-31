@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:dividerPadding="8dp"
+    android:orientation="horizontal"
     android:padding="8dp">
 
     <ImageView
         android:id="@+id/book_request"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical"
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:dividerPadding="8dp"
-        android:padding="10dp"
-        android:layout_width="match_parent">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/req_book_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:hint="@string/book_title"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.25"/>
+            android:layout_weight="0.25"
+            android:hint="@string/book_title"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
-
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/accept"
@@ -44,12 +42,14 @@
                 android:layout_weight="2"
                 android:text="@string/accept" />
 
+
             <Button
                 android:id="@+id/decline"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@string/decline" />
+
         </LinearLayout>
 
 

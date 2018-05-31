@@ -257,7 +257,7 @@ public class ShowChat extends AppCompatActivity {
                 break;
 
             case 1: // *** BOOK REQ TAB ***
-                //getFragmentManager().beginTransaction().remove(conversation).commit();
+                getFragmentManager().beginTransaction().remove(bookRequestList).commit();
                 break;
 
             default: // ** no need **
