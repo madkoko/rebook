@@ -22,7 +22,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
@@ -75,6 +74,13 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG,"onCreate() called");
 
+        ProfileManager.logout();
+
+        // Creating an empty SharedPreferences object
+        SharedPreferences.Editor sharedPreferencesEditor = this.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE).edit();
+        sharedPreferencesEditor.putString("Profile", new Gson().toJson(new Profile())).commit();
+        sharedPreferencesEditor.apply();
+
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -109,12 +115,12 @@ public class HomeActivity extends AppCompatActivity
         // If the user has already logged in
         if (ProfileManager.hasLoggedIn()) {
             // Starting the profile management service
-            startService(new Intent(getApplicationContext(), ProfileService.class));
+            startService(new Intent(this, ProfileService.class));
 
-            Log.d(TAG, "Registration completed: " + ProfileService.hasCompletedRegistration());
+            Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
 
             // If the user has not completed the registration process already
-            if(!ProfileService.hasCompletedRegistration()) {
+            if(!ProfileManager.hasCompletedRegistration()) {
                 // Launch the EditProfile activity=
                 startActivity(new Intent(getApplicationContext(), EditProfile.class));
 

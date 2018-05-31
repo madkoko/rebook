@@ -1,6 +1,8 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,7 +12,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,6 +28,8 @@ import it.polito.mad.koko.kokolab3.ui.ImageManager;
 public class ProfileManager {
 
     private static final String TAG = "ProfileManager";
+
+    private static final String PACKAGE_NAME = "it.polito.mad.koko.kokolab3";
 
     /**
      * Firebase objects
@@ -97,6 +104,11 @@ public class ProfileManager {
         }
     }
 
+    /**
+     * It returns the specified user profile information.
+     * @param Uid   the desired user profile.
+     * @return      the specified user profile information.
+     */
     public static Profile getProfile(String Uid) {
         synchronized (allUsers) {
             Map<String, String> userInfo = (Map<String, String>) allUsers.get(Uid);
@@ -115,8 +127,18 @@ public class ProfileManager {
         }
     }
 
+    /**
+     * @return  the current user profile information
+     */
     public static Profile getProfile() {
-        return ProfileService.getCurrentUserProfile();
+        Profile currentUserProfile = null;
+
+        // Retrieving the current profile object from the binary file
+        try(ObjectInputStream oinf = new ObjectInputStream(new FileInputStream("profile.bin"));) {
+            currentUserProfile = (Profile)oinf.readObject();
+        } catch(Exception e) {}
+
+        return currentUserProfile;
     }
 
     /**
@@ -155,7 +177,7 @@ public class ProfileManager {
             newImageURL = taskSnapshot.getDownloadUrl().toString();
 
             // Updating the current user profile offline object
-            ProfileService.getCurrentUserProfile().setImage(newImageURL);
+            getProfile().setImage(newImageURL);
 
             // Updating it on Firebase
             userChildFirebaseReference.child("image").setValue(newImageURL);
@@ -209,5 +231,31 @@ public class ProfileManager {
         ProfileService.detachCurrentUserProfileListener();
 
         Log.d(TAG, "Logged out.");
+    }
+
+
+
+    /**
+     * It checks whether this user has completed the registration.
+     * This is done by checking that all minimum fields have been properly set.
+     *
+     * @return  true if the user has completed the registration.
+     *          false otherwise.
+     */
+    public static boolean hasCompletedRegistration() {
+        // Retrieving the current profile object
+        Profile profile = getProfile();
+
+        // 'name' field must be set
+        String name = profile.getName();
+        if (name == null || name.isEmpty() || name.compareTo("") == 0)
+            return false;
+
+        // 'position field must be set
+        String position = profile.getPosition();
+        if (position == null || position.isEmpty() || position.compareTo("") == 0)
+            return false;
+
+        return true;
     }
 }
