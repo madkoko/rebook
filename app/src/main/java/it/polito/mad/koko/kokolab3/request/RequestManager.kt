@@ -35,10 +35,10 @@ class RequestManager() {
     companion object {
 
         private var reqIdRetrieved: String? = null
+        private val database = FirebaseDatabase.getInstance()
 
         fun newRequest(req: Request, data: ByteArray, reqId: String) {
 
-            val database = FirebaseDatabase.getInstance()
             val storage = FirebaseStorage.getInstance()
             var downloadUrl: String;
 
@@ -87,73 +87,29 @@ class RequestManager() {
 
                 override fun onCancelled(databaseError: DatabaseError) {}
             });
-
         }
-    }
-}
 
-           // Log.d(TAG, req.toString())
-
-            /*
-
-        val bookKey = booksDatabaseRef.push().getKey()
-
-        val uploadTask = booksStorageRef.child(bookKey).putBytes(data)
-        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
-            downloadUrl = taskSnapshot.downloadUrl!!.toString()
-            //Log.d(TAG,downloadUrl);
-            book.setImage(downloadUrl)
-            //ref.child(bookKey).child("image").setValue(downloadUrl);
-            booksDatabaseRef.child(bookKey).setValue(book)
-        })
-*/
-
-            /*
-        val Ref = usersRef.child(id)
-        this.storageRef = storageRef
-        childUpdates = HashMap()
-
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", profileId.toString())
-                .build();
-
-
-        val uploadTask = storageRef.putBytes(data)
-        uploadTask.addOnSuccessListener { taskSnapshot ->
-            downloadUrl = taskSnapshot.downloadUrl!!.toString()
-            Ref.child("image").setValue(downloadUrl)
-            if (downloadUrl != null) ImageManager.loadBitmap(downloadUrl)
-        }
-        childUpdates!!.put("name", name)
-        childUpdates!!.put("email", email)
-        childUpdates!!.put("phone", phone)
-        childUpdates!!.put("location", location)
-        childUpdates!!.put("bio", bio)
-        if (latLng != null) childUpdates!!.put("position", latLng)
-        Ref.updateChildren(childUpdates!!)
-        firebaseUser.updateProfile(new UserProfileChangeRequest
-                .Builder()
-                .setDisplayName(name)
-                .build()
-        );
-       }
-        */
-
-/*
-    fun profileIsNotPresent(uid: String): Boolean {
-        synchronized(allUsers) {
-            val it = allUsers.entries.iterator()
-            while (it.hasNext()) {
-                val entry = it.next() as Entry<*, *>
-                if (entry.key == uid) {
-                    return false
-                }
+        // *** ACCEPT a BOOK REQUEST ***
+        //      >>> Change Request status
+        private fun acceptRequest(reqId: String, myId: String){
+            if (reqId != null) {
+                val reqDatabaseRef = database.reference.child("requests")
+                        .child(reqId)
+                        .child("status")
+                        .setValue("onBorrow")
             }
         }
-        return true
-    }
 
-    fun addToken(token: String, uid: String) {
-        usersRef.child(uid).child("tokenMessage").setValue(token)
+        // *** DECLINE a BOOK REQUEST ***
+        //      >>> Delete the Request on Firebase
+        //      >>> Delete the Request on Book Requests List in the Tab Menu
+        private fun declineRequest(reqId: String, myId: String){
+            if (reqId != null) {
+                val reqDatabaseRef = database.reference.child("requests")
+                        .child(reqId)
+                        .removeValue()
+            }
+        }
+
     }
-    */
+}

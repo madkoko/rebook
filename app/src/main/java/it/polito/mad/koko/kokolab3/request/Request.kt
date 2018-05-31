@@ -3,20 +3,33 @@ package it.polito.mad.koko.kokolab3.request
 /**
  * Created by Franci on 23/05/18.
  */
-class Request (_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String) {
+class Request {
 
     private val TAG = "Request"
 
-    var senderId: String? = _senderId;
-    var receiverId: String? = _receiverId;
-    var bookId: String? = _bookId;
+    var senderId: String? = null;
+    var receiverId: String? = null;
+    var bookId: String? = null;
 
-    var bookName = _bookName;
-    var bookImage = _bookImage;
-    var status = "pending";
+    var bookName: String? = null;
+    var bookImage: String? = null;
+    var status: String? = null;
 
     var rating: Int? = null;
     var comment: String? = null;
+
+    constructor(_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String) {
+        senderId = _senderId;
+        receiverId = _receiverId;
+        bookId = _bookId;
+
+        bookName = _bookName;
+        bookImage = _bookImage;
+        status = "pending";
+
+        rating = null;
+        comment = null;
+    }
 
     constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, rating: Int, comment: String):
             this(senderId, receiverId, bookId, bookName, bookImage) {

@@ -14,7 +14,7 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequestList;
+import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequest;
 import it.polito.mad.koko.kokolab3.messaging.tabShowChat.Conversation;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -169,7 +169,8 @@ public class ShowChat extends AppCompatActivity {
 
         // 5. Final UI implementation
         conversation = new Conversation();
-        bookRequestList = new BookRequestList();
+
+        bookRequestList = new BookRequest();
 
         // Parameters to be sent to ConversationFragment
         Bundle bun = new Bundle();
