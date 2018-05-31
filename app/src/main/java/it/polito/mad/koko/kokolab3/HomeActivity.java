@@ -22,19 +22,21 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.gson.Gson;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
 import it.polito.mad.koko.kokolab3.messaging.ShowChats;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
-import it.polito.mad.koko.kokolab3.profile.ProfileService;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeChatList;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeListBook;
@@ -114,9 +116,6 @@ public class HomeActivity extends AppCompatActivity
 
         // If the user has already logged in
         if (ProfileManager.hasLoggedIn()) {
-            // Starting the profile management service
-            startService(new Intent(this, ProfileService.class));
-
             Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
 
             // If the user has not completed the registration process already
@@ -247,10 +246,6 @@ public class HomeActivity extends AppCompatActivity
             // Inform the user of the successful authentication
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
 
-            if(!ProfileService.isRunning())
-                // Starting the profile management service
-                startService(new Intent(getApplicationContext(), ProfileService.class));
-
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
@@ -260,17 +255,35 @@ public class HomeActivity extends AppCompatActivity
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
 
-            ProfileService.refreshCurrentUserProfileListener();
-
             // If this is a new user or the user has not finished the registration
-            if (ProfileManager.profileIsNotPresent((ProfileManager.getCurrentUserID()))) {
-                startActivity(new Intent(getApplicationContext(), EditProfile.class));
-            } else {
-                if (ProfileManager.getProfile().getImage() != null) {
-                    Profile p = ProfileManager.getProfile();
-                    ImageManager.loadBitmap(p.getImage());
+            ProfileManager.readProfile(this, new OnGetDataListener() {
+                    @Override
+                    public void onStart() {
+                        //DO SOME THING WHEN START GET DATA HERE
+                    }
+
+                    @Override
+                    public void onSuccess(DataSnapshot data) {
+                        /*  If the user has not completed the registration procedure
+                            (for instance it is a new user) */
+                        if(!ProfileManager.hasCompletedRegistration())
+                            // Start the EditProfile activity
+                            startActivity(new Intent(getApplicationContext(), EditProfile.class));
+                        /*  If the user has already completed the registration and
+                            has a profile picture */
+                        else if (ProfileManager.getProfile().getImage() != null) {
+                            // Load the profile picture in the UI
+                            Profile p = ProfileManager.getProfile();
+                            ImageManager.loadBitmap(p.getImage());
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(DatabaseError databaseError) {
+                        //DO SOME THING WHEN GET DATA FAILED HERE
+                    }
                 }
-            }
+            );
         }
     }
 

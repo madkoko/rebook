@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.profile;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,8 +15,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,13 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 public class ProfileManager {
 
     private static final String TAG = "ProfileManager";
 
-    private static final String PACKAGE_NAME = "it.polito.mad.koko.kokolab3";
+    private static final File profileFile = new File("data/data/it.polito.mad.koko.kokolab3/files/profile.bin");
 
     /**
      * Firebase objects
@@ -37,11 +42,12 @@ public class ProfileManager {
     private static Map<String, Object> newUserObject;
     private static String newImageURL;
 
-    private static ConcurrentMap<String, Profile> allUsers;
+    private static ConcurrentMap<String, Profile> allUsers = new ConcurrentHashMap<>();
 
-    static {
-        allUsers = new ConcurrentHashMap<>();
-    }
+    /**
+     * Current user's Profile
+     */
+    private static Profile currentUserProfile;
 
     /**
      * Retrieving all users (used when showing searched books)
@@ -134,7 +140,7 @@ public class ProfileManager {
         Profile currentUserProfile = null;
 
         // Retrieving the current profile object from the binary file
-        try(ObjectInputStream oinf = new ObjectInputStream(new FileInputStream("profile.bin"));) {
+        try(ObjectInputStream oinf = new ObjectInputStream(new FileInputStream(profileFile))) {
             currentUserProfile = (Profile)oinf.readObject();
         } catch(Exception e) {}
 
@@ -228,7 +234,6 @@ public class ProfileManager {
         Log.d(TAG, "Logging out...");
 
         FirebaseAuth.getInstance().signOut();
-        ProfileService.detachCurrentUserProfileListener();
 
         Log.d(TAG, "Logged out.");
     }
@@ -257,5 +262,38 @@ public class ProfileManager {
             return false;
 
         return true;
+    }
+
+    public static void readProfile(Context context, final OnGetDataListener listener) {
+        listener.onStart();
+        ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Retrieving the updated user info from Firebase
+                currentUserProfile = dataSnapshot.getValue(Profile.class);
+                Log.d(TAG, "This user profile has been updated: " + currentUserProfile.toString());
+
+                /*  Saving the updated user info into a binary file in case the
+                    application will be closed */
+                try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
+                    outputStream.writeObject(currentUserProfile);
+                } catch(Exception e) {}
+                Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
+
+                // Calling the listener's callback
+                listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "The read failed: " + databaseError.getCode());
+
+                listener.onFailed(databaseError);
+            }
+        });
+    }
+
+    public static File getProfileFile() {
+        return profileFile;
     }
 }
