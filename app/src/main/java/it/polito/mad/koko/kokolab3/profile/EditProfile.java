@@ -24,6 +24,8 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -34,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
+import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class EditProfile extends AppCompatActivity {
@@ -148,7 +152,7 @@ public class EditProfile extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] shown_image = baos.toByteArray();
 
-                //
+                // Update the current user information on Firebase
                 ProfileManager.updateProfile(
                         ProfileManager.getCurrentUserID(),
                         et_name.getText().toString(),
@@ -161,7 +165,8 @@ public class EditProfile extends AppCompatActivity {
                         FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
                 );
 
-                //Log.d(TAG, "User has completed the registration: " + ProfileManager.hasCompletedRegistration());
+                // Update the local file containing the current user profile information
+                ProfileManager.readProfile();
 
                 // Terminating the activity
                 finish();
@@ -205,8 +210,7 @@ public class EditProfile extends AppCompatActivity {
 
         boolean infoIsMissing = false;
 
-        if(
-            (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
+        if( (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
                 ||
             (username == null || (username.isEmpty() || username.equals("")))
         )
@@ -366,8 +370,6 @@ public class EditProfile extends AppCompatActivity {
             String toastMsg = String.format("Place: %s", place.getName());
             Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
         }
-
-
     }
 
     /**

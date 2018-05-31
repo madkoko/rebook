@@ -247,32 +247,31 @@ public class HomeActivity extends AppCompatActivity
             myFirebaseInstanceIDService.onTokenRefresh();
 
             // If this is a new user or the user has not finished the registration
-            ProfileManager.readProfile(this, new OnGetDataListener() {
-                    @Override
-                    public void onStart() {
-                    }
+            ProfileManager.readProfile(new OnGetDataListener() {
+                @Override
+                public void onStart() {
+                }
 
-                    @Override
-                    public void onSuccess(DataSnapshot data) {
-                        /*  If the user has not completed the registration procedure
-                            (for instance it is a new user) */
-                        if(!ProfileManager.hasCompletedRegistration())
-                            // Start the EditProfile activity
-                            startActivity(new Intent(getApplicationContext(), EditProfile.class));
-                        /*  If the user has already completed the registration and
-                            has a profile picture */
-                        else if (ProfileManager.getProfile().getImage() != null) {
-                            // Load the profile picture in the UI
-                            Profile p = ProfileManager.getProfile();
-                            ImageManager.loadBitmap(p.getImage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailed(DatabaseError databaseError) {
+                @Override
+                public void onSuccess(DataSnapshot data) {
+                    /*  If the user has not completed the registration procedure
+                        (for instance it is a new user) */
+                    if(!ProfileManager.hasCompletedRegistration())
+                        // Start the EditProfile activity
+                        startActivity(new Intent(getApplicationContext(), EditProfile.class));
+                    /*  If the user has already completed the registration and
+                        has a profile picture */
+                    else if (ProfileManager.getProfile().getImage() != null) {
+                        // Load the profile picture in the UI
+                        Profile p = ProfileManager.getProfile();
+                        ImageManager.loadBitmap(p.getImage());
                     }
                 }
-            );
+
+                @Override
+                public void onFailed(DatabaseError databaseError) {
+                }
+            });
         }
     }
 

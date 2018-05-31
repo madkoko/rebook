@@ -250,12 +250,21 @@ public class ProfileManager {
     }
 
     /**
-     * It reads the current user profile information immediately.
-     * @param context
-     * @param listener
+     * It just reads the current user profile information immediately: no
+     * listener must be used in order to do something with the retrieved data.
      */
-    public static void readProfile(Context context, final OnGetDataListener listener) {
-        listener.onStart();
+    public static void readProfile() {
+        readProfile(null);
+    }
+
+    /**
+     * It reads the current user profile information immediately.
+     * @param listener      the listener object that will process the retrieved data.
+     */
+    public static void readProfile(final OnGetDataListener listener) {
+        if(listener != null)
+            listener.onStart();
+
         ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -273,14 +282,16 @@ public class ProfileManager {
                 Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
 
                 // Calling the listener's callback
-                listener.onSuccess(dataSnapshot);
+                if(listener != null)
+                    listener.onSuccess(dataSnapshot);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(TAG, "The read failed: " + databaseError.getCode());
 
-                listener.onFailed(databaseError);
+                if(listener != null)
+                    listener.onFailed(databaseError);
             }
         });
     }
