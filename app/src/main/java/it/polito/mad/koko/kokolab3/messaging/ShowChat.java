@@ -14,6 +14,7 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequestList;
 import it.polito.mad.koko.kokolab3.messaging.tabShowChat.Conversation;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -45,6 +46,7 @@ public class ShowChat extends AppCompatActivity {
     private EditText messageEditor;
     private LinearLayout sendMsgLayout;
     private Fragment conversation;
+    private Fragment bookRequestList;
 
     private Intent i;
 
@@ -147,6 +149,7 @@ public class ShowChat extends AppCompatActivity {
 
         // 5. Final UI implementation
         conversation = new Conversation();
+        bookRequestList = new BookRequestList();
 
         // Parameters to be sent to ConversationFragment
         Bundle bun = new Bundle();
@@ -210,8 +213,10 @@ public class ShowChat extends AppCompatActivity {
             case 1: // *** BOOK REQ TAB ***
 
                 // Set layout visibility: hide send_msg_layout
-                //sendMsgLayout = findViewById(R.id.send_msg_layout);
-                //sendMsgLayout.setVisibility(View.INVISIBLE);
+                sendMsgLayout = findViewById(R.id.send_msg_layout);
+                sendMsgLayout.setVisibility(View.INVISIBLE);
+
+                getFragmentManager().beginTransaction().add(android.R.id.content, bookRequestList).commit();
 
                 break;
 
