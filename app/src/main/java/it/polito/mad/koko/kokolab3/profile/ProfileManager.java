@@ -2,8 +2,6 @@ package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Environment;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,7 +11,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,20 +31,22 @@ public class ProfileManager {
 
     private static final String TAG = "ProfileManager";
 
-    private static final File profileFile = new File("data/data/it.polito.mad.koko.kokolab3/files/profile.bin");
-
     /**
      * Firebase objects
      */
     private static Map<String, Object> newUserObject;
-    private static String newImageURL;
-
-    private static ConcurrentMap<String, Profile> allUsers = new ConcurrentHashMap<>();
 
     /**
      * Current user's Profile
      */
     private static Profile currentUserProfile;
+    private static String currentUserImageURL;
+    private static final File profileFile = new File("data/data/it.polito.mad.koko.kokolab3/files/profile.bin");
+
+    /**
+     * All users' profiles
+     */
+    private static ConcurrentMap<String, Profile> allUsers = new ConcurrentHashMap<>();
 
     /**
      * Retrieving all users (used when showing searched books)
@@ -59,9 +58,11 @@ public class ProfileManager {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
+                                // Initializing the allUsers data structure
                                 allUsers = new ConcurrentHashMap<>();
                                 allUsers.clear();
 
+                                // Downloading all users' profiles
                                 allUsers.putAll((Map<String, Profile>) dataSnapshot.getValue());
                             }
                         }
@@ -104,12 +105,6 @@ public class ProfileManager {
         return hasLoggedIn() ? DatabaseManager.get("users", getCurrentUserID()) : null;
     }
 
-    public static ConcurrentMap<String, Profile> getAllUsers() {
-        synchronized (allUsers) {
-            return allUsers;
-        }
-    }
-
     /**
      * It returns the specified user profile information.
      * @param Uid   the desired user profile.
@@ -142,7 +137,9 @@ public class ProfileManager {
         // Retrieving the current profile object from the binary file
         try(ObjectInputStream oinf = new ObjectInputStream(new FileInputStream(profileFile))) {
             currentUserProfile = (Profile)oinf.readObject();
-        } catch(Exception e) {}
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
         return currentUserProfile;
     }
@@ -154,17 +151,22 @@ public class ProfileManager {
      */
     @SuppressLint("LongLogTag")
     public static void addProfile(String uid, String email) {
-        //This is for future implementation of Auth
-        /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
-        DatabaseManager.get("users").push().setValue(profile);*/
-
-        //Profile profile = new Profile(name,email);
-        //DatabaseManager.get("users").setValue(profile);
-
         DatabaseManager.set(email, "users", uid, "email");
     }
 
-
+    /**
+     * It updates a profile on Firebase using the specified data.
+     *
+     * @param id
+     * @param name
+     * @param email
+     * @param phone
+     * @param location
+     * @param bio
+     * @param data
+     * @param position
+     * @param storageRef
+     */
     public static void updateProfile(String id,
                                      String name,
                                      String email,
@@ -180,17 +182,17 @@ public class ProfileManager {
         // Uploading the new profile image
         storageRef.putBytes(data).addOnSuccessListener(taskSnapshot -> {
             // Retrieving the new profile image URL
-            newImageURL = taskSnapshot.getDownloadUrl().toString();
+            currentUserImageURL = taskSnapshot.getDownloadUrl().toString();
 
             // Updating the current user profile offline object
-            getProfile().setImage(newImageURL);
+            getProfile().setImage(currentUserImageURL);
 
             // Updating it on Firebase
-            userChildFirebaseReference.child("image").setValue(newImageURL);
+            userChildFirebaseReference.child("image").setValue(currentUserImageURL);
 
             // Loading the new image in the UI
-            if (newImageURL != null)
-                ImageManager.loadBitmap(newImageURL);
+            if (currentUserImageURL != null)
+                ImageManager.loadBitmap(currentUserImageURL);
         });
 
         // New user info data structure
@@ -208,24 +210,9 @@ public class ProfileManager {
         userChildFirebaseReference.updateChildren(newUserObject);
     }
 
-    public static boolean profileIsNotPresent(String uid) {
-        synchronized (allUsers) {
-            Iterator it = allUsers.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                if (entry.getKey().equals(uid)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     public static void addToken(String uid, String token) {
         DatabaseManager.set(token, "users", uid, "tokenMessage");
     }
-
-
 
     /**
      * It performs the logout operation.
@@ -237,8 +224,6 @@ public class ProfileManager {
 
         Log.d(TAG, "Logged out.");
     }
-
-
 
     /**
      * It checks whether this user has completed the registration.
@@ -264,6 +249,11 @@ public class ProfileManager {
         return true;
     }
 
+    /**
+     * It reads the current user profile information immediately.
+     * @param context
+     * @param listener
+     */
     public static void readProfile(Context context, final OnGetDataListener listener) {
         listener.onStart();
         ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
@@ -277,7 +267,9 @@ public class ProfileManager {
                     application will be closed */
                 try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
                     outputStream.writeObject(currentUserProfile);
-                } catch(Exception e) {}
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
 
                 // Calling the listener's callback
@@ -293,7 +285,11 @@ public class ProfileManager {
         });
     }
 
-    public static File getProfileFile() {
-        return profileFile;
+    /**
+     * @return  true if the current user profile file already exists.
+     *          false otherwise.
+     */
+    public static boolean profileFileExists() {
+        return profileFile.exists();
     }
 }

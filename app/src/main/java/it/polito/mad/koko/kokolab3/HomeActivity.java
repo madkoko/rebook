@@ -76,36 +76,28 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG,"onCreate() called");
 
-        ProfileManager.logout();
-
-        // Creating an empty SharedPreferences object
-        SharedPreferences.Editor sharedPreferencesEditor = this.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE).edit();
-        sharedPreferencesEditor.putString("Profile", new Gson().toJson(new Profile())).commit();
-        sharedPreferencesEditor.apply();
+        // If the local offline file containing the current user's information does not exist
+        if(!ProfileManager.profileFileExists())
+            // Force a logout operation
+            ProfileManager.logout();
 
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();*/
-
             Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
             insertBook.putExtra("uid", ProfileManager.getCurrentUserID());
             //BookManager.removeUserBooksEventListener();
             //BookManager.removeSearchBooksEventListener();
             startActivityForResult(insertBook, INSERT_BOOK);
         });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -114,24 +106,7 @@ public class HomeActivity extends AppCompatActivity
 
         ProfileManager.populateUsersList();
 
-        // If the user has already logged in
-        if (ProfileManager.hasLoggedIn()) {
-            Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
-
-            // If the user has not completed the registration process already
-            if(!ProfileManager.hasCompletedRegistration()) {
-                // Launch the EditProfile activity=
-                startActivity(new Intent(getApplicationContext(), EditProfile.class));
-
-                return;
-            }
-
-            // Retrieve all current user's chats
-            MessageManager.setUserChatsIDListener();
-            MessageManager.populateUserChatsID();
-        }
-
-        // UI
+        // UI (tabs)
         viewSwitcher = findViewById(R.id.home_switcher);
         layoutRecycler = findViewById(R.id.home_recycler_switcher);
         layoutList = findViewById(R.id.home_list_switcher);
@@ -143,7 +118,6 @@ public class HomeActivity extends AppCompatActivity
         homeListChats = new HomeChatList();
         tab_layout.addTab(tab_layout.newTab().setText("in progress"));
         selectFragment(0);
-
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -162,6 +136,23 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
             }
         });
+
+        // If the user has already logged in
+        if (ProfileManager.hasLoggedIn()) {
+            Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
+
+            // If the user has not completed the registration process already
+            if(!ProfileManager.hasCompletedRegistration()) {
+                // Launch the EditProfile activity
+                startActivity(new Intent(getApplicationContext(), EditProfile.class));
+
+                return;
+            }
+
+            // Retrieve all current user's chats
+            MessageManager.setUserChatsIDListener();
+            MessageManager.populateUserChatsID();
+        }
     }
 
     private void removeFragment(int position) {
@@ -259,7 +250,6 @@ public class HomeActivity extends AppCompatActivity
             ProfileManager.readProfile(this, new OnGetDataListener() {
                     @Override
                     public void onStart() {
-                        //DO SOME THING WHEN START GET DATA HERE
                     }
 
                     @Override
@@ -280,7 +270,6 @@ public class HomeActivity extends AppCompatActivity
 
                     @Override
                     public void onFailed(DatabaseError databaseError) {
-                        //DO SOME THING WHEN GET DATA FAILED HERE
                     }
                 }
             );
