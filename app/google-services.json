@@ -10,17 +10,77 @@
       "client_info": {
         "mobilesdk_app_id": "1:761234817977:android:613f1944f60012a6",
         "android_client_info": {
+          "package_name": "it.polito.mad.koko.kokolab2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761234817977-k5mlsbk3ki11jj83sejbk6el6lddi1da.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.koko.kokolab2",
+            "certificate_hash": "e8f2a76f0f41df5ba63eb3b05621d54dd0a77edd"
+          }
+        },
+        {
+          "client_id": "761234817977-84ikbbjsjdm39fddbatnos18nbgkn2uu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.koko.kokolab2",
+            "certificate_hash": "d9accb0bda48489213e9744f4716d7c2107271f8"
+          }
+        },
+        {
+          "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrTztQPbOmc9C09g1hJMWFR-Q8A5-Ingw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761234817977:android:be8ee89ca58dfc4c",
+        "android_client_info": {
           "package_name": "it.polito.mad.koko.kokolab3"
         }
       },
       "oauth_client": [
         {
-          "client_id": "761234817977-84ikbbjsjdm39fddbatnos18nbgkn2uu.apps.googleusercontent.com",
+          "client_id": "761234817977-a1m4v05upbohmcma63k54iljj8qpki5e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "it.polito.mad.koko.kokolab3",
             "certificate_hash": "d9accb0bda48489213e9744f4716d7c2107271f8"
           }
+        },
+        {
+          "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+          "client_type": 3
         },
         {
           "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",

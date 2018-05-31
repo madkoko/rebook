@@ -63,6 +63,7 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
 
             Intent showBook = new Intent(activity, ShowBook.class);
             showBook.putExtra("book", model);
+            showBook.putExtra("bookId", getRef(position).getKey());
 
             activity.startActivity(showBook);
             //getRef(position).getKey()

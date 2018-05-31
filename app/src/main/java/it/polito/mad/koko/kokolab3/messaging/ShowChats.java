@@ -17,6 +17,8 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 public class ShowChats extends AppCompatActivity {
 
@@ -64,10 +66,19 @@ public class ShowChats extends AppCompatActivity {
 
                 Log.d(TAG, adapter.getRef(position).getKey());
 
+                // Second party info
                 secondPartyUsername = model.getSecondPartyUsername();
                 secondPartyId = model.getSecondPartyId();
                 secondPartyImage = model.getSecondPartyImage();
                 lastMessage = model.getLastMessage();
+
+                // My info
+                Profile senderProfile = ProfileManager.getInstance().getCurrentUser();
+                String senderId = FirebaseAuth.getInstance().getUid();
+                String senderUsername = senderProfile.getName();
+                String senderImage = senderProfile.getImage();
+                String senderToken = senderProfile.getTokenMessage();
+                UserChatInfo senderInfo = new UserChatInfo(senderId, senderUsername, senderImage, lastMessage, senderToken);
 
                 chatID = adapter.getRef(position).getKey();
 
@@ -84,7 +95,8 @@ public class ShowChats extends AppCompatActivity {
                     Intent showChat = new Intent(getApplicationContext(), ShowChat.class);
                     showChat.putExtra("chatID", chatID);
                     showChat.putExtra("originClass", "showChats");
-                    showChat.putExtra("userChatInfo", model);
+                    showChat.putExtra("receiverInfo", model);
+                    showChat.putExtra("senderInfo", senderInfo);
 
                     startActivity(showChat);
                 });

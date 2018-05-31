@@ -283,16 +283,20 @@ public class MessageManager {
                                                // Message info
                                                final String messageText) {
         sendNotification(
+
                 senderUsername,
                 messageText,
+
                 senderId,
                 senderUsername,
                 senderImage,
                 senderToken,
+
                 receiverId,
                 receiverUsername,
                 receiverImage,
                 receiverToken,
+
                 bookTitle,
                 chatID,
                 "message"
@@ -599,10 +603,9 @@ public class MessageManager {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String chatIdRetrieved;
-                if(chatID!=null){
+                if (chatID != null) {
                     chatIdRetrieved = chatID;
-                }
-                else{
+                } else {
                     chatIdRetrieved = null;
                 }
 
@@ -630,7 +633,7 @@ public class MessageManager {
                 if (chatIdRetrieved != null) {
 
                     // Create a new message (if click is on button "Request Book")
-                    if(chatFlag) {
+                    if (chatFlag) {
                         createMessage(chatIdRetrieved, senderId, receiverId, senderUsername
                                 + NEW_REQUEST_MESSAGE
                                 + bookTitle
@@ -669,7 +672,7 @@ public class MessageManager {
                 usersRefReceiver.child("chats").child(chatIdRetrieved).child("secondPartyToken").setValue(senderToken);
 
                 // Create first message (if click is on button "Request Book")
-                if(chatFlag) {
+                if (chatFlag) {
                     createMessage(chatIdRetrieved, senderId, receiverId, FIRST_CHAT_MESSAGE
                             + senderUsername
                             + NEW_REQUEST_MESSAGE
@@ -688,12 +691,12 @@ public class MessageManager {
         /*if(chatID != null) {
             chatsRef.removeEventListener(chatRefListener);
         }*/
-}
+    }
 
 
-// Metodo che contiene il controllo già implementato in CreateChat (da cancellare in createChat?!)
+    // Metodo che contiene il controllo già implementato in CreateChat (da cancellare in createChat?!)
     // >>> chatId valorizzato e da prendere con getter nel caso in cui esiste già la chat
-    public static void checkExistingChat(String senderId, String receiverId){
+    public static void checkExistingChat(String senderId, String receiverId) {
 
         // 1. Create the 'chats' child
         DatabaseReference messagesRef = DatabaseManager.get("chats");
@@ -738,7 +741,7 @@ public class MessageManager {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-             }
+            }
         });
     }
 
@@ -807,7 +810,9 @@ public class MessageManager {
     public static void resumeChat() {
     }
 
-    public static String getChatID(){ return chatID; }
+    public static String getChatID() {
+        return chatID;
+    }
 
     public static String getSenderId() {
         return senderId;
@@ -841,7 +846,7 @@ public class MessageManager {
         return receiverToken;
     }
 
-    public static void removeChatRefListener(){
-         chatsRef.removeEventListener(chatRefListener);
+    public static void removeChatRefListener() {
+        chatsRef.removeEventListener(chatRefListener);
     }
 }
