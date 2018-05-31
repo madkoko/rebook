@@ -5,7 +5,7 @@ package it.polito.mad.koko.kokolab3.request
  */
 class Request {
 
-    private val TAG = "Request"
+    val TAG = "Request"
 
     var senderId: String? = null;
     var receiverId: String? = null;

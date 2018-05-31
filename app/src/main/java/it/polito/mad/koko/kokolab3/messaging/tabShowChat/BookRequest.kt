@@ -32,69 +32,33 @@ class BookRequest() : Fragment() {
     var adapter: FirebaseListAdapter<Request>? = null       // All requests sent to the user
     var requesterId: String? = null                         // Second party id
     var myId: String? = null                                // My id
-    val reqListView: ListView? = null
+    var reqListView: ListView? = null
     var reqId: String? = null
     var bookId: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
+   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
 
-        val rootBookReqView = inflater.inflate(R.layout.request_fragment, container, false)
-        val listBookReqView = rootBookReqView.findViewById<ListView>(R.id.list_chat)
+       val rootBookReqView = inflater.inflate(R.layout.request_fragment, container, false)
+       val listBookReqView = rootBookReqView.findViewById<ListView>(R.id.list_chat) // Carica parte grafica lista
 
-        // UI elements
-        val reqListView = rootBookReqView.findViewById<ListView>(R.id.list_chat)
-        myId = FirebaseAuth.getInstance().currentUser!!.uid //ok not null
+       // UI elements
+       reqListView = rootBookReqView.findViewById<ListView>(R.id.list_chat)
 
-
-        var query: Query? = null
-        query = FirebaseDatabase.getInstance().reference.child("requests").orderByChild("receiverId").equalTo("myId")
-
-        val options = FirebaseListOptions.Builder<Request>() //savedInstanceState null
-                .setLayout(R.layout.request_fragment)
-                .setQuery(query, Request::class.java)
-                .build()
-        Log.d(TAG, options.snapshots.toString())
-
-        adapter =  object: FirebaseListAdapter<Request>(options) { //ok not null
-
-            override fun populateView(v: View?, model: Request?, position: Int) {
-
-                val bookTitle = view.findViewById<TextView>(R.id.req_book_title)
-                val bookRequest = view.findViewById<ImageView>(R.id.book_request)
-
-                bookTitle.text = model!!.bookName
-                Picasso.get().load(model.bookImage).into(bookRequest)
-
-                val acceptButton = view.findViewById<Button>(R.id.accept)
-                val declineButton = view.findViewById<Button>(R.id.decline)
-
-                if(model.status.equals("pending")) {
-                    acceptButton.setVisibility(View.VISIBLE)
-                    declineButton.setVisibility(View.VISIBLE)
-                }
-                else{
-                    acceptButton.setVisibility(View.INVISIBLE)
-                    declineButton.setVisibility(View.INVISIBLE)
-                }
-
-            }
-        }
-
-        reqListView.adapter = adapter
-        return rootBookReqView
+       return rootBookReqView
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-/*
+
         val myListView = activity.findViewById<ListView>(R.id.list_chat)
 
         val myReqClass = Request::class
 
         myId = FirebaseAuth.getInstance().currentUser!!.uid //ok not null
 
-        val query = FirebaseDatabase.getInstance().reference.child("requests").orderByChild("receiverId").equalTo("myId")
+        val query = FirebaseDatabase.getInstance().reference.child("requests").orderByChild("receiverId").equalTo(myId)
+
 
         val options = FirebaseListOptions.Builder<Request>() //savedInstanceState null
                 .setLayout(R.layout.request_fragment)
@@ -103,12 +67,17 @@ class BookRequest() : Fragment() {
 
         Log.d(TAG, options.snapshots.toString())
 
+        Log.d(TAG, "siamo tra options e populate")
+
+
         adapter =  object: FirebaseListAdapter<Request>(options) { //ok not null
 
             override fun populateView(v: View?, model: Request?, position: Int) {
 
                 val bookTitle = view.findViewById<TextView>(R.id.req_book_title)
                 val bookRequest = view.findViewById<ImageView>(R.id.book_request)
+
+                Log.d(TAG, "siamo in populate")
 
                 bookTitle.text = model!!.bookName
                 Picasso.get().load(model.bookImage).into(bookRequest)
@@ -127,7 +96,11 @@ class BookRequest() : Fragment() {
 
             }
         }
-        myListView.adapter = adapter*/
+
+        if(adapter != null) {
+            myListView?.adapter = adapter
+        }
+
     }
 
     override fun onResume() {   // non serve
@@ -140,12 +113,12 @@ class BookRequest() : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        adapter!!.startListening()
+        adapter?.startListening()
     }
 
     override fun onStop() {
         super.onStop()
-        adapter!!.stopListening()
+        adapter?.stopListening()
     }
 
 }
