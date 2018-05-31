@@ -59,9 +59,11 @@ public class HomeSharingBook extends Fragment {
                         RequestManager.Companion.retunRequest(getRef(position).getKey());
                     });
                 } else if (model.getStatus().equals("returned")) {
+
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
                     RatingBar ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
+                    ratingBar.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         ProfileManager.getInstance().setRating(model.getReceiverId(), ratingBar.getNumStars());
                         RequestManager.Companion.ratedTransition(getRef(position).getKey());

@@ -101,11 +101,12 @@ class BookRequest() : Fragment() {
                     acceptButton.setOnClickListener {
                         RequestManager.retunBook(getRef(position).key)
                     }
-                } else if (model.status == "return") {
+                } else if (model.status == "returned") {
                     acceptButton.setVisibility(View.VISIBLE)
-                    declineButton.setVisibility(View.VISIBLE)
+                    declineButton.setVisibility(View.INVISIBLE)
                     acceptButton.setText(R.string.currency)
                     val ratingBar = v.findViewById(R.id.rating_bar_request) as RatingBar
+                    ratingBar.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
                         ProfileManager.getInstance().setRating(model.senderId, ratingBar.numStars)
                         RequestManager.ratedTransition(getRef(position).key)
