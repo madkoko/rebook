@@ -91,44 +91,45 @@ class RequestManager() {
 
         // *** ACCEPT a BOOK REQUEST ***
         //      >>> Change Request status
-        public fun acceptRequest(reqId: String){
-            if (reqId != null) {
-                val reqDatabaseRef = database.reference.child("requests")
-                        .child(reqId)
-                        .child("status")
-                        .setValue("onBorrow")
-            }
+        public fun acceptRequest(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("onBorrow")
         }
 
         // *** DECLINE a BOOK REQUEST ***
         //      >>> Delete the Request on Firebase
         //      >>> Delete the Request on Book Requests List in the Tab Menu
-        public fun declineRequest(reqId: String){
-            if (reqId != null) {
-                val reqDatabaseRef = database.reference.child("requests")
-                        .child(reqId)
-                        .removeValue()
-            }
+        public fun declineRequest(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .removeValue()
         }
 
-        public fun retunRequest(reqId: String){
-            if(reqId != null){
-                val reqDatabaseRef = database.reference.child("requests")
-                        .child(reqId)
-                        .child("status")
-                        .setValue("returning")
-            }
+        public fun retunRequest(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("returning")
         }
 
         fun retunBook(reqId: String?) {
-            if (reqId != null){
-                val reqDatabaseRef = database.reference.child("requests")
-                        .child(reqId)
-                        .child("status")
-                        .setValue("reutn")
-            }
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("reutn")
+        }
 
+
+        fun ratedTransition(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("rated")
         }
 
     }
+
+
 }

@@ -248,7 +248,8 @@ public class ProfileManager {
                 if(rating!= null && !rating.isEmpty()){
                     int ratingNum = Integer.parseInt(rating);
                     ratingNum+=valutation;
-                    //usersRef.child()
+                    String finalRating = ""+ratingNum;
+                    usersRef.child(uid).child("rating").setValue(finalRating);
                 }
             }
 

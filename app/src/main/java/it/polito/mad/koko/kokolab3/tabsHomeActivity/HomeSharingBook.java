@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -60,8 +61,10 @@ public class HomeSharingBook extends Fragment {
                 } else if (model.getStatus().equals("return")) {
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
+                    RatingBar ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
                     buttonReturn.setOnClickListener(v2 -> {
-                        ProfileManager.getInstance().setRating();
+                        ProfileManager.getInstance().setRating(model.getReceiverId(), ratingBar.getNumStars());
+                        RequestManager.Companion.ratedTransition(getRef(position).getKey());
                     });
                 } else
                     buttonReturn.setVisibility(View.INVISIBLE);

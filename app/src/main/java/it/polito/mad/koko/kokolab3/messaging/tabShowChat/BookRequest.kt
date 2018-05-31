@@ -6,10 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
 import com.firebase.ui.database.SnapshotParser
@@ -18,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.squareup.picasso.Picasso
 import it.polito.mad.koko.kokolab3.R
+import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.request.Request
 import kotlin.reflect.KClass
 import it.polito.mad.koko.kokolab3.request.RequestManager
@@ -103,7 +101,17 @@ class BookRequest() : Fragment() {
                     acceptButton.setOnClickListener {
                         RequestManager.retunBook(getRef(position).key)
                     }
-                } else {
+                } else if (model.status == "return") {
+                    acceptButton.setVisibility(View.VISIBLE)
+                    declineButton.setVisibility(View.VISIBLE)
+                    acceptButton.setText(R.string.currency)
+                    val ratingBar = v.findViewById(R.id.rating_bar_request) as RatingBar
+                    acceptButton.setOnClickListener {
+                        ProfileManager.getInstance().setRating(model.senderId, ratingBar.numStars)
+                        RequestManager.ratedTransition(getRef(position).key)
+                    }
+                    //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().setRating(model.receiverId, ratingBar.numStars) })
+                }else {
                     acceptButton.setVisibility(View.INVISIBLE)
                     declineButton.setVisibility(View.INVISIBLE)
                 }
