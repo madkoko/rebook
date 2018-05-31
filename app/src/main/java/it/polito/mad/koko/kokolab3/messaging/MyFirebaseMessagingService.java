@@ -352,6 +352,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 messageIntent.setAction(MESSAGE_ACTION);
                 messageIntent.putExtra("chatID", chatID);
                 messageIntent.putExtra("receiverInfo", receiverInfo);
+                messageIntent.putExtra("senderInfo", senderInfo);
                 PendingIntent messagePendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, messageIntent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
 

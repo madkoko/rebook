@@ -86,7 +86,7 @@ public class ShowChat extends AppCompatActivity {
         }
 
         // >>> CASE B) User is coming from "ShowChat" or "ShowChats" [Click in "Chat" tab or "Chats" menù]
-        else if (i.getStringExtra("originClass").equals("showChats")){
+        else if (i.getStringExtra("originClass").equals("homeChatList")){
 
             // B1. Retrieve Chat ID
             chatID = (String) i.getExtras().get("chatID");
@@ -108,7 +108,22 @@ public class ShowChat extends AppCompatActivity {
 
         // >>> CASE C) Default case: user is coming from anywhere else (Tapping the notification)
         else{
+            // B1. Retrieve Chat ID
+            chatID = (String) i.getExtras().get("chatID");
 
+            // B2. Retrieve *Sender* informations
+            senderProfile = ProfileManager.getInstance().getCurrentUser();
+            senderId = FirebaseAuth.getInstance().getUid();
+            senderUsername = senderProfile.getName();
+            senderImage = senderProfile.getImage();
+            senderToken = senderProfile.getTokenMessage();
+
+            // B3. Retrieve *Receiver* informations
+            UserChatInfo secondParty = (UserChatInfo) i.getExtras().get("senderInfo"); // SWAP >>> correttp!?
+            receiverId = secondParty.getSecondPartyId();
+            receiverUsername = secondParty.getSecondPartyUsername();
+            receiverImage = secondParty.getSecondPartyImage();
+            receiverToken = secondParty.getSecondPartyToken();
         }
 
         if (receiverId == null) {                                                   // !! No Receiver found? !!
