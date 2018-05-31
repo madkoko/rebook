@@ -118,7 +118,7 @@ class RequestManager() {
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("status")
-                    .setValue("reutn")
+                    .setValue("returned")
         }
 
 
