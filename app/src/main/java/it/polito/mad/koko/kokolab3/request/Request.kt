@@ -1,5 +1,7 @@
 package it.polito.mad.koko.kokolab3.request
 
+import android.content.IntentSender
+
 /**
  * Created by Franci on 23/05/18.
  */
@@ -22,9 +24,9 @@ class Request {
 
     constructor() : this("",
                     "",
-                    "", "","")
+                    "", "","","","")
 
-    constructor(_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String) {
+    constructor(_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String, _ratingSender: String, _ratingReceiver: String) {
         senderId = _senderId;
         receiverId = _receiverId;
         bookId = _bookId;
@@ -33,19 +35,19 @@ class Request {
         bookImage = _bookImage;
         status = "pending";
 
-        ratingSender = null;
-        commentSender = null;
-        ratingReceiver = null;
-        commentReceiver = null;
+        ratingSender = _ratingSender;
+        //commentSender = commentSender;
+        ratingReceiver = _ratingReceiver;
+        //commentReceiver = commentReceiver;
     }
 
-    constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, _ratingSender: String, _commentSender: String, _ratingReceiver: String, _commentReceiver: String):
-            this(senderId, receiverId, bookId, bookName, bookImage) {
+    /*constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, _ratingSender: String, _commentSender: String, _ratingReceiver: String, _commentReceiver: String):
+            this(senderId, receiverId, bookId, bookName, bookImage,) {
         this.ratingSender = _ratingSender;
         this.commentSender = _commentSender;
         this.ratingReceiver = _ratingReceiver;
         this.commentReceiver = _commentReceiver;
-    }
+    }*/
 
     fun returnBook(){
         this.status = "return";

@@ -71,6 +71,8 @@ class BookRequest() : Fragment() {
 
                 val bookTitle = v!!.findViewById(R.id.req_book_title) as TextView
                 val bookRequest = v.findViewById(R.id.book_request) as ImageView
+                val ratingBar = v.findViewById(R.id.rating_bar_request) as RatingBar
+
 
                 Log.d(TAG, "siamo in populate")
 
@@ -100,11 +102,10 @@ class BookRequest() : Fragment() {
                     acceptButton.setVisibility(View.VISIBLE)
                     declineButton.setVisibility(View.INVISIBLE)
                     acceptButton.setText(R.string.currency)
-                    val ratingBar = v.findViewById(R.id.rating_bar_request) as RatingBar
                     ratingBar.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
-                        ProfileManager.getInstance().addRating(model.senderId, ratingBar.numStars)
-                        RequestManager.putSenderRate(getRef(position).key, ratingBar.numStars)
+                        ProfileManager.getInstance().addRating(model.senderId, ratingBar.rating.toString())
+                        RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
                         if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
                             RequestManager.ratedTransition(getRef(position).key)
                     }
@@ -112,6 +113,9 @@ class BookRequest() : Fragment() {
                 }else {
                     acceptButton.setVisibility(View.INVISIBLE)
                     declineButton.setVisibility(View.INVISIBLE)
+                }
+                if (!model.ratingSender.equals("")){
+                    ratingBar.setVisibility(View.INVISIBLE)
                 }
 
             }

@@ -26,6 +26,7 @@ public class HomeSharingBook extends Fragment {
 
     private static final String TAG = "HomeSharingBook";
     private FirebaseListAdapter<Request> adapter;
+    private RatingBar ratingBar;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -50,6 +51,8 @@ public class HomeSharingBook extends Fragment {
                 ImageView imageBook = v.findViewById(R.id.book_sharing_home);
                 TextView titleBook = v.findViewById(R.id.req_book_title_sharing_home);
                 Button buttonReturn = v.findViewById(R.id.return_button);
+                ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
+                ratingBar.setVisibility(View.INVISIBLE);
 
                 titleBook.setText(model.getBookName());
                 Picasso.get().load(model.getBookImage()).into(imageBook);
@@ -62,19 +65,22 @@ public class HomeSharingBook extends Fragment {
                 } else if (model.getStatus().equals("returned")) {
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
-                    RatingBar ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
                     ratingBar.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
-                        ProfileManager.getInstance().addRating(model.getReceiverId(), (int) ratingBar.getRating());
-                        RequestManager.Companion.putReceiverRate(getRef(position).getKey(), (int) ratingBar.getRating());
-                        if(model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0){
+                        ProfileManager.getInstance().addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()));
+                        RequestManager.Companion.putReceiverRate(getRef(position).getKey(), String.valueOf((int) ratingBar.getRating()));
+                        if (model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0) {
                             RequestManager.Companion.ratedTransition(getRef(position).getKey());
                         }
                     });
                 } else
                     buttonReturn.setVisibility(View.INVISIBLE);
+                if(!model.getRatingReceiver().equals(""))
+                    ratingBar.setVisibility(View.INVISIBLE);
+
             }
+
         };
         listView.setAdapter(adapter);
     }

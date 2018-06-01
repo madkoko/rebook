@@ -118,13 +118,13 @@ class RequestManager() {
                     .setValue("rated")
         }
 
-        fun putReceiverRate(reqId: String?, rate: Int){
+        fun putReceiverRate(reqId: String?, rate: String?){
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("ratingReceiver")
                     .setValue(rate)
         }
-        fun putSenderRate(reqId: String?, rate: Int){
+        fun putSenderRate(reqId: String?, rate: String?){
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("ratingSender")

@@ -250,7 +250,7 @@ public class ProfileManager {
      *       completedExchanges
      */
 
-    public void addRating(String uid, int rating){
+    public void addRating(String uid, String rating){
         usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -263,12 +263,14 @@ public class ProfileManager {
                         } catch(NumberFormatException e){
                             Log.e(TAG, "totalStars is NaN");
                         }
-                    Log.d(TAG, dataSnapshot.child("username").getValue() + " has totalStars = " + totalStars);
+                    Log.d(TAG, dataSnapshot.child("name").getValue() + " has totalStars = " + totalStars);
 
                     // Updating the total number of stars received by the user
-                    totalStars += rating;
-                    String totalStarsString = ""+totalStars;
-                    usersRef.child(uid).child("totalStars").setValue(String.valueOf(totalStars));
+                    totalStars += Float.valueOf(rating).intValue();
+
+                    String totalStarString = Integer.toString(totalStars);//String.valueOf(totalStars);
+                    Log.d(TAG, String.valueOf(totalStarString instanceof String));
+                    usersRef.child(uid).child("totalStars").setValue(totalStarString);
 
                     // Retrieving the total number of completed exchanges
                     int completedExchanges = 0;
@@ -278,11 +280,15 @@ public class ProfileManager {
                         } catch(NumberFormatException e){
                             Log.e(TAG, "completedExchanges is NaN");
                         }
-                    Log.d(TAG, dataSnapshot.child("username").getValue() + " has completedExchanges = " + completedExchanges);
+                    Log.d(TAG, dataSnapshot.child("name").getValue() + " has completedExchanges = " + completedExchanges);
 
                     // Updating the total number of completed exchanges
                     ++completedExchanges;
-                    usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
+
+                    String completedExchangesString = String.valueOf(completedExchanges);
+                    usersRef.child(uid).child("completedExchanges").setValue(completedExchangesString);
+
+                    //usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
                 }
             }
 
