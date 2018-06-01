@@ -73,7 +73,7 @@ public class ShowChats extends AppCompatActivity {
                 lastMessage = model.getLastMessage();
 
                 // My info
-                Profile senderProfile = ProfileManager.getInstance().getCurrentUser();
+                Profile senderProfile = ProfileManager.getProfile();
                 String senderId = FirebaseAuth.getInstance().getUid();
                 String senderUsername = senderProfile.getName();
                 String senderImage = senderProfile.getImage();

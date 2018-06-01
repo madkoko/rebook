@@ -48,7 +48,7 @@ public class BookManager {
     /**
      * Arraylist with all the books in Firebase
      */
-    private static ArrayList<Book> allBooks;
+    private static Map<String,Book> allBooks;
 
     static {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -139,24 +139,13 @@ public class BookManager {
         booksDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                allBooks = new ArrayList<>();
+                allBooks = new HashMap<>();
                 if (dataSnapshot.exists()) {
 
-                    Map<String, Map<String,String>> booksSnapshot = (Map<String, Map<String,String>>) dataSnapshot.getValue();
-
                     // Retrieve all the books from Firebase
-                    for (String key : booksSnapshot.keySet()) {
-                        Map<String,String> bookValues=booksSnapshot.get(key);
-                        String isbn=bookValues.get("isbn");
-                        String title=bookValues.get("title");
-                        String author=bookValues.get("author");
-                        String publisher=bookValues.get("publisher");
-                        String editionYear=bookValues.get("editionYear");
-                        String conditions=bookValues.get("conditions");
-                        String uid=bookValues.get("uid");
-                        String image=bookValues.get("image");
-                        Book book=new Book(isbn,title,author,publisher,editionYear,conditions,uid,image);
-                        allBooks.add(book);
+                    for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
+                        Book book=bookSnapshot.getValue(Book.class);
+                        allBooks.put(bookSnapshot.getKey(),book);
                     }
                 }
             }
@@ -170,7 +159,7 @@ public class BookManager {
     /**
      * @return Arraylist with all the books in Firebase
      */
-    public static ArrayList<Book> getAllBooks() {
+    public static Map<String,Book> getAllBooks() {
 
         return allBooks;
     }

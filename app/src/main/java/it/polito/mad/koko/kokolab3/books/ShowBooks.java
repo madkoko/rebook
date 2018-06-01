@@ -23,12 +23,14 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
+import it.polito.mad.koko.kokolab3.util.JsonUtil;
 
 public class ShowBooks extends AppCompatActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
@@ -46,7 +48,7 @@ public class ShowBooks extends AppCompatActivity
      */
     private ArrayList<Book> book_list;
 
-    private ProfileManager pm;
+    private Map<String, Book> bookMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,23 +63,24 @@ public class ShowBooks extends AppCompatActivity
         // In case this activity is called by "SearchBooks"
         if (requestCode == SEARCH_BOOKS) {
 
-            book_list = (ArrayList<Book>) getIntent().getExtras().get("searchedBooks");
+            bookMap = JsonUtil.deserializeBooks(getIntent().getStringExtra("searchedBooks"));
 
-            if (book_list != null && book_list.size() == 0) {
+            if (bookMap != null && bookMap.size() == 0) {
                 Toast.makeText(getApplicationContext(), "No books found", Toast.LENGTH_LONG).show();
                 finish();
             } else {
+
 
                 bookListView.setAdapter(new BaseAdapter() {
 
                     @Override
                     public int getCount() {
-                        return book_list.size();
+                        return bookMap.size();
                     }
 
                     @Override
                     public Object getItem(int i) {
-                        return book_list.get(i);
+                        return bookMap.keySet().toArray()[i];
                     }
 
                     @Override
@@ -90,16 +93,16 @@ public class ShowBooks extends AppCompatActivity
                         if (view == null)
                             view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
-                        createBooksView(view, book_list.get(i), i);
+                        createBooksView(view, bookMap.get(bookMap.keySet().toArray()[i]), (String) bookMap.keySet().toArray()[i]);
 
                         TextView sharingUser = (TextView) view.findViewById(R.id.sharing_user);
-                        String uid = book_list.get(i).getUid();
-                        String sharedBy = "Shared by: " + pm.getProfile(uid).getName();
+                        String uid = bookMap.get(bookMap.keySet().toArray()[i]).getUid();
+                        String sharedBy = "Shared by: " + ProfileManager.getProfile(uid).getName();
                         sharingUser.setText(sharedBy);
                         sharingUser.setOnClickListener(v -> {
                             Intent showProfile = new Intent(getApplicationContext(), ShowProfile.class);
                             showProfile.putExtra("UserID", uid);
-                            pm.retriveInformationUser(uid);
+                            ProfileManager.retriveInformationUser(uid);
                             startActivity(showProfile);
                         });
                         return view;
@@ -128,7 +131,7 @@ public class ShowBooks extends AppCompatActivity
 
                     Log.d(TAG, booksAdapter.getRef(position).getKey());
 
-                    createBooksView(view, model, position);
+                    createBooksView(view, model, null);
 
                     // Insert the current Book (model) into an array to use it in "showMap"
                     book_list.add(model);
@@ -149,7 +152,7 @@ public class ShowBooks extends AppCompatActivity
      * @param view  view to be created
      * @param model book to populate the views
      */
-    private void createBooksView(View view, Book model, int position) {
+    private void createBooksView(View view, Book model, String bookId) {
         TextView title = (TextView) view.findViewById(R.id.book_title);
         ImageView photo = (ImageView) view.findViewById(R.id.book_photo);
         title.setText(model.getTitle());
@@ -170,7 +173,9 @@ public class ShowBooks extends AppCompatActivity
 
                 Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
                 showBook.putExtra("book", model);
-                showBook.putExtra("bookId", booksAdapter.getRef(position).getKey());
+
+                if (bookId != null)
+                    showBook.putExtra("bookId", bookId);
 
                 //showBook.putExtra("bookPhoto",bookVals.get("image"));
                 startActivity(showBook);
@@ -186,16 +191,16 @@ public class ShowBooks extends AppCompatActivity
 
         // Sender Info
         String senderId = FirebaseAuth.getInstance().getUid();
-        Profile senderProfile = pm.getProfile(senderId);
+        Profile senderProfile = ProfileManager.getProfile(senderId);
         String senderUsername = senderProfile.getName();
         String senderImage = senderProfile.getImage();
         String senderToken = senderProfile.getTokenMessage();
 
         // Receiver Info
         String receiverId = book.getUid();
-        Profile receiverProfile = pm.getProfile(receiverId);
-        String receiverUsername = receiverProfile.getName();
+        Profile receiverProfile = ProfileManager.getProfile(receiverId);
         String receiverImage = receiverProfile.getImage();
+        String receiverUsername = receiverProfile.getName();
         String receiverToken = receiverProfile.getTokenMessage();
 
         // 2. Put Sender & Receiver info into Intent

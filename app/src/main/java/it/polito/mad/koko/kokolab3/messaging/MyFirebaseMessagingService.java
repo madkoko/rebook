@@ -37,18 +37,15 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
-
-import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -104,92 +101,74 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     // [START receive_message]
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) { //meglio cambiare nome in onNotificationReceived
-        // [START_EXCLUDE]
-        // There are two types of messages: data messages and notification messages. Data messages are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
-        // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        // [END_EXCLUDE]
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        if(ProfileManager.hasLoggedIn()) {
+            // [START_EXCLUDE]
+            // There are two types of messages: data messages and notification messages. Data messages are handled
+            // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
+            // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
+            // is in the foreground. When the app is in the background an automatically generated notification is displayed.
+            // When the user taps on the notification they are returned to the app. Messages containing both notification
+            // and data payloads are treated as notification messages. The Firebase console always sends notification
+            // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
+            // [END_EXCLUDE]
 
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+            // TODO(developer): Handle FCM messages here.
+            // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+            Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        MessageManager.setUserChatsIDListener();
-        ProfileManager.populateUsersList();
-        MessageManager.populateUserChatsID();
-        MessageManager.populateUserMessages();
-        // MessageManager.createChat(Intent intent, String bookTitle); // DA FARE -> dov'è l'intent? dov'è book title?!
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Received message with a payload");
+            MessageManager.setUserChatsIDListener();
+            ProfileManager.populateUsersList();
+            MessageManager.populateUserChatsID();
+            MessageManager.populateUserMessages();
+            // MessageManager.createChat(Intent intent, String bookTitle); // DA FARE -> dov'è l'intent? dov'è book title?!
 
-            // Retrieving the notification type
-            String notificationType = remoteMessage.getData().get("type");
+            // Check if message contains a data payload.
+            if (remoteMessage.getData().size() > 0) {
+                Log.d(TAG, "Received message with a payload");
 
-            /*  Figuring out whether it is a request notification
-                or not, so action buttons will be displayed accordingly */
-            boolean showResponseButtons = notificationType.compareTo("request") == 0;
+                // Retrieving the notification type
+                String notificationType = remoteMessage.getData().get("type");
 
-            // Figuring out what action should be performed upon tapping the notification
-            int onTapAction = 0; // nothing has to be performed
-            if (notificationType.compareTo("request") == 0)
-                onTapAction = 1; // the sender's profile has to be shown
-            else if (notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
-                onTapAction = 2; // the chat with the sender has to be opened
+                /*  Figuring out whether it is a request notification
+                    or not, so action buttons will be displayed accordingly */
+                boolean showResponseButtons = notificationType.compareTo("request") == 0;
 
-            // If this is a new message notification
-            if (notificationType.compareTo("message") == 0) {
-                synchronized (activeChatId) {
-                    // Retrieving the chat ID corresponding to this new notification
-                    String chatID = remoteMessage.getData().get("chatID");
+                // Figuring out what action should be performed upon tapping the notification
+                int onTapAction = 0; // nothing has to be performed
+                if (notificationType.compareTo("request") == 0)
+                    onTapAction = 1; // the sender's profile has to be shown
+                else if (notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
+                    onTapAction = 2; // the chat with the sender has to be opened
 
-                    // !! If the chat corresponding to this notification is not currently active
-                    if (chatID.compareTo(activeChatId) != 0)
-                        // Show the new message notification
-                        showNotification(remoteMessage, showResponseButtons, onTapAction);
+                // If this is a new message notification
+                if (notificationType.compareTo("message") == 0) {
+                    synchronized (activeChatId) {
+                        // Retrieving the chat ID corresponding to this new notification
+                        String chatID = remoteMessage.getData().get("chatID");
+
+                        // !! If the chat corresponding to this notification is not currently active
+                        if (chatID.compareTo(activeChatId) != 0)
+                            // Show the new message notification
+                            showNotification(remoteMessage, showResponseButtons, onTapAction);
+                    }
+                } else {
+                    // Always show the notification
+                    showNotification(remoteMessage, showResponseButtons, onTapAction);
                 }
-            } else {
-                // Always show the notification
-                showNotification(remoteMessage, showResponseButtons, onTapAction);
             }
-        }
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Received message with a notification");
-        }
+            // Check if message contains a notification payload.
+            if (remoteMessage.getNotification() != null) {
+                Log.d(TAG, "Received message with a notification");
+            }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See showNotification method below.
+            // Also if you intend on generating your own notifications as a result of a received FCM
+            // message, here is where that should be initiated. See showNotification method below.
+        }
     }
     // [END receive_message]
-
-    /**
-     * Schedule a job using FirebaseJobDispatcher.
-     */
-    private void scheduleJob() {
-        // [START dispatch_job]
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Job myJob = dispatcher.newJobBuilder()
-                .setService(MyJobService.class)
-                .setTag("my-job-tag")
-                .build();
-        dispatcher.schedule(myJob);
-        // [END dispatch_job]
-    }
-
-    /**
-     * Handle time allotted to BroadcastReceivers.
-     */
-    private void handleNow() {
-        Log.d(TAG, "Short lived task is done.");
-    }
 
     /**
      * Create and show a simple notification containing the received FCM message.
@@ -210,9 +189,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 1.   Retrieving the * Notification * data object
         String notificationJsonString = receivedMessage.getData().get("notification");
-        Map<String, String> notificationObject = // De-serializing the "object" JSON object
-                new Gson().fromJson(notificationJsonString, new TypeToken<Map<String, String>>() {
-                }.getType());
+        Map<String, String> notificationObject = JsonUtil.deserialize(notificationJsonString);
         //      Retrieving Notification informations
         String notificationTitle = notificationObject.get("title");
         String notificationBody = notificationObject.get("body");
@@ -223,9 +200,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 3.   Retrieving the * Sender * data object
         String senderJsonString = receivedMessage.getData().get("sender");
-        Map<String, String> senderObject = // De-serializing the "sender" JSON object
-                new Gson().fromJson(senderJsonString, new TypeToken<Map<String, String>>() {
-                }.getType());
+        Map<String, String> senderObject = JsonUtil.deserialize(senderJsonString);
         //      Retrieving sender informations
         String senderId = senderObject.get("id");
         String senderUsername = senderObject.get("username");
@@ -236,9 +211,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 4.   Retrieving the * Receiver * data object
         String receiverJsonString = receivedMessage.getData().get("receiver");
-        Map<String, String> receiverObject = // De-serializing the "sender" JSON object
-                new Gson().fromJson(receiverJsonString, new TypeToken<Map<String, String>>() {
-                }.getType());
+        Map<String, String> receiverObject = JsonUtil.deserialize(receiverJsonString);
         //      Retrieving Receiver informations
         String receiverId = receiverObject.get("id");
         String receiverUsername = receiverObject.get("username");
@@ -248,9 +221,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 5.   Retrieving the * Book * data object
         String bookJsonString = receivedMessage.getData().get("book");
-        Map<String, String> bookObject = // De-serializing the "book" JSON object
-                new Gson().fromJson(bookJsonString, new TypeToken<Map<String, String>>() {
-                }.getType());
+        Map<String, String> bookObject = JsonUtil.deserialize(bookJsonString);
         //      Retrieving Book informations
         String bookTitle = bookObject.get("title");
 

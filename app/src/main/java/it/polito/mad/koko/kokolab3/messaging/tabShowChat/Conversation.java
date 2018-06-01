@@ -21,6 +21,7 @@ import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.Message;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 /**
  * Created by Franci on 22/05/18.

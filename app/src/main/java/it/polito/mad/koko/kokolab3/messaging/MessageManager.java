@@ -1,10 +1,7 @@
 package it.polito.mad.koko.kokolab3.messaging;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.transition.ChangeTransform;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,10 +10,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -24,12 +19,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
 import okhttp3.MediaType;
@@ -37,9 +28,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static android.support.v4.content.ContextCompat.startActivity;
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MessageManager {
 
@@ -192,6 +180,7 @@ public class MessageManager {
 
         */
 
+        Log.d(TAG,"CHAT ID: "+chatID);
         sendNotification(
                 notificationTitle,
                 notificationText,
@@ -307,23 +296,23 @@ public class MessageManager {
      * It sends a general notification to a specific user.
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
-     * <p>
+     *
      * A JSON example is shown below:
-     * <p>
+     *
      * {
-     * "priority": "high",
-     * <p>
-     * "to": receiver_token
-     * <p>
-     * "data": {
-     * "notification": {
-     * "title": title,
-     * "body": body
-     * },
-     * <p>
-     * "type": "request" | "accept" | "decline" | "message",
-     * <p>
-     * "chatID": chat_id,
+     *      "priority": "high",
+     *
+     *      "to": receiver_token
+     *
+     *      "data": {
+     *          "notification": {
+     *              "title": title,
+     *              "body": body
+     *          },
+     *
+     *          "type": "request" | "accept" | "decline" | "message",
+     *
+     *          "chatID": chat_id,
      * <p>
      * "sender": {
      * "id": "kE3ErSqw...",
@@ -420,7 +409,7 @@ public class MessageManager {
                     root.put("priority", "high");
                     root.put("to", receiverToken);
                     root.put("data", data);
-                    Log.d(TAG, "JSON message: " + JsonUtil.formatJson(root.toString()));
+                    //Log.d(TAG, "JSON message: " + JsonUtil.formatJson(root.toString()));
 
                     // Sending the JSON packet to FCM
                     String result = postToFCM(root.toString());
@@ -479,7 +468,7 @@ public class MessageManager {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     userChatIDs.putAll((Map<String, Map<String, String>>) dataSnapshot.getValue());
-                    Log.d(TAG, userChatIDs.toString());
+                    //Log.d(TAG, userChatIDs.toString());
                     MessageManager.populateUserMessages();
                 }
             }
@@ -731,7 +720,7 @@ public class MessageManager {
                         if (chatsInfo.get(chatKey).getSecondPartyId().equals(receiverId)) {     // >>> Chat between Sender & Receiver is already existing
                             chatIdRetrieved = chatKey;
                             chatID = chatIdRetrieved;
-                            Log.d("MessangerManager", "chattavoGiàConMaddalena");
+                            //Log.d(TAG, "chattavoGiàConMaddalena");
                             break;
                         }
                     }

@@ -168,11 +168,11 @@
                     />
 
                     <Button
-                        android:id="@+id/send_message"
+                        android:id="@+id/open_chat"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/show_book_conditions"
-                        android:hint="@string/send_message"
+                        android:hint="@string/open_chat"
                         android:textSize="20sp"
                         android:layout_alignParentRight="true" />
                 </LinearLayout>

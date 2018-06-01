@@ -90,7 +90,6 @@ public class HomeBookAdapter extends FirebaseRecyclerAdapter<Book, HomeBookAdapt
     private Intent getChatInfo(Book book) {
 
         Intent i = new Intent();
-        pm = ProfileManager.getInstance();
 
         // Sender Info
         String senderId = FirebaseAuth.getInstance().getUid();

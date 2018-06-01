@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +56,7 @@ public class ShowChat extends AppCompatActivity {
         super.onCreate(bundle);
         setContentView(R.layout.activity_show_chat);
 
+        Log.d(TAG,"OnCrreate");
         this.savedInstanceState = bundle;
         i = getIntent();
 
@@ -92,7 +94,7 @@ public class ShowChat extends AppCompatActivity {
             chatID = (String) i.getExtras().get("chatID");
 
             // B2. Retrieve *Sender* informations
-            senderProfile = ProfileManager.getInstance().getCurrentUser();
+            senderProfile = ProfileManager.getProfile();
             senderId = FirebaseAuth.getInstance().getUid();
             senderUsername = senderProfile.getName();
             senderImage = senderProfile.getImage();
@@ -112,7 +114,7 @@ public class ShowChat extends AppCompatActivity {
             chatID = (String) i.getExtras().get("chatID");
 
             // B2. Retrieve *Sender* informations
-            senderProfile = ProfileManager.getInstance().getCurrentUser();
+            senderProfile = ProfileManager.getProfile();
             senderId = FirebaseAuth.getInstance().getUid();
             senderUsername = senderProfile.getName();
             senderImage = senderProfile.getImage();

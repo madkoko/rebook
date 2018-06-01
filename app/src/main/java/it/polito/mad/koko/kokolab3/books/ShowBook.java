@@ -104,14 +104,14 @@ public class ShowBook extends AppCompatActivity
 
             // Sender Info
             senderId = ProfileManager.getCurrentUserID();
-            senderProfile = profileManager.getProfile();
+            senderProfile = ProfileManager.getProfile();
             senderUsername = senderProfile.getName();
             senderImage = senderProfile.getImage();
             senderToken = senderProfile.getTokenMessage();
 
             // Receiver Info
             receiverId = book.getUid();
-            receiverProfile = profileManager.getProfile(receiverId);
+            receiverProfile = ProfileManager.getProfile(receiverId);
             receiverUsername = receiverProfile.getName();
             receiverImage = receiverProfile.getImage();
             receiverToken = receiverProfile.getTokenMessage();
@@ -122,7 +122,7 @@ public class ShowBook extends AppCompatActivity
 
             sendingLayout = findViewById(R.id.sending_layout);  // >>> Start Chat | Send Message Layout
             sendRequest = findViewById(R.id.send_request);      // >>> Send Request Button
-            sendMessage = findViewById(R.id.send_message);      // >>> Send Message Button
+            sendMessage = findViewById(R.id.open_chat);      // >>> Send Message Button
 
             if(authUser.compareTo(book.getUid())!=0) {
 
@@ -142,6 +142,10 @@ public class ShowBook extends AppCompatActivity
                 // 3. Click on "Book Request"
                 sendRequest.setOnClickListener(
                         v -> {
+
+                            // 3C. Create or resume Chat
+                            boolean chatFlag = true;
+                            MessageManager.createChat(i, book.getTitle(), chatFlag);
 
                             // 3A. Sen a Request Notification
                             MessageManager.sendRequestNotification(    //createMsg
@@ -178,9 +182,6 @@ public class ShowBook extends AppCompatActivity
                             String reqId = senderId+""+bookId;
                             RequestManager.Companion.newRequest(req, shown_image, reqId);
 
-                            // 3C. Create or resume Chat
-                            boolean chatFlag = true;
-                            MessageManager.createChat(i, book.getTitle(), chatFlag);
                         });
 
                 // 4. Click on "Open Chat"

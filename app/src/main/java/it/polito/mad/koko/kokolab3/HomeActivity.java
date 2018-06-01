@@ -116,7 +116,7 @@ public class HomeActivity extends AppCompatActivity
         homeListBook = new HomeListBook();
         tab_layout.addTab(tab_layout.newTab().setText("chats"));
         homeListChats = new HomeChatList();
-        tab_layout.addTab(tab_layout.newTab().setText("in progress"));
+        tab_layout.addTab(tab_layout.newTab().setText("requests"));
         selectFragment(0);
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

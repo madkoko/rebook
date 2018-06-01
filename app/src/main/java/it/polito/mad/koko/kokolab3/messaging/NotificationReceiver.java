@@ -68,13 +68,15 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             if(!isActive) {
                 context.startActivity(showChatIntent);
             }
-
         }
 
         // In case a book exchange response has been received, whether it's positive or not
         else if (intent.getAction().compareTo(ACCEPT_ACTION) == 0 || intent.getAction().compareTo(DECLINE_ACTION) == 0) {
             // Retrieving the book exchange outcome
             boolean exchangeAccepted = intent.getAction().compareTo(ACCEPT_ACTION) == 0;
+
+            UserChatInfo receiverInfo = (UserChatInfo)intent.getExtras().get("receiverInfo");
+            UserChatInfo senderInfo = (UserChatInfo)intent.getExtras().get("senderInfo");
 
             // If the book exchange has not been accepted
             if (!exchangeAccepted)
@@ -85,9 +87,6 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             if (exchangeAccepted) {
                 // Creating a chat with the user
                 String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
-
-                UserChatInfo receiverInfo = (UserChatInfo) intent.getExtras().get("receiverInfo");
-                UserChatInfo senderInfo = (UserChatInfo) intent.getExtras().get("senderInfo");
 
                 // Sending a positive response notification
                 //intent.putExtra("chatID", chatID);

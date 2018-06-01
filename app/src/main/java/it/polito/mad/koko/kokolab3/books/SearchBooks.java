@@ -3,20 +3,19 @@ package it.polito.mad.koko.kokolab3.books;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 //import com.twitter.sdk.android.core.models.Search;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.util.JsonUtil;
 
 public class SearchBooks extends AppCompatActivity {
 
@@ -33,7 +32,7 @@ public class SearchBooks extends AppCompatActivity {
     /**
      * ArrayList with all the books that match the keywords
      */
-    private ArrayList<Book> searchedBooks;
+    private Map<String,Book> searchedBooks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +76,7 @@ public class SearchBooks extends AppCompatActivity {
 
         searchedBooks=BookManager.getAllBooks();
 
-        Iterator<Book> booksIterator=searchedBooks.iterator();
+        Iterator<Book> booksIterator=searchedBooks.values().iterator();
         while(booksIterator.hasNext()){
             if(!bookMatchesKeywords(booksIterator.next()))
                 booksIterator.remove();
@@ -87,7 +86,8 @@ public class SearchBooks extends AppCompatActivity {
         // and putting the filtered books array list in the intent
         Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
         showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
-        showSearchBooks.putExtra("searchedBooks",searchedBooks);
+
+        showSearchBooks.putExtra("searchedBooks", JsonUtil.serialize(searchedBooks));
         startActivity(showSearchBooks);
 
     }
