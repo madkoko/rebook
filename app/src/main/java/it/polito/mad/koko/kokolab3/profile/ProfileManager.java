@@ -196,7 +196,7 @@ public class ProfileManager {
                     String phone = currentUserSnapshot.get("phone");
                     String position = currentUserSnapshot.get("position");
                     String tokenMessage = currentUserSnapshot.get("tokenMessage");
-                    String totalStars = currentUserSnapshot.get("totalStars");
+                    String totalStars =  currentUserSnapshot.get("totalStars");
                     String completedExchanges = currentUserSnapshot.get("completedExchanges");
                     currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, totalStars, completedExchanges);
                 }
@@ -267,7 +267,8 @@ public class ProfileManager {
 
                     // Updating the total number of stars received by the user
                     totalStars += rating;
-                    usersRef.child(uid).child("totalStars").setValue(totalStars);
+                    String totalStarsString = ""+totalStars;
+                    usersRef.child(uid).child("totalStars").setValue(String.valueOf(totalStars));
 
                     // Retrieving the total number of completed exchanges
                     int completedExchanges = 0;
@@ -281,7 +282,7 @@ public class ProfileManager {
 
                     // Updating the total number of completed exchanges
                     ++completedExchanges;
-                    usersRef.child(uid).child("completedExchanges").setValue(completedExchanges);
+                    usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
                 }
             }
 

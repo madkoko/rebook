@@ -104,8 +104,9 @@ class BookRequest() : Fragment() {
                     ratingBar.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
                         ProfileManager.getInstance().addRating(model.senderId, ratingBar.numStars)
-                        RequestManager.ratedTransition(getRef(position).key)
-                        RequestManager.putSenderRate(model.senderId, ratingBar.numStars)
+                        RequestManager.putSenderRate(getRef(position).key, ratingBar.numStars)
+                        if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
+                            RequestManager.ratedTransition(getRef(position).key)
                     }
                     //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
                 }else {

@@ -60,7 +60,6 @@ public class HomeSharingBook extends Fragment {
                         RequestManager.Companion.retunRequest(getRef(position).getKey());
                     });
                 } else if (model.getStatus().equals("returned")) {
-
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
                     RatingBar ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
@@ -68,8 +67,10 @@ public class HomeSharingBook extends Fragment {
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
                         ProfileManager.getInstance().addRating(model.getReceiverId(), (int) ratingBar.getRating());
-                        RequestManager.Companion.ratedTransition(getRef(position).getKey());
-                        RequestManager.Companion.putReceiverRate(model.getReceiverId(), (int) ratingBar.getRating());
+                        RequestManager.Companion.putReceiverRate(getRef(position).getKey(), (int) ratingBar.getRating());
+                        if(model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0){
+                            RequestManager.Companion.ratedTransition(getRef(position).getKey());
+                        }
                     });
                 } else
                     buttonReturn.setVisibility(View.INVISIBLE);
