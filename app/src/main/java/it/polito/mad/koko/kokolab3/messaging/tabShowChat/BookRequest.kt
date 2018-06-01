@@ -106,7 +106,7 @@ class BookRequest() : Fragment() {
                     acceptButton.setText(R.string.currency)
                     ratingBar.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
-                        ProfileManager.getInstance().addRating(model.senderId, ratingBar.rating.toString())
+                        ProfileManager.addRating(model.senderId, ratingBar.rating.toString())
                         RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
                         if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
                             RequestManager.ratedTransition(getRef(position).key)

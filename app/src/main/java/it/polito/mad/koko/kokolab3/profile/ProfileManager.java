@@ -335,7 +335,7 @@ public class ProfileManager {
         });
     }
 
-    public Profile getOtherUser() {return otherUser;}
+    public static Profile getOtherUser() {return otherUser;}
 
     /**
      * listener to check if the username already exists in Firebase
@@ -368,7 +368,7 @@ public class ProfileManager {
      *       completedExchanges
      */
 
-    public void addRating(String uid, String rating){
+    public static void addRating(String uid, String rating){
         DatabaseManager.get("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
