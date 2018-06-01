@@ -120,8 +120,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         MessageManager.setUserChatsIDListener();
-        ProfileManager profileManager = ProfileManager.getInstance();
-        profileManager.populateUsersList();
+        ProfileManager.populateUsersList();
         MessageManager.populateUserChatsID();
         MessageManager.populateUserMessages();
         // MessageManager.createChat(Intent intent, String bookTitle); // DA FARE -> dov'è l'intent? dov'è book title?!
@@ -335,7 +334,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 /*Intent requestIntent = new Intent(this, NotificationReceiver.class);
                 requestIntent.setAction(REQUEST_ACTION);
-                requestIntent.putExtra("UserID", *//* TODO insert sender's ID *//* FirebaseAuth.getInstance().getUid());
+                requestIntent.putExtra("UserID", *//* TODO insert sender's ID *//* ProfileManager.getCurrentUserID());
                 requestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent requestPendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, requestIntent,
                         PendingIntent.FLAG_ONE_SHOT);*/

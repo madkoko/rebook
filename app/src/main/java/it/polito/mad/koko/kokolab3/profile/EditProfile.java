@@ -35,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class EditProfile extends AppCompatActivity {
@@ -59,12 +58,6 @@ public class EditProfile extends AppCompatActivity {
     private EditText et_location;
     private EditText et_bio;
     private ImageView user_photo;
-    //private android.support.design.widget.TextInputLayout text_user_location;
-
-    /**
-     * User profile information
-     */
-    private ProfileManager profileManager;
 
     /**
      * Firebase login profile, firebase database
@@ -81,9 +74,8 @@ public class EditProfile extends AppCompatActivity {
     private Bitmap imageBitmap;
     private boolean flagCamera;
     private boolean flagGallery;
-    private Authenticator authenticator;
     private EditText map_button;
-    private Profile p;
+    private Profile currentUserProfile;
     private String latLng;
 
     /**
@@ -98,14 +90,11 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        authenticator = new Authenticator(this);
-        profileManager= ProfileManager.getInstance();
-
         // TODO Debugging
         Log.d(TAG, "onCreate");
 
         // Retrieving the ProfileManager singleton
-        p = profileManager.getCurrentUser();
+        currentUserProfile = ProfileManager.getProfile();
         // Loading the XML layout file
         setContentView(R.layout.activity_edit_profile);
 
@@ -148,9 +137,7 @@ public class EditProfile extends AppCompatActivity {
         Button save_button = findViewById(R.id.save_button);
 
         save_button.setOnClickListener(v -> {
-            // If the user has selected a location
-
-
+            // If the user has filled up all mandatory fields
             if (!infoIsMissingFromUI()) {
                 // Get the data from an ImageView as bytes
                 user_photo.setDrawingCacheEnabled(true);
@@ -160,9 +147,9 @@ public class EditProfile extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] shown_image = baos.toByteArray();
 
-                //Create a new profileManager
-                profileManager.editProfile(
-                        authenticator.getAuth().getUid(),
+                // Update the current user information on Firebase
+                ProfileManager.updateProfile(
+                        ProfileManager.getCurrentUserID(),
                         et_name.getText().toString(),
                         et_email.getText().toString(),
                         et_phone.getText().toString(),
@@ -170,8 +157,11 @@ public class EditProfile extends AppCompatActivity {
                         et_bio.getText().toString(),
                         shown_image,
                         latLng,
-                        authenticator.getStorage().getReference().child("users").child(authenticator.getAuth().getUid())
+                        FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
                 );
+
+                // Update the local file containing the current user profile information
+                ProfileManager.readProfile();
 
                 // Terminating the activity
                 finish();
@@ -183,24 +173,22 @@ public class EditProfile extends AppCompatActivity {
      * Tests whether the location info and username have been specified or not via the
      * corresponding UI item.
      *
-     * @return true if the user has not specified the location or username yet.
-     * false otherwise.
+     * @return  true if the user has not specified the location or username yet.
+     *          false otherwise.
      */
-
     private boolean infoIsMissingFromUI() {
-
-        boolean checkUIMandatoryInfo = false;
+        boolean infoIsMissing = false;
 
         if (et_name != null && et_name.getText().toString().equals("")) {
-            checkUIMandatoryInfo = true;
+            infoIsMissing = true;
             et_name.setError("Please insert a valid username");
         }
         if (et_location != null && et_location.getText().equals("")) {
-            checkUIMandatoryInfo = true;
+            infoIsMissing = true;
             et_location.setError("Please insert a valid location");
         }
 
-        return checkUIMandatoryInfo;
+        return infoIsMissing;
     }
 
 
@@ -212,13 +200,12 @@ public class EditProfile extends AppCompatActivity {
      */
 
     private boolean infoIsMissingFromUser() {
-        String userLocation = profileManager.getProfile(authenticator.getUser().getUid()).getLocation();
-        String username = profileManager.getProfile(authenticator.getUser().getUid()).getName();
+        String userLocation = ProfileManager.getProfile().getLocation();
+        String username = ProfileManager.getProfile().getName();
 
         boolean infoIsMissing = false;
 
-        if(
-            (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
+        if( (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
                 ||
             (username == null || (username.isEmpty() || username.equals("")))
         )
@@ -234,9 +221,6 @@ public class EditProfile extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation(): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation());
-        //Log.d("location", "profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(\"\"): " + profileManager.getProfile(authenticator.getUser().getUid()).getLocation().equals(""));
-
         if (!infoIsMissingFromUser() && !infoIsMissingFromUI())
             finish();
     }
@@ -381,8 +365,6 @@ public class EditProfile extends AppCompatActivity {
             String toastMsg = String.format("Place: %s", place.getName());
             Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
         }
-
-
     }
 
     /**
@@ -394,12 +376,12 @@ public class EditProfile extends AppCompatActivity {
         super.onResume();
 
 
-        et_name.setText(p.getName());
-        et_email.setText(p.getEmail());
-        et_bio.setText(p.getBio());
-        et_location.setText(p.getLocation());
-        et_phone.setText(p.getPhone());
-        latLng = p.getPosition();
+        et_name.setText(currentUserProfile.getName());
+        et_email.setText(currentUserProfile.getEmail());
+        et_bio.setText(currentUserProfile.getBio());
+        et_location.setText(currentUserProfile.getLocation());
+        et_phone.setText(currentUserProfile.getPhone());
+        latLng = currentUserProfile.getPosition();
 
 
         if (flagCamera) {
@@ -407,8 +389,8 @@ public class EditProfile extends AppCompatActivity {
             user_photo.setImageBitmap(tmp);
         } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
-        } else if (p.getImage() != null) {
-            Picasso.get().load(p.getImage()).fit().centerCrop().into(user_photo);
+        } else if (currentUserProfile.getImage() != null) {
+            Picasso.get().load(currentUserProfile.getImage()).fit().centerCrop().into(user_photo);
         }
     }
 }

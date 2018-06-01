@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import it.polito.mad.koko.kokolab3.profile.ProfileManager;
-
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.ACCEPT_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.DECLINE_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.MESSAGE_ACTION;
@@ -17,8 +15,6 @@ import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.R
 public class NotificationReceiver extends BroadcastReceiver { //entra come prima cosa dopo che clicco accetta
 
     private static final String TAG = "NotificationReceiver";
-
-    private ProfileManager profileManager;
 
     private static String activeChatId = ""; // Currently active chat
     private static boolean isActive = true;

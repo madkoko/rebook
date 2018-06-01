@@ -81,5 +81,4 @@ public class ProfileTabAdapter extends FirebaseListAdapter<Profile> {
         //valueBio.setOnClickListener(vBio -> switcherBio.showNext());
 
     }
-
 }

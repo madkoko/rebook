@@ -1,83 +1,69 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
-/**
- * Singleton profile manager class
- */
 public class ProfileManager {
 
     private static final String TAG = "ProfileManager";
 
-    private static Profile currentUser;
-
-    private static Profile otherUser;
-
-    /**
-     * Unique instance
-     */
-    private static ProfileManager instance = null;
-
     /**
      * Firebase objects
      */
-    private DatabaseReference usersRef;
-    private StorageReference storageRef;
-    private Map<String, Object> childUpdates;
-    private String downloadUrl;
-
-    private static ConcurrentMap<String,Profile> allUsers = new ConcurrentHashMap<String, Profile>();
+    private static Map<String, Object> newUserObject;
 
     /**
-     * synchronized method for different thread
-     * @return ProfileManager instance
+     * Current user's Profile
      */
-    public static synchronized ProfileManager getInstance() {
-        if(instance == null)
-            instance = new ProfileManager();
-        return instance;
-    }
+    private static Profile currentUserProfile;
+    private static String currentUserImageURL;
+    private static final File profileFile = new File("data/data/it.polito.mad.koko.kokolab3/files/profile.bin");
 
-    public static void reset() {
-        instance = new ProfileManager();
-    }
+    /**
+     * All users' profiles
+     */
+    private static ConcurrentMap<String, Profile> allUsers = new ConcurrentHashMap<>();
 
-    protected ProfileManager() {
-        usersRef = FirebaseDatabase.getInstance().getReference().child("users");
-    }
-
-    /* METHOD TO RETRIEVE ALL THE USERS AND USE IT INTO SHOW SEARCHED BOOKS
-     * CREATED BY FRANCESCO PETRO
-     * */
-
-    public void populateUsersList(){
+    /**
+     * Retrieving all users (used when showing searched books)
+     */
+    public static void populateUsersList() {
         synchronized (allUsers) {
-            usersRef.addValueEventListener(
+            DatabaseManager.get("users").addValueEventListener(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
+                                // Initializing the allUsers data structure
                                 allUsers = new ConcurrentHashMap<>();
                                 allUsers.clear();
 
-                                allUsers.putAll((Map<String, Profile>)dataSnapshot.getValue());
+                                // Downloading all users' profiles
+                                allUsers.putAll((Map<String, Profile>) dataSnapshot.getValue());
                             }
                         }
 
@@ -88,13 +74,43 @@ public class ProfileManager {
         }
     }
 
-    public ConcurrentMap<String, Profile> getAllUsers(){
-        synchronized (allUsers) {
-            return allUsers;
-        }
+    /**
+     * Returns true if the user has logged in,
+     * false otherwise.
+     *
+     * @return whether the user has logged in or not.
+     */
+    public static boolean hasLoggedIn() {
+        return getCurrentUser() != null;
     }
 
-    public Profile getProfile(String Uid) {
+    /**
+     * @return the current user object on Firebase.
+     */
+    public static FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    /**
+     * @return the current user ID on Firebase.
+     */
+    public static String getCurrentUserID() {
+        return hasLoggedIn() ? getCurrentUser().getUid() : null;
+    }
+
+    /**
+     * @return the current user database reference on Firebase.
+     */
+    public static DatabaseReference getCurrentUserReference() {
+        return hasLoggedIn() ? DatabaseManager.get("users", getCurrentUserID()) : null;
+    }
+
+    /**
+     * It returns the specified user profile information.
+     * @param Uid   the desired user profile.
+     * @return      the specified user profile information.
+     */
+    public static Profile getProfile(String Uid) {
         synchronized (allUsers) {
             Map<String, String> userInfo = (Map<String, String>) allUsers.get(Uid);
 
@@ -111,129 +127,180 @@ public class ProfileManager {
             return profile;
         }
     }
+
+    /**
+     * @return  the current user profile information
+     */
+    public static Profile getProfile() {
+        Profile currentUserProfile = null;
+
+        // Retrieving the current profile object from the binary file
+        try(ObjectInputStream oinf = new ObjectInputStream(new FileInputStream(profileFile))) {
+            currentUserProfile = (Profile)oinf.readObject();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return currentUserProfile;
+    }
+
     /**
      * Manager for add Profile on Firebase
+     *
      * @param email email of user
      */
     @SuppressLint("LongLogTag")
-    public void addProfile(String uid, String email){
-        //This is for future implementation of Auth
-        /*Profile profile=new Profile(name,email,phone,location,bio,imgUrl);
-        usersRef.push().setValue(profile);*/
-
-
-        //Profile profile = new Profile(name,email);
-        //usersRef.setValue(profile);
-        usersRef.child(uid).child("email").setValue(email);
+    public static void addProfile(String uid, String email) {
+        DatabaseManager.set(email, "users", uid, "email");
     }
 
+    /**
+     * It updates a profile on Firebase using the specified data.
+     *
+     * @param id
+     * @param name
+     * @param email
+     * @param phone
+     * @param location
+     * @param bio
+     * @param data
+     * @param position
+     * @param storageRef
+     */
+    public static void updateProfile(String id,
+                                     String name,
+                                     String email,
+                                     String phone,
+                                     String location,
+                                     String bio,
+                                     byte[] data,
+                                     String position,
+                                     StorageReference storageRef) {
 
-    public void editProfile(String id, String name, String email, String phone, String location, String bio, byte[] data, String latLng, StorageReference storageRef) {
-        DatabaseReference Ref = usersRef.child(id);
-        this.storageRef=storageRef;
-        childUpdates = new HashMap<>();
-        /*
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", profileId.toString())
-                .build();
-                */
-        UploadTask uploadTask = storageRef.putBytes(data);
-        uploadTask.addOnSuccessListener(taskSnapshot -> {
-            downloadUrl = taskSnapshot.getDownloadUrl().toString();
-            Ref.child("image").setValue(downloadUrl);
-            if(downloadUrl!=null)ImageManager.loadBitmap(downloadUrl);
+        DatabaseReference userChildFirebaseReference = DatabaseManager.get("users", id);
+
+        // Uploading the new profile image
+        storageRef.putBytes(data).addOnSuccessListener(taskSnapshot -> {
+            // Retrieving the new profile image URL
+            currentUserImageURL = taskSnapshot.getDownloadUrl().toString();
+
+            // Updating the current user profile offline object
+            getProfile().setImage(currentUserImageURL);
+
+            // Updating it on Firebase
+            userChildFirebaseReference.child("image").setValue(currentUserImageURL);
+
+            // Loading the new image in the UI
+            if (currentUserImageURL != null)
+                ImageManager.loadBitmap(currentUserImageURL);
         });
-        childUpdates.put("name", name);
-        childUpdates.put("email", email);
-        childUpdates.put("phone", phone);
-        childUpdates.put("location", location);
-        childUpdates.put("bio", bio);
-        if(latLng!=null)childUpdates.put("position",latLng);
-        Ref.updateChildren(childUpdates);
-        /*firebaseUser.updateProfile(new UserProfileChangeRequest
-                .Builder()
-                .setDisplayName(name)
-                .build()
-        );
-        */
+
+        // New user info data structure
+        newUserObject = new HashMap<>();
+
+        // Filling the new user info map
+        newUserObject.put("name", name);
+        newUserObject.put("email", email);
+        newUserObject.put("phone", phone);
+        newUserObject.put("location", location);
+        newUserObject.put("bio", bio);
+        newUserObject.put("position", position);
+
+        // Saving new info in Firebase
+        userChildFirebaseReference.updateChildren(newUserObject);
     }
 
+    public static void addToken(String uid, String token) {
+        DatabaseManager.set(token, "users", uid, "tokenMessage");
+    }
 
-    public boolean profileIsNotPresent(String uid) {
-        synchronized (allUsers){
-            Iterator it = allUsers.entrySet().iterator();
-            while (it.hasNext()){
-                Map.Entry entry = (Map.Entry)it.next();
-                if(entry.getKey().equals(uid)) {
-                    return false;
-                }
-            }
-        }
+    /**
+     * It performs the logout operation.
+     */
+    public static void logout() {
+        Log.d(TAG, "Logging out...");
+
+        FirebaseAuth.getInstance().signOut();
+
+        Log.d(TAG, "Logged out.");
+    }
+
+    /**
+     * It checks whether this user has completed the registration.
+     * This is done by checking that all minimum fields have been properly set.
+     *
+     * @return  true if the user has completed the registration.
+     *          false otherwise.
+     */
+    public static boolean hasCompletedRegistration() {
+        // Retrieving the current profile object
+        Profile profile = getProfile();
+
+        // 'name' field must be set
+        String name = profile.getName();
+        if (name == null || name.isEmpty() || name.compareTo("") == 0)
+            return false;
+
+        // 'position field must be set
+        String position = profile.getPosition();
+        if (position == null || position.isEmpty() || position.compareTo("") == 0)
+            return false;
+
         return true;
     }
 
-    public void addToken(String token, String uid) {
-        usersRef.child(uid).child("tokenMessage").setValue(token);
+    /**
+     * It just reads the current user profile information immediately: no
+     * listener must be used in order to do something with the retrieved data.
+     */
+    public static void readProfile() {
+        readProfile(null);
     }
 
-    // Listener to retrieve the current user from firebase
-    public void retrieveCurrentUser() {
-        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    /**
+     * It reads the current user profile information immediately.
+     * @param listener      the listener object that will process the retrieved data.
+     */
+    public static void readProfile(final OnGetDataListener listener) {
+        if(listener != null)
+            listener.onStart();
 
-        usersRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+        ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Map<String, String> currentUserSnapshot = (Map<String, String>) dataSnapshot.getValue();
-                    String bio = currentUserSnapshot.get("bio");
-                    String email = currentUserSnapshot.get("email");
-                    String image = currentUserSnapshot.get("image");
-                    String location = currentUserSnapshot.get("location");
-                    String name = currentUserSnapshot.get("name");
-                    String phone = currentUserSnapshot.get("phone");
-                    String position = currentUserSnapshot.get("position");
-                    String tokenMessage = currentUserSnapshot.get("tokenMessage");
-                    currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
+                // Retrieving the updated user info from Firebase
+                currentUserProfile = dataSnapshot.getValue(Profile.class);
+                Log.d(TAG, "This user profile has been updated: " + currentUserProfile.toString());
+
+                /*  Saving the updated user info into a binary file in case the
+                    application will be closed */
+                try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
+                    outputStream.writeObject(currentUserProfile);
+                } catch(Exception e) {
+                    e.printStackTrace();
                 }
+                Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
+
+                // Calling the listener's callback
+                if(listener != null)
+                    listener.onSuccess(dataSnapshot);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "The read failed: " + databaseError.getCode());
 
-            }
-        });
-
-    }
-
-    public Profile getCurrentUser() {
-        return currentUser;
-    }
-
-    public void retriveInformationUser(String uid) {
-        usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Map<String, String> otherUserSnapshot = (Map<String, String>) dataSnapshot.getValue();
-                    String bio = otherUserSnapshot.get("bio");
-                    String email = otherUserSnapshot.get("email");
-                    String image = otherUserSnapshot.get("image");
-                    String location = otherUserSnapshot.get("location");
-                    String name = otherUserSnapshot.get("name");
-                    String phone = otherUserSnapshot.get("phone");
-                    String position = otherUserSnapshot.get("position");
-                    String tokenMessage = otherUserSnapshot.get("tokenMessage");
-                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                if(listener != null)
+                    listener.onFailed(databaseError);
             }
         });
     }
 
-    public Profile getOtherUser() {return otherUser;}
+    /**
+     * @return  true if the current user profile file already exists.
+     *          false otherwise.
+     */
+    public static boolean profileFileExists() {
+        return profileFile.exists();
+    }
 }

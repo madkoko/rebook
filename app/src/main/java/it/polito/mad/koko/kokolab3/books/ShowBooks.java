@@ -53,8 +53,6 @@ public class ShowBooks extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_books);
 
-        pm = ProfileManager.getInstance();
-
         requestCode = getIntent().getIntExtra("request_code", -1);
 
         ListView bookListView = findViewById(R.id.books_listview);
@@ -112,7 +110,7 @@ public class ShowBooks extends AppCompatActivity
 
         // In case this activity is called by "My Books"
         else if (requestCode == USER_BOOKS) {
-            String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String currentUserID = ProfileManager.getCurrentUserID();
             Query userBooksQuery = FirebaseDatabase.getInstance().getReference().child("books").orderByChild("uid").equalTo(currentUserID);
 
             // FirebaseListOptions<Book> to retrieve books from firebase
@@ -236,14 +234,13 @@ public class ShowBooks extends AppCompatActivity
         Intent mapsIntent = new Intent(getApplicationContext(), BooksMapActivity.class);
 
         // Retrieving all users IDs
-        ProfileManager profileManager = ProfileManager.getInstance();
         ArrayList<String> userId = new ArrayList<String>();
         for (Book book : book_list) {
             if (book.getUid() != null &&
                     !book.getUid().isEmpty() &&
                     book.getUid() != "") {
 
-                Profile profile = profileManager.getProfile(book.getUid());
+                Profile profile = ProfileManager.getProfile(book.getUid());
                 String userPosition = profile.getPosition();
 
                 if (userPosition != null)

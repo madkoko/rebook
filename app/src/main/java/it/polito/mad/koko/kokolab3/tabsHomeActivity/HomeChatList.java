@@ -39,7 +39,7 @@ public class HomeChatList extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUserID = ProfileManager.getCurrentUserID();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");
 
@@ -69,8 +69,8 @@ public class HomeChatList extends Fragment{
                 String chatID = adapter.getRef(position).getKey();
 
                 // My info
-                Profile senderProfile = ProfileManager.getInstance().getCurrentUser();
-                String senderId = FirebaseAuth.getInstance().getUid();
+                Profile senderProfile = ProfileManager.getProfile();
+                String senderId = ProfileManager.getCurrentUserID();
                 String senderUsername = senderProfile.getName();
                 String senderImage = senderProfile.getImage();
                 String senderToken = senderProfile.getTokenMessage();

@@ -63,7 +63,7 @@ public class Conversation extends Fragment {
 
         // Parameters from ShowChat activity
         //senderId = getArguments().getString("senderId");
-        senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        senderId = ProfileManager.getCurrentUserID();
 
         //savedInstanceState = this.getArguments();
         //if (savedInstanceState != null) {

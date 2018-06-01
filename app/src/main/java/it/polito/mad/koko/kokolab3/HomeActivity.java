@@ -2,7 +2,9 @@ package it.polito.mad.koko.kokolab3;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -20,13 +22,15 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.gson.Gson;
 
-import it.polito.mad.koko.kokolab3.auth.Authenticator;
-import it.polito.mad.koko.kokolab3.books.BookManager;
+import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
 import it.polito.mad.koko.kokolab3.messaging.ShowChats;
@@ -43,15 +47,7 @@ public class HomeActivity extends AppCompatActivity
 
     private static final String TAG = "HomeActivity";
 
-    /**
-     * Custom class managing the user authentication
-     */
-    private Authenticator authenticator;
-
-    /**
-     * User profile information
-     */
-    private ProfileManager profileManager;
+    private static final String PACKAGE_NAME = "it.polito.mad.koko.kokolab3";
 
     /**
      * Result codes needed to distinguish among all possible activities launched
@@ -74,71 +70,47 @@ public class HomeActivity extends AppCompatActivity
 
     //private int SEARCH_BOOKS = 2;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        authenticator = new Authenticator(this);
+        Log.d(TAG,"onCreate() called");
 
-
+        // If the local offline file containing the current user's information does not exist
+        if(!ProfileManager.profileFileExists())
+            // Force a logout operation
+            ProfileManager.logout();
 
         // UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();*/
-
             Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
-            insertBook.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+            insertBook.putExtra("uid", ProfileManager.getCurrentUserID());
             //BookManager.removeUserBooksEventListener();
             //BookManager.removeSearchBooksEventListener();
             startActivityForResult(insertBook, INSERT_BOOK);
         });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        authenticator.authUI();
+        // Launching the authentication UI
+        AuthenticationUI.launch(this);
 
-        new BookManager();
+        ProfileManager.populateUsersList();
 
-        profileManager = ProfileManager.getInstance();
-        //profileManager.retrieveCurrentUser();
-        profileManager.populateUsersList();
-        // creation of the BookManager if the user is authenticated
-        if (authenticator.hasLoggedIn()) {
-            // Retrieving the ProfileManager singleton
-            //BookManager.populateUserBookList();
-            //BookManager.populateSearchBooks();
-
-            ProfileManager.getInstance().retrieveCurrentUser();
-
-            // Retrieve all current user's chats
-            MessageManager.setUserChatsIDListener();
-            MessageManager.populateUserChatsID();
-        }
-
-        //*********//
-        // Final UI implementation
-
+        // UI (tabs)
         viewSwitcher = findViewById(R.id.home_switcher);
         layoutRecycler = findViewById(R.id.home_recycler_switcher);
         layoutList = findViewById(R.id.home_list_switcher);
-
-
         TabLayout tab_layout = findViewById(R.id.tabs_home);
-
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
         tab_layout.addTab(tab_layout.newTab().setText("home"));
         homeListBook = new HomeListBook();
@@ -146,9 +118,6 @@ public class HomeActivity extends AppCompatActivity
         homeListChats = new HomeChatList();
         tab_layout.addTab(tab_layout.newTab().setText("in progress"));
         selectFragment(0);
-
-
-
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -167,8 +136,25 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
             }
         });
-    }
 
+        // If the user has already logged in
+        if (ProfileManager.hasLoggedIn()) {
+            Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
+
+            // If the user has not completed the registration process already
+            if(!ProfileManager.hasCompletedRegistration()) {
+                // Launch the EditProfile activity
+                startActivity(new Intent(getApplicationContext(), EditProfile.class));
+
+                return;
+            }
+
+            // Retrieve all current user's chats
+            // TODO do we still need this?
+            MessageManager.setUserChatsIDListener();
+            MessageManager.populateUserChatsID();
+        }
+    }
 
     private void removeFragment(int position) {
         switch (position){
@@ -226,6 +212,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d(TAG,"onActivityResult() called");
+
         /*if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
 
             Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
@@ -234,7 +222,6 @@ public class HomeActivity extends AppCompatActivity
         }*/
 
         // Debugging
-        Log.d(TAG, "HomeActivity::onActivityResult() has been called");
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
@@ -244,49 +231,54 @@ public class HomeActivity extends AppCompatActivity
 
             // Returning in HomeActivity from an Authentication procedure
         if (resultCode == AUTH) {
-            profileManager.retrieveCurrentUser();
-
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
 
             // Inform the user of the successful authentication
-
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-            authenticator.instantiateUser();
-
-
-            //profileManager = ProfileManager.getInstance();
-
-            // Creating the Firebase user entry in the database
-
-            //BookManager.populateUserBookList();
-            //BookManager.populateSearchBooks();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();
             MessageManager.populateUserChatsID();
 
-            //
-            profileManager.getInstance();
-            //profileManager.populateUsersList();
-            profileManager.addProfile(authenticator.getAuth().getUid(), authenticator.getAuth().getCurrentUser().getEmail());
+            // Loading the new profile on Firebase
+            ProfileManager.addProfile(ProfileManager.getCurrentUserID(), ProfileManager.getCurrentUser().getEmail());
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
-            //Control if profile is in the map
-            if (profileManager.profileIsNotPresent((authenticator.getAuth().getUid()))) {
-                Intent intent = new Intent(getApplicationContext(), EditProfile.class);
-                startActivity(intent);
-            } else {
-                if (profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid()).getImage() != null) {
-                    Profile p = profileManager.getProfile(authenticator.getAuth().getCurrentUser().getUid());
-                    ImageManager.loadBitmap(p.getImage());
+
+            // If this is a new user or the user has not finished the registration
+            ProfileManager.readProfile(new OnGetDataListener() {
+                @Override
+                public void onStart() {
                 }
-            }
+
+                @Override
+                public void onSuccess(DataSnapshot data) {
+                    /*  If the user has not completed the registration procedure
+                        (for instance it is a new user) */
+                    if(!ProfileManager.hasCompletedRegistration())
+                        // Start the EditProfile activity
+                        startActivity(new Intent(getApplicationContext(), EditProfile.class));
+                    /*  If the user has already completed the registration and
+                        has a profile picture */
+                    else if (ProfileManager.getProfile().getImage() != null) {
+                        // Load the profile picture in the UI
+                        Profile p = ProfileManager.getProfile();
+                        ImageManager.loadBitmap(p.getImage());
+                    }
+                }
+
+                @Override
+                public void onFailed(DatabaseError databaseError) {
+                }
+            });
         }
     }
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG,"onBackPressed() called");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -304,6 +296,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG,"onOptionsItemSelected() called");
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -320,20 +314,18 @@ public class HomeActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Log.d(TAG,"onNavigationItemSelected() called");
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.view_profile) {
-            ProfileManager.getInstance().retrieveCurrentUser();
             Intent i = new Intent(getApplicationContext(), ShowProfile.class);
-            i.putExtra("UserID", authenticator.getUser().getUid());
+            i.putExtra("UserID", ProfileManager.getCurrentUserID());
             startActivity(i);
 
         } else if (id == R.id.edit_profile) {
-            ProfileManager.getInstance().retrieveCurrentUser();
-            Intent intent = new Intent(getApplicationContext(), EditProfile.class);
-            startActivity(intent);
-
+            startActivity(new Intent(getApplicationContext(), EditProfile.class));
         } else if (id == R.id.my_books) {
 
             Intent showBooks = new Intent(getApplicationContext(), ShowBooks.class);
@@ -352,7 +344,8 @@ public class HomeActivity extends AppCompatActivity
             /*startActivity(new Intent(getApplicationContext(), ShowChats.class));*/
 
         } else if (id == R.id.sign_out) {
-            authenticator.signOut();
+            ProfileManager.logout();
+            AuthenticationUI.launch(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -363,8 +356,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        profileManager.reset();
 
+        Log.d(TAG,"onResume() called");
     }
-
 }

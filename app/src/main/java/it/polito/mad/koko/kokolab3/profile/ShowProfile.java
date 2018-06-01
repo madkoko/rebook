@@ -43,7 +43,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.auth.Authenticator;
 import it.polito.mad.koko.kokolab3.profile.tabs.PagerAdapter;
 import it.polito.mad.koko.kokolab3.ui.*;
 
@@ -61,8 +60,6 @@ public class ShowProfile extends AppCompatActivity {
     /**
      * User profile information
      */
-    private ProfileManager profileManager;
-    private Authenticator authenticator;
     private Bitmap bmp;
     private Profile profile;
     private FloatingActionButton edit;
@@ -84,13 +81,6 @@ public class ShowProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        // Retrieving the ProfileManager singleton
-        profileManager = ProfileManager.getInstance();
-
-        authenticator = new Authenticator(this);
-
-
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -106,18 +96,17 @@ public class ShowProfile extends AppCompatActivity {
         ln = findViewById(R.id.Linear);
         user_photo = findViewById(R.id.user_photo);
 
-
         //Loading UserID from intent
         i = getIntent();
         mFirebaseUser = i.getExtras().getString("UserID");
         edit = findViewById(R.id.fab);
 
-        if (mFirebaseUser.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-            profile = profileManager.getCurrentUser();
+        if (mFirebaseUser.equals(ProfileManager.getCurrentUserID())) {
+            profile = ProfileManager.getProfile();
             edit.setVisibility(View.VISIBLE);
         } else {
             edit.setVisibility(View.INVISIBLE);
-            profile = profileManager.getOtherUser();
+            profile = ProfileManager.getOtherUser();
         }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -125,7 +114,6 @@ public class ShowProfile extends AppCompatActivity {
             toolbar.setTitle(profile.getName());
             edit.setOnClickListener(v -> {
                 //Only if Auth user is equal to user from intent, we can use this menu
-                ProfileManager.getInstance().retrieveCurrentUser();
                 Intent i = new Intent(getApplicationContext(), EditProfile.class);
                 startActivity(i);
                 finish();

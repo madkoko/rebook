@@ -1,9 +1,15 @@
 package it.polito.mad.koko.kokolab3.profile;
 
-
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
 
+/**
+ * Properties that don't map to class fields are ignored when
+ * serializing to a class annotated with this annotation.
+ * https://firebase.google.com/docs/reference/android/com/google/firebase/database/IgnoreExtraProperties
+ */
+@IgnoreExtraProperties
 public class Profile implements Serializable {
 
     private static final String TAG = "Profile";
@@ -20,18 +26,23 @@ public class Profile implements Serializable {
     public Profile() {
     }
 
-
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage) {
-        this.name=name;
-        this.email=email;
-        this.phone=phone;
-        this.location=location;
-        this.bio=bio;
-        this.image =imgUrl;
+    public Profile(String name,
+                   String email,
+                   String phone,
+                   String location,
+                   String bio,
+                   String imgUrl,
+                   String position,
+                   String tokenMessage) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.location = location;
+        this.bio = bio;
+        this.image = imgUrl;
         this.position = position;
-        this.tokenMessage=tokenMessage;
+        this.tokenMessage = tokenMessage;
     }
-
 
     public String getName() {
         return name;
@@ -49,8 +60,6 @@ public class Profile implements Serializable {
         return location;
     }
 
-    public String getPosition() {return position;}
-
     public String getBio() {
         return bio;
     }
@@ -59,7 +68,13 @@ public class Profile implements Serializable {
         return image;
     }
 
-    public String getTokenMessage() { return tokenMessage; }
+    public String getPosition() {
+        return position;
+    }
+
+    public String getTokenMessage() {
+        return tokenMessage;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -77,8 +92,6 @@ public class Profile implements Serializable {
         this.location = location;
     }
 
-    public void setPosition(String latLng) {this.position =latLng;}
-
     public void setBio(String bio) {
         this.bio = bio;
     }
@@ -87,9 +100,13 @@ public class Profile implements Serializable {
         this.image = image;
     }
 
-    public void setTokenMessage(String tokenMessage) { this.tokenMessage = tokenMessage; }
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
-
+    public void setTokenMessage(String tokenMessage) {
+        this.tokenMessage = tokenMessage;
+    }
 
     @Override
     public String toString() {
@@ -103,6 +120,4 @@ public class Profile implements Serializable {
                 ", position='" + position + '\'' +
                 '}';
     }
-
-
 }
