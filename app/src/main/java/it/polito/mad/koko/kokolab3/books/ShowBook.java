@@ -2,7 +2,6 @@ package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -178,7 +177,7 @@ public class ShowBook extends AppCompatActivity
                             //      >>> Create a new Request
                             Request req = new Request(senderId, receiverId, bookId, bookName, book.getImage(),"","");
                             String reqId = senderId+""+bookId;
-                            RequestManager.Companion.newRequest(req, shown_image, reqId);
+                            RequestManager.Companion.createRequest(req, shown_image, reqId);
 
                             // 3C. Create or resume Chat
                             boolean chatFlag = true;

@@ -191,8 +191,8 @@ public class ShowChat extends AppCompatActivity {
 
         TabLayout tab_layout = findViewById(R.id.tabs_chat);
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
-        tab_layout.addTab(tab_layout.newTab().setText("Conversation"));
-        tab_layout.addTab(tab_layout.newTab().setText("Book Requests"));
+        tab_layout.addTab(tab_layout.newTab().setText("chat"));
+        tab_layout.addTab(tab_layout.newTab().setText("requested books"));
 
         selectFragment(0);
 

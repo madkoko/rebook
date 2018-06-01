@@ -5,6 +5,7 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener
 
 /**
  * Created by Franci on 23/05/18.
@@ -26,36 +27,54 @@ class RequestManager() {
         private var reqIdRetrieved: String? = null
         private val database = FirebaseDatabase.getInstance()
 
-        fun newRequest(req: Request, data: ByteArray, reqId: String) {
+        fun createRequest(req: Request, data: ByteArray, reqId: String) {
 
             val storage = FirebaseStorage.getInstance()
             var downloadUrl: String;
 
-            checkExistingReq(reqId);
+            checkExistingReq(reqId, object : OnGetDataListener {
+                override fun onStart() {
+                }
 
-            if (reqIdRetrieved == null) {
-                val reqDatabaseRef = database.reference.child("requests")
-                reqDatabaseRef.child(reqId).setValue(req);
-                val reqStorageRef = storage.reference.child("requests")
-                val uploadTask = reqStorageRef!!.child(reqId).putBytes(data)
+                override fun onSuccess(dataSnapshot: DataSnapshot?) {
+                    reqIdRetrieved = if (dataSnapshot!!.exists()) {
+                        dataSnapshot!!.key;
+                    } else {
+                        null;
+                    }
 
-                uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
-                    downloadUrl = taskSnapshot.downloadUrl!!.toString()
-                    //Log.d(TAG,downloadUrl);
-                    req.bookImage = downloadUrl
-                    //ref.child(bookKey).child("image").setValue(downloadUrl);
-                    reqDatabaseRef.child(reqId).setValue(req)
-                })
-            }
+                    if (reqIdRetrieved == null) {
+                        val reqDatabaseRef = database.reference.child("requests")
+                        reqDatabaseRef.child(reqId).setValue(req);
+
+                        /*val reqStorageRef = storage.reference.child("requests")
+                        val uploadTask = reqStorageRef!!.child(reqId).putBytes(data)
+
+                        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
+                            downloadUrl = taskSnapshot.downloadUrl!!.toString()
+                            //Log.d(TAG,downloadUrl);
+                            req.bookImage = downloadUrl
+                            //ref.child(bookKey).child("image").setValue(downloadUrl);
+                            reqDatabaseRef.child(reqId).setValue(req)
+                        })*/
+                    }
+                }
+
+                override fun onFailed(databaseError: DatabaseError?) {
+                }
+            })
+
+
         }
 
 
         // Check if the same Request has already been sent
-        private fun checkExistingReq(reqId: String) {
+        private fun checkExistingReq(reqId: String, listener: OnGetDataListener) {
+            listener?.onStart()
 
             /* 1. Create the 'requests' child
-        val database = FirebaseDatabase.getInstance()
-        val reqRef = database.reference.child("requests")*/
+            val database = FirebaseDatabase.getInstance()
+            val reqRef = database.reference.child("requests")*/
 
             // 2. Search if a Request between Send & Receiver for the same book is already existing
             val reqRef = FirebaseDatabase
@@ -66,15 +85,12 @@ class RequestManager() {
 
             reqRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-                        reqIdRetrieved = dataSnapshot.key;
-                    } else {
-                        reqIdRetrieved = null;
-                    }
+                    listener?.onSuccess(dataSnapshot)
                 }
 
-                override fun onCancelled(databaseError: DatabaseError) {}
+                override fun onCancelled(databaseError: DatabaseError) {
+                    listener?.onFailed(databaseError)
+                }
             });
         }
 

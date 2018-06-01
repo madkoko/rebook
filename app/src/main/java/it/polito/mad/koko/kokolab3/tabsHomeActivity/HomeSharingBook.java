@@ -76,8 +76,11 @@ public class HomeSharingBook extends Fragment {
                     });
                 } else
                     buttonReturn.setVisibility(View.INVISIBLE);
-                if(!model.getRatingReceiver().equals(""))
+                if(!model.getRatingReceiver().equals("")) {
                     ratingBar.setVisibility(View.INVISIBLE);
+                    buttonReturn.setVisibility(View.INVISIBLE);
+
+                }
 
             }
 

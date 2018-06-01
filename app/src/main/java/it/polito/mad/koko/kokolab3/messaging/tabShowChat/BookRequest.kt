@@ -118,6 +118,7 @@ class BookRequest() : Fragment() {
                 }
                 if (!model.ratingSender.equals("")){
                     ratingBar.setVisibility(View.INVISIBLE)
+                    acceptButton.setVisibility(View.INVISIBLE)
                 }
 
             }
