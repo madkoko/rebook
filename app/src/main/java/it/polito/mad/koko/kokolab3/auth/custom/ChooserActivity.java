@@ -79,12 +79,12 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             GoogleSignInActivity.class,
             EmailPasswordActivity.class,
 
+            // Social
+            FacebookLoginActivity.class,
+            //TwitterLoginActivity.class,
+
             // Not included in the free Spark plan
             // PhoneAuthActivity.class,
-
-            // Social
-            /*FacebookLoginActivity.class,
-            TwitterLoginActivity.class,*/
 
             // Useless
             /*AnonymousAuthActivity.class,
@@ -100,12 +100,12 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.string.label_google_sign_in,
             R.string.label_emailpassword,
 
-            // Not included in the free Spark plan
-            R.string.label_phone_auth,
-
             // Social
             R.string.label_facebook_login,
             R.string.label_twitter_login,
+
+            // Not included in the free Spark plan
+            R.string.label_phone_auth,
 
             // Useless
             R.string.label_anonymous_auth,
@@ -121,12 +121,12 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.string.desc_google_sign_in,
             R.string.desc_emailpassword,
 
-            // Not included in the free Spark plan
-            R.string.desc_phone_auth,
-
             // Social
             R.string.desc_facebook_login,
             R.string.desc_twitter_login,
+
+            // Not included in the free Spark plan
+            R.string.desc_phone_auth,
 
             // Useless
             R.string.desc_anonymous_auth,
@@ -142,12 +142,12 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             R.drawable.fui_ic_googleg_color_24dp,
             R.drawable.fui_ic_mail_white_24dp,
 
-            // Not included in the free Spark plan
-            R.drawable.fui_ic_phone_white_24dp,
-
             // Social
             R.drawable.fui_ic_facebook_white_22dp,
             R.drawable.fui_ic_twitter_bird_white_24dp,
+
+            // Not included in the free Spark plan
+            R.drawable.fui_ic_phone_white_24dp,
 
             // Useless
             R.drawable.fui_ic_phone_white_24dp,

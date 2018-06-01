@@ -76,6 +76,7 @@
     <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
     <string name="label_facebook_login">Facebook Login</string>
     <string name="desc_facebook_login">Use a Facebook Login credential to authenticate with Firebase.</string>
+    <string name="facebook_application_id" translatable="false">968752849958104</string>
     <string name="label_twitter_login">Twitter Login</string>
     <string name="desc_twitter_login">Use a Twitter Login credential to authenticate with Firebase.</string>
     <string name="label_emailpassword">Email/Password</string>
@@ -90,10 +91,6 @@
     <string name="desc_custom_auth">Use a custom token signed by your own server to authenticate with Firebase.</string>
     <string name="label_firebase_ui">FirebaseUI Auth</string>
     <string name="desc_firebase_ui">Use the FirebaseUI-Android library to authenticate with Firebase.</string>
-
-    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
-    <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
-    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
 
     <!-- Twitter consumer key and secret -->
     <string name="twitter_consumer_key" translatable="false">YOUR_CONSUMER_KEY</string>
