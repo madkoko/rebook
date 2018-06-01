@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.tabsHomeActivity;
 import android.app.Fragment;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import it.polito.mad.koko.kokolab3.request.RequestManager;
 
 public class HomeSharingBook extends Fragment {
 
+    private static final String TAG = "HomeSharingBook";
     private FirebaseListAdapter<Request> adapter;
 
     @Override
@@ -65,7 +67,8 @@ public class HomeSharingBook extends Fragment {
                     RatingBar ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
                     ratingBar.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
-                        ProfileManager.getInstance().setRating(model.getReceiverId(), ratingBar.getNumStars());
+                        Log.d(TAG, String.valueOf(ratingBar.getRating()));
+                        ProfileManager.getInstance().setRating(model.getReceiverId(), (int) ratingBar.getRating());
                         RequestManager.Companion.ratedTransition(getRef(position).getKey());
                     });
                 } else

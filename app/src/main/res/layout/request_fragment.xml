@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:numStars="5"
             android:stepSize="1.0"
-            android:visibility="invisible"/>
+            android:visibility="visible"/>
 
 
     </LinearLayout>

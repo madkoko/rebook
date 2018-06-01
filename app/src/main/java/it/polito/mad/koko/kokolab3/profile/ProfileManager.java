@@ -250,7 +250,8 @@ public class ProfileManager {
                     ratingNum+=valutation;
                     String finalRating = ""+ratingNum;
                     usersRef.child(uid).child("rating").setValue(finalRating);
-                }
+                }else
+                    usersRef.child(uid).child("rating").setValue(""+valutation);
             }
 
             @Override
