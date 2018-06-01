@@ -29,9 +29,9 @@ public class ProfileTabAdapter extends FirebaseListAdapter<Profile> {
     private Guideline guideLine;
 
 
-    public ProfileTabAdapter(Context context, FirebaseListOptions<Profile> options){
+    public ProfileTabAdapter(Context context, FirebaseListOptions<Profile> options) {
         super(options);
-        this.context=context;
+        this.context = context;
 
     }
 
@@ -52,33 +52,9 @@ public class ProfileTabAdapter extends FirebaseListAdapter<Profile> {
         valueBio = v.findViewById(R.id.value_bio);
         valueBio.setText(model.getBio());
 
-        //WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        //Display display=  windowManager.getDefaultDisplay();
-
-        //guideLine = v.findViewById(R.id.guideline);
-        //guideLine.setGuidelineBegin(display.getWidth());
-
-
-        /*
-        switcherBio.setOnKeyListener((View v1, int keyCode, KeyEvent event) -> {
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                switch (keyCode) {
-                    case KeyEvent.KEYCODE_DPAD_CENTER:
-                    case KeyEvent.KEYCODE_ENTER:
-                        if (valueBio.getText() != null && valueBio.getText().toString() != "") {
-                            valueBio.setText(valueBio.getText().toString());
-                            switcherBio.showPrevious();
-                        }
-                        return true;
-                    default:
-                        break;
-                }
-            }
-            return false;
-        });
-        */
-
-        //valueBio.setOnClickListener(vBio -> switcherBio.showNext());
+        if (model.getCompletedExchanges() != null && !model.getCompletedExchanges().equals("") && model.getTotalStars() != null && !model.getTotalStars().equals("")) {
+            ratingText.setText(String.valueOf(Double.valueOf(Integer.valueOf(model.getTotalStars()) / Integer.valueOf(model.getCompletedExchanges())).intValue()));
+        }
 
     }
 
