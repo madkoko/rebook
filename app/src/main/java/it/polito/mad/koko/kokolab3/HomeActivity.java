@@ -143,8 +143,10 @@ public class HomeActivity extends AppCompatActivity
 
             // If the user has not completed the registration process already
             if(!ProfileManager.hasCompletedRegistration()) {
-                // Launch the EditProfile activity
-                startActivity(new Intent(getApplicationContext(), EditProfile.class));
+                Intent editProfileIntent=new Intent(getApplicationContext(), EditProfile.class);
+                editProfileIntent.putExtra("showLogoutButton",true);
+                // Start the EditProfile activity
+                startActivity(editProfileIntent);
 
                 return;
             }
@@ -256,9 +258,13 @@ public class HomeActivity extends AppCompatActivity
                 public void onSuccess(DataSnapshot data) {
                     /*  If the user has not completed the registration procedure
                         (for instance it is a new user) */
-                    if(!ProfileManager.hasCompletedRegistration())
+                    if(!ProfileManager.hasCompletedRegistration()) {
+                        Intent editProfileIntent=new Intent(getApplicationContext(), EditProfile.class);
+                        editProfileIntent.putExtra("showLogoutButton",true);
                         // Start the EditProfile activity
-                        startActivity(new Intent(getApplicationContext(), EditProfile.class));
+                        startActivity(editProfileIntent);
+                    }
+
                     /*  If the user has already completed the registration and
                         has a profile picture */
                     else if (ProfileManager.getProfile().getImage() != null) {

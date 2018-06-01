@@ -13,6 +13,7 @@
     <string name="scan_button_label">Scan</string>
     <string name="show_book_button">Show</string>
     <string name="search_button_label">Search</string>
+    <string name="logout_button_label">Logout</string>
 
     <!-- Sidebar menu-->
     <string name="view_profile">View Profile</string>
@@ -47,6 +48,7 @@
     <string name="user_born_name">Name</string>
     <string name="required_fields">Required fields</string>
     <string name="extra_fields">Extra fields</string>
+    <string name="edit_location"> Insert Your Position </string>
 
 
     <!-- Camera -->

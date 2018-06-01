@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,8 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -35,6 +38,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class EditProfile extends AppCompatActivity {
@@ -55,7 +60,7 @@ public class EditProfile extends AppCompatActivity {
     private EditText et_name;
     private TextView et_email;
     private EditText et_phone;
-    private EditText et_location;
+    private TextView et_location;
     private EditText et_bio;
     private ImageView user_photo;
 
@@ -74,7 +79,6 @@ public class EditProfile extends AppCompatActivity {
     private Bitmap imageBitmap;
     private boolean flagCamera;
     private boolean flagGallery;
-    private EditText map_button;
     private Profile currentUserProfile;
     private String latLng;
 
@@ -106,12 +110,16 @@ public class EditProfile extends AppCompatActivity {
         et_email.setPaintFlags(et_email.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         //
         et_phone = findViewById(R.id.edit_user_phone);
-        et_location = findViewById(R.id.button_map);
+        et_location = findViewById(R.id.text_view_edit_location);
         et_bio = findViewById(R.id.edit_user_bio);
         user_photo = findViewById(R.id.user_photo_edit);
 
-
-
+        et_name.setText(currentUserProfile.getName());
+        et_email.setText(currentUserProfile.getEmail());
+        et_bio.setText(currentUserProfile.getBio());
+        et_location.setText(currentUserProfile.getLocation());
+        et_phone.setText(currentUserProfile.getPhone());
+        latLng = currentUserProfile.getPosition();
 
         // Restoring from past instanceState
         if (savedInstanceState != null) {
@@ -121,7 +129,6 @@ public class EditProfile extends AppCompatActivity {
                 imageRef = Uri.parse(savedInstanceState.getString("imageRef"));
         }
 
-        //map_button = findViewById(R.id.button_map);
         et_location.setOnClickListener(v -> PlaceApi());
 
         // Edit profile pic button
@@ -139,32 +146,68 @@ public class EditProfile extends AppCompatActivity {
         save_button.setOnClickListener(v -> {
             // If the user has filled up all mandatory fields
             if (!infoIsMissingFromUI()) {
-                // Get the data from an ImageView as bytes
-                user_photo.setDrawingCacheEnabled(true);
-                user_photo.buildDrawingCache();
-                Bitmap bitmap = user_photo.getDrawingCache();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] shown_image = baos.toByteArray();
 
-                // Update the current user information on Firebase
-                ProfileManager.updateProfile(
-                        ProfileManager.getCurrentUserID(),
-                        et_name.getText().toString(),
-                        et_email.getText().toString(),
-                        et_phone.getText().toString(),
-                        et_location.getText().toString(),
-                        et_bio.getText().toString(),
-                        shown_image,
-                        latLng,
-                        FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
-                );
+                // listener to check if the username already exists in Firebase
+                ProfileManager.usernameExists(et_name.getText().toString(), new OnGetDataListener() {
+                    @Override
+                    public void onStart() {
 
-                // Update the local file containing the current user profile information
-                ProfileManager.readProfile();
+                    }
 
-                // Terminating the activity
-                finish();
+                    @Override
+                    public void onSuccess(DataSnapshot data) {
+
+                        // if the data snapshot doesn't exists it means that that username doesn't exists in firebase
+                        if (!data.exists()) {
+                            // Get the data from an ImageView as bytes
+                            user_photo.setDrawingCacheEnabled(true);
+                            user_photo.buildDrawingCache();
+                            Bitmap bitmap = user_photo.getDrawingCache();
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            byte[] shown_image = baos.toByteArray();
+
+                            // Update the current user information on Firebase
+                            ProfileManager.updateProfile(
+                                    ProfileManager.getCurrentUserID(),
+                                    et_name.getText().toString(),
+                                    et_email.getText().toString(),
+                                    et_phone.getText().toString(),
+                                    et_location.getText().toString(),
+                                    et_bio.getText().toString(),
+                                    shown_image,
+                                    latLng,
+                                    FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
+                            );
+
+                            if (getIntent().getBooleanExtra("showLogoutButton", false)) {
+                                Context context = getApplicationContext();
+                                Button logoutButton = (Button) findViewById(R.id.logout_button);
+                                logoutButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        logout();
+                                    }
+                                });
+                            }
+
+                            // Update the local file containing the current user profile information
+                            ProfileManager.readProfile();
+
+                            // Terminating the activity
+                            finish();
+                        } else
+                            et_name.setError("This username already exists");
+
+
+                    }
+
+                    @Override
+                    public void onFailed(DatabaseError databaseError) {
+
+                    }
+                });
+
             }
         });
     }
@@ -173,8 +216,8 @@ public class EditProfile extends AppCompatActivity {
      * Tests whether the location info and username have been specified or not via the
      * corresponding UI item.
      *
-     * @return  true if the user has not specified the location or username yet.
-     *          false otherwise.
+     * @return true if the user has not specified the location or username yet.
+     * false otherwise.
      */
     private boolean infoIsMissingFromUI() {
         boolean infoIsMissing = false;
@@ -205,10 +248,10 @@ public class EditProfile extends AppCompatActivity {
 
         boolean infoIsMissing = false;
 
-        if( (userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
+        if ((userLocation == null || (userLocation.isEmpty() || userLocation.equals("")))
                 ||
-            (username == null || (username.isEmpty() || username.equals("")))
-        )
+                (username == null || (username.isEmpty() || username.equals("")))
+                )
             infoIsMissing = true;
 
         return infoIsMissing;
@@ -283,7 +326,7 @@ public class EditProfile extends AppCompatActivity {
                         try {
                             // Launching the camera app
                             startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-                        } catch(Exception e) {
+                        } catch (Exception e) {
                             // Creating an alert dialog indicating all possible causes
                             AlertManager.permissionDialog(EditProfile.this);
                         }
@@ -375,15 +418,6 @@ public class EditProfile extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
-        et_name.setText(currentUserProfile.getName());
-        et_email.setText(currentUserProfile.getEmail());
-        et_bio.setText(currentUserProfile.getBio());
-        et_location.setText(currentUserProfile.getLocation());
-        et_phone.setText(currentUserProfile.getPhone());
-        latLng = currentUserProfile.getPosition();
-
-
         if (flagCamera) {
             Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
             user_photo.setImageBitmap(tmp);
@@ -392,5 +426,13 @@ public class EditProfile extends AppCompatActivity {
         } else if (currentUserProfile.getImage() != null) {
             Picasso.get().load(currentUserProfile.getImage()).fit().centerCrop().into(user_photo);
         }
+    }
+
+    /**
+     * Method to perform logout
+     */
+    private void logout() {
+        ProfileManager.logout();
+        AuthenticationUI.launch(this);
     }
 }

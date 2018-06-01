@@ -334,4 +334,31 @@ public class ProfileManager {
     public static Profile getOtherUser() {
         return otherUser;
     }
+
+    /**
+     * listener to check if the username already exists in Firebase
+     * @param username username to be checked
+     * @param listener
+     */
+    public static void usernameExists(String username, final OnGetDataListener listener){
+        if(listener != null)
+            listener.onStart();
+
+        DatabaseManager.get("users").orderByChild("name").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(listener != null)
+                    listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if(listener != null)
+                    listener.onFailed(databaseError);
+            }
+        });
+
+
+    }
 }
