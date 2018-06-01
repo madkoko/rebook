@@ -1,7 +1,6 @@
 package it.polito.mad.koko.kokolab3.tabsHomeActivity;
 
 import android.app.Fragment;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -68,9 +67,9 @@ public class HomeSharingBook extends Fragment {
                     ratingBar.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
-                        ProfileManager.getInstance().setRating(model.getReceiverId(), (int) ratingBar.getRating());
+                        ProfileManager.getInstance().addRating(model.getReceiverId(), (int) ratingBar.getRating());
                         RequestManager.Companion.ratedTransition(getRef(position).getKey());
-                        RequestManager.Companion.putReciverRate(model.getReceiverId(), (int) ratingBar.getRating());
+                        RequestManager.Companion.putReceiverRate(model.getReceiverId(), (int) ratingBar.getRating());
                     });
                 } else
                     buttonReturn.setVisibility(View.INVISIBLE);

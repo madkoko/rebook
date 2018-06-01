@@ -1,101 +1,121 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 
-
 import java.io.Serializable;
 
 public class Profile implements Serializable {
 
     private static final String TAG = "Profile";
 
-    private String  name,
-                    email,
-                    phone,
-                    location,
-                    bio,
-                    image,
-                    position,
-                    tokenMessage,
-                    rating;
+    private String name,
+            email,
+            phone,
+            location,
+            bio,
+            image,
+            position,
+            tokenMessage,
+            totalStars,
+            completedExchanges;
 
     public Profile() {
     }
 
 
-    public Profile(String name, String email, String phone, String location, String bio, String imgUrl, String position, String tokenMessage, String rating) {
-        this.name=name;
-        this.email=email;
-        this.phone=phone;
-        this.location=location;
-        this.bio=bio;
-        this.image =imgUrl;
+    public Profile(String name,
+                   String email,
+                   String phone, String location, String bio, String imgUrl, String position, String tokenMessage, String totalStars, String completedExchanges) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.location = location;
+        this.bio = bio;
+        this.image = imgUrl;
         this.position = position;
-        this.tokenMessage=tokenMessage;
-        this.rating=rating;
+        this.tokenMessage = tokenMessage;
+        this.totalStars = totalStars;
+        this.completedExchanges = completedExchanges;
     }
-
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public String getPosition() {return position;}
-
-    public String getBio() {
-        return bio;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public String getTokenMessage() { return tokenMessage; }
-
-    public String getRating() {return rating;}
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
     public void setLocation(String location) {
         this.location = location;
     }
 
-    public void setPosition(String latLng) {this.position =latLng;}
+    public String getBio() {
+        return bio;
+    }
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     public void setImage(String image) {
         this.image = image;
     }
 
-    public void setTokenMessage(String tokenMessage) { this.tokenMessage = tokenMessage; }
+    public String getPosition() {
+        return position;
+    }
 
-    public void setRating(String rating) {this.rating=rating;}
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
+    public String getTokenMessage() {
+        return tokenMessage;
+    }
 
+    public void setTokenMessage(String tokenMessage) {
+        this.tokenMessage = tokenMessage;
+    }
+
+    public String getTotalStars() {
+        return totalStars;
+    }
+
+    public void setTotalStars(String totalStars) {
+        this.totalStars = totalStars;
+    }
+
+    public String getCompletedExchanges() {
+        return completedExchanges;
+    }
+
+    public void setCompletedExchanges(String completedExchanges) {
+        this.completedExchanges = completedExchanges;
+    }
 
     @Override
     public String toString() {
@@ -107,9 +127,8 @@ public class Profile implements Serializable {
                 ", bio='" + bio + '\'' +
                 ", image='" + image + '\'' +
                 ", position='" + position + '\'' +
-                ", rating='" + rating + '\'' +
+                ", totalStars='" + totalStars + '\'' +
+                ", completedExchanges='" + completedExchanges + '\'' +
                 '}';
     }
-
-
 }

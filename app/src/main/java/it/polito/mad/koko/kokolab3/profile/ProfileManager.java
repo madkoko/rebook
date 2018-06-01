@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -107,7 +108,8 @@ public class ProfileManager {
                     userInfo.get("image"),
                     userInfo.get("position"),
                     userInfo.get("tokenMessage"),
-                    userInfo.get("rating"));
+                    userInfo.get("totalStars"),
+                    userInfo.get("completedExchanges"));
 
             return profile;
         }
@@ -194,8 +196,9 @@ public class ProfileManager {
                     String phone = currentUserSnapshot.get("phone");
                     String position = currentUserSnapshot.get("position");
                     String tokenMessage = currentUserSnapshot.get("tokenMessage");
-                    String rating = currentUserSnapshot.get("rating");
-                    currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, rating);
+                    String totalStars = currentUserSnapshot.get("totalStars");
+                    String completedExchanges = currentUserSnapshot.get("completedExchanges");
+                    currentUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, totalStars, completedExchanges);
                 }
             }
 
@@ -225,8 +228,9 @@ public class ProfileManager {
                     String phone = otherUserSnapshot.get("phone");
                     String position = otherUserSnapshot.get("position");
                     String tokenMessage = otherUserSnapshot.get("tokenMessage");
-                    String rating = otherUserSnapshot.get("rating");
-                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, rating);
+                    String totalStars = otherUserSnapshot.get("totalStars");
+                    String completedExchanges = otherUserSnapshot.get("completedExchanges");
+                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, totalStars, completedExchanges);
                 }
 
             }
@@ -240,18 +244,45 @@ public class ProfileManager {
 
     public Profile getOtherUser() {return otherUser;}
 
-    public void setRating(String uid, int valutation){
-        usersRef.child(uid).child("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+    /**
+     * userID
+     *       totalStars
+     *       completedExchanges
+     */
+
+    public void addRating(String uid, int rating){
+        usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String rating = (String) dataSnapshot.getValue();
-                if(rating!= null && !rating.isEmpty()){
-                    int ratingNum = Integer.parseInt(rating);
-                    ratingNum+=valutation;
-                    String finalRating = ""+ratingNum;
-                    usersRef.child(uid).child("rating").setValue(finalRating);
-                }else
-                    usersRef.child(uid).child("rating").setValue(""+valutation);
+                if(dataSnapshot.exists()) {
+                    // Retrieving the total number of stars received by the user
+                    int totalStars = 0;
+                    if(dataSnapshot.child("totalStars").exists())
+                        try {
+                            totalStars = Integer.parseInt((String) dataSnapshot.child("totalStars").getValue());
+                        } catch(NumberFormatException e){
+                            Log.e(TAG, "totalStars is NaN");
+                        }
+                    Log.d(TAG, dataSnapshot.child("username").getValue() + " has totalStars = " + totalStars);
+
+                    // Updating the total number of stars received by the user
+                    totalStars += rating;
+                    usersRef.child(uid).child("totalStars").setValue(totalStars);
+
+                    // Retrieving the total number of completed exchanges
+                    int completedExchanges = 0;
+                    if(dataSnapshot.child("completedExchanges").exists())
+                        try {
+                            completedExchanges = Integer.parseInt((String) dataSnapshot.child("completedExchanges").getValue());
+                        } catch(NumberFormatException e){
+                            Log.e(TAG, "completedExchanges is NaN");
+                        }
+                    Log.d(TAG, dataSnapshot.child("username").getValue() + " has completedExchanges = " + completedExchanges);
+
+                    // Updating the total number of completed exchanges
+                    ++completedExchanges;
+                    usersRef.child(uid).child("completedExchanges").setValue(completedExchanges);
+                }
             }
 
             @Override

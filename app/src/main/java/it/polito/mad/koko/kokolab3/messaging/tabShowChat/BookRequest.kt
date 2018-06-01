@@ -103,11 +103,11 @@ class BookRequest() : Fragment() {
                     val ratingBar = v.findViewById(R.id.rating_bar_request) as RatingBar
                     ratingBar.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
-                        ProfileManager.getInstance().setRating(model.senderId, ratingBar.numStars)
+                        ProfileManager.getInstance().addRating(model.senderId, ratingBar.numStars)
                         RequestManager.ratedTransition(getRef(position).key)
                         RequestManager.putSenderRate(model.senderId, ratingBar.numStars)
                     }
-                    //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().setRating(model.receiverId, ratingBar.numStars) })
+                    //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
                 }else {
                     acceptButton.setVisibility(View.INVISIBLE)
                     declineButton.setVisibility(View.INVISIBLE)
