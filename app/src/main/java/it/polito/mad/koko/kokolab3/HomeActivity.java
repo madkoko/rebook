@@ -40,6 +40,7 @@ import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeChatList;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeListBook;
+import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeSharingBook;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 public class HomeActivity extends AppCompatActivity
@@ -67,6 +68,7 @@ public class HomeActivity extends AppCompatActivity
     private ViewSwitcher viewSwitcher;
     private LinearLayout layoutRecycler;
     private LinearLayout layoutList;
+    private Fragment homeSharingBook;
 
     //private int SEARCH_BOOKS = 2;
 
@@ -116,7 +118,8 @@ public class HomeActivity extends AppCompatActivity
         homeListBook = new HomeListBook();
         tab_layout.addTab(tab_layout.newTab().setText("chats"));
         homeListChats = new HomeChatList();
-        tab_layout.addTab(tab_layout.newTab().setText("requests"));
+        tab_layout.addTab(tab_layout.newTab().setText("borrowed"));
+        homeSharingBook = new HomeSharingBook();
         selectFragment(0);
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -167,6 +170,7 @@ public class HomeActivity extends AppCompatActivity
                 getFragmentManager().beginTransaction().remove(homeListChats).commit();
                 break;
             case 2:
+                getFragmentManager().beginTransaction().remove(homeSharingBook).commit();
                 break;
             default:
                 break;
@@ -193,7 +197,7 @@ public class HomeActivity extends AppCompatActivity
                 if (viewSwitcher.getCurrentView() != layoutList) {
                     viewSwitcher.showNext();
                 }
-                //getFragmentManager().beginTransaction().add(android.R.id.content, homeListChats).commit();
+                getFragmentManager().beginTransaction().add(android.R.id.content, homeSharingBook).commit();
                 break;
             default:
 

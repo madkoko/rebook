@@ -123,7 +123,9 @@ public class ProfileManager {
                     userInfo.get("bio"),
                     userInfo.get("image"),
                     userInfo.get("position"),
-                    userInfo.get("tokenMessage"));
+                    userInfo.get("tokenMessage"),
+                    userInfo.get("totalStars"),
+                    userInfo.get("completedExchanges"));
 
             return profile;
         }
@@ -319,7 +321,9 @@ public class ProfileManager {
                     String phone = otherUserSnapshot.get("phone");
                     String position = otherUserSnapshot.get("position");
                     String tokenMessage = otherUserSnapshot.get("tokenMessage");
-                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage);
+                    String totalStars = otherUserSnapshot.get("totalStars");
+                    String completedExchanges = otherUserSnapshot.get("completedExchanges");
+                    otherUser = new Profile(name, email, phone, location, bio, image, position, tokenMessage, totalStars, completedExchanges);
                 }
 
             }
@@ -331,9 +335,7 @@ public class ProfileManager {
         });
     }
 
-    public static Profile getOtherUser() {
-        return otherUser;
-    }
+    public Profile getOtherUser() {return otherUser;}
 
     /**
      * listener to check if the username already exists in Firebase
@@ -358,7 +360,60 @@ public class ProfileManager {
                     listener.onFailed(databaseError);
             }
         });
+    }
 
+    /**
+     * userID
+     *       totalStars
+     *       completedExchanges
+     */
 
+    public void addRating(String uid, String rating){
+        DatabaseManager.get("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    // Retrieving the total number of stars received by the user
+                    int totalStars = 0;
+                    if(dataSnapshot.child("totalStars").exists())
+                        try {
+                            totalStars = Integer.parseInt((String) dataSnapshot.child("totalStars").getValue());
+                        } catch(NumberFormatException e){
+                            Log.e(TAG, "totalStars is NaN");
+                        }
+                    Log.d(TAG, dataSnapshot.child("name").getValue() + " has totalStars = " + totalStars);
+
+                    // Updating the total number of stars received by the user
+                    totalStars += Float.valueOf(rating).intValue();
+
+                    String totalStarString = Integer.toString(totalStars);//String.valueOf(totalStars);
+                    Log.d(TAG, String.valueOf(totalStarString instanceof String));
+                    DatabaseManager.get("users").child(uid).child("totalStars").setValue(totalStarString);
+
+                    // Retrieving the total number of completed exchanges
+                    int completedExchanges = 0;
+                    if(dataSnapshot.child("completedExchanges").exists())
+                        try {
+                            completedExchanges = Integer.parseInt((String) dataSnapshot.child("completedExchanges").getValue());
+                        } catch(NumberFormatException e){
+                            Log.e(TAG, "completedExchanges is NaN");
+                        }
+                    Log.d(TAG, dataSnapshot.child("name").getValue() + " has completedExchanges = " + completedExchanges);
+
+                    // Updating the total number of completed exchanges
+                    ++completedExchanges;
+
+                    String completedExchangesString = String.valueOf(completedExchanges);
+                    DatabaseManager.get("users").child(uid).child("completedExchanges").setValue(completedExchangesString);
+
+                    //usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

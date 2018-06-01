@@ -1,21 +1,11 @@
 package it.polito.mad.koko.kokolab3.request
 
-import android.annotation.SuppressLint
-import android.util.Log
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
-import it.polito.mad.koko.kokolab3.books.Book
-import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
-import it.polito.mad.koko.kokolab3.messaging.UserChatInfo
-import it.polito.mad.koko.kokolab3.profile.Profile
-import it.polito.mad.koko.kokolab3.profile.ProfileManager
-import it.polito.mad.koko.kokolab3.ui.ImageManager
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener
 
 /**
  * Created by Franci on 23/05/18.
@@ -35,38 +25,56 @@ class RequestManager() {
     companion object {
 
         private var reqIdRetrieved: String? = null
+        private val database = FirebaseDatabase.getInstance()
 
-        fun newRequest(req: Request, data: ByteArray, reqId: String) {
+        fun createRequest(req: Request, data: ByteArray, reqId: String) {
 
-            val database = FirebaseDatabase.getInstance()
             val storage = FirebaseStorage.getInstance()
             var downloadUrl: String;
 
-            checkExistingReq(reqId);
+            checkExistingReq(reqId, object : OnGetDataListener {
+                override fun onStart() {
+                }
 
-            if (reqIdRetrieved == null) {
-                val reqDatabaseRef = database.reference.child("requests")
-                reqDatabaseRef.child(reqId).setValue(req);
-                val reqStorageRef = storage.reference.child("requests")
-                val uploadTask = reqStorageRef!!.child(reqId).putBytes(data)
+                override fun onSuccess(dataSnapshot: DataSnapshot?) {
+                    reqIdRetrieved = if (dataSnapshot!!.exists()) {
+                        dataSnapshot!!.key;
+                    } else {
+                        null;
+                    }
 
-                uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
-                    downloadUrl = taskSnapshot.downloadUrl!!.toString()
-                    //Log.d(TAG,downloadUrl);
-                    req.bookImage = downloadUrl
-                    //ref.child(bookKey).child("image").setValue(downloadUrl);
-                    reqDatabaseRef.child(reqId).setValue(req)
-                })
-            }
+                    if (reqIdRetrieved == null) {
+                        val reqDatabaseRef = database.reference.child("requests")
+                        reqDatabaseRef.child(reqId).setValue(req);
+
+                        /*val reqStorageRef = storage.reference.child("requests")
+                        val uploadTask = reqStorageRef!!.child(reqId).putBytes(data)
+
+                        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
+                            downloadUrl = taskSnapshot.downloadUrl!!.toString()
+                            //Log.d(TAG,downloadUrl);
+                            req.bookImage = downloadUrl
+                            //ref.child(bookKey).child("image").setValue(downloadUrl);
+                            reqDatabaseRef.child(reqId).setValue(req)
+                        })*/
+                    }
+                }
+
+                override fun onFailed(databaseError: DatabaseError?) {
+                }
+            })
+
+
         }
 
 
         // Check if the same Request has already been sent
-        private fun checkExistingReq(reqId: String) {
+        private fun checkExistingReq(reqId: String, listener: OnGetDataListener) {
+            listener?.onStart()
 
             /* 1. Create the 'requests' child
-        val database = FirebaseDatabase.getInstance()
-        val reqRef = database.reference.child("requests")*/
+            val database = FirebaseDatabase.getInstance()
+            val reqRef = database.reference.child("requests")*/
 
             // 2. Search if a Request between Send & Receiver for the same book is already existing
             val reqRef = FirebaseDatabase
@@ -77,83 +85,69 @@ class RequestManager() {
 
             reqRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-                        reqIdRetrieved = dataSnapshot.key;
-                    } else {
-                        reqIdRetrieved = null;
-                    }
+                    listener?.onSuccess(dataSnapshot)
                 }
 
-                override fun onCancelled(databaseError: DatabaseError) {}
+                override fun onCancelled(databaseError: DatabaseError) {
+                    listener?.onFailed(databaseError)
+                }
             });
-
         }
+
+        // *** ACCEPT a BOOK REQUEST ***
+        //      >>> Change Request status
+        public fun acceptRequest(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("onBorrow")
+        }
+
+        // *** DECLINE a BOOK REQUEST ***
+        //      >>> Delete the Request on Firebase
+        //      >>> Delete the Request on Book Requests List in the Tab Menu
+        public fun declineRequest(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .removeValue()
+        }
+
+        public fun retunRequest(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("returning")
+        }
+
+        fun retunBook(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("returned")
+        }
+
+
+        fun ratedTransition(reqId: String?) {
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("status")
+                    .setValue("rated")
+        }
+
+        fun putReceiverRate(reqId: String?, rate: String?){
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("ratingReceiver")
+                    .setValue(rate)
+        }
+        fun putSenderRate(reqId: String?, rate: String?){
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("ratingSender")
+                    .setValue(rate)
+        }
+
     }
+
+
 }
-
-           // Log.d(TAG, req.toString())
-
-            /*
-
-        val bookKey = booksDatabaseRef.push().getKey()
-
-        val uploadTask = booksStorageRef.child(bookKey).putBytes(data)
-        uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
-            downloadUrl = taskSnapshot.downloadUrl!!.toString()
-            //Log.d(TAG,downloadUrl);
-            book.setImage(downloadUrl)
-            //ref.child(bookKey).child("image").setValue(downloadUrl);
-            booksDatabaseRef.child(bookKey).setValue(book)
-        })
-*/
-
-            /*
-        val Ref = usersRef.child(id)
-        this.storageRef = storageRef
-        childUpdates = HashMap()
-
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", profileId.toString())
-                .build();
-
-
-        val uploadTask = storageRef.putBytes(data)
-        uploadTask.addOnSuccessListener { taskSnapshot ->
-            downloadUrl = taskSnapshot.downloadUrl!!.toString()
-            Ref.child("image").setValue(downloadUrl)
-            if (downloadUrl != null) ImageManager.loadBitmap(downloadUrl)
-        }
-        childUpdates!!.put("name", name)
-        childUpdates!!.put("email", email)
-        childUpdates!!.put("phone", phone)
-        childUpdates!!.put("location", location)
-        childUpdates!!.put("bio", bio)
-        if (latLng != null) childUpdates!!.put("position", latLng)
-        Ref.updateChildren(childUpdates!!)
-        firebaseUser.updateProfile(new UserProfileChangeRequest
-                .Builder()
-                .setDisplayName(name)
-                .build()
-        );
-       }
-        */
-
-/*
-    fun profileIsNotPresent(uid: String): Boolean {
-        synchronized(allUsers) {
-            val it = allUsers.entries.iterator()
-            while (it.hasNext()) {
-                val entry = it.next() as Entry<*, *>
-                if (entry.key == uid) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-    fun addToken(token: String, uid: String) {
-        usersRef.child(uid).child("tokenMessage").setValue(token)
-    }
-    */

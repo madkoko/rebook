@@ -15,7 +15,7 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequestList;
+import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequest;
 import it.polito.mad.koko.kokolab3.messaging.tabShowChat.Conversation;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -171,7 +171,8 @@ public class ShowChat extends AppCompatActivity {
 
         // 5. Final UI implementation
         conversation = new Conversation();
-        bookRequestList = new BookRequestList();
+
+        bookRequestList = new BookRequest();
 
         // Parameters to be sent to ConversationFragment
         Bundle bun = new Bundle();
@@ -192,8 +193,8 @@ public class ShowChat extends AppCompatActivity {
 
         TabLayout tab_layout = findViewById(R.id.tabs_chat);
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
-        tab_layout.addTab(tab_layout.newTab().setText("Conversation"));
-        tab_layout.addTab(tab_layout.newTab().setText("Book Requests"));
+        tab_layout.addTab(tab_layout.newTab().setText("chat"));
+        tab_layout.addTab(tab_layout.newTab().setText("requested books"));
 
         selectFragment(0);
 
@@ -258,7 +259,7 @@ public class ShowChat extends AppCompatActivity {
                 break;
 
             case 1: // *** BOOK REQ TAB ***
-                //getFragmentManager().beginTransaction().remove(conversation).commit();
+                getFragmentManager().beginTransaction().remove(bookRequestList).commit();
                 break;
 
             default: // ** no need **
