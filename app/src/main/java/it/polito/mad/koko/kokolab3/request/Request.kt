@@ -15,8 +15,10 @@ class Request {
     var bookImage: String? = null;
     var status: String? = null;
 
-    var rating: Int? = null;
-    var comment: String? = null;
+    var ratingSender: String? = null;
+    var commentSender: String? = null;
+    var ratingReceiver: String? = null;
+    var commentReceiver: String? = null;
 
     constructor() : this("",
                     "",
@@ -31,14 +33,18 @@ class Request {
         bookImage = _bookImage;
         status = "pending";
 
-        rating = null;
-        comment = null;
+        ratingSender = null;
+        commentSender = null;
+        ratingReceiver = null;
+        commentReceiver = null;
     }
 
-    constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, rating: Int, comment: String):
+    constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, _ratingSender: String, _commentSender: String, _ratingReceiver: String, _commentReceiver: String):
             this(senderId, receiverId, bookId, bookName, bookImage) {
-        this.rating = rating;
-        this.comment = comment;
+        this.ratingSender = _ratingSender;
+        this.commentSender = _commentSender;
+        this.ratingReceiver = _ratingReceiver;
+        this.commentReceiver = _commentReceiver;
     }
 
     fun returnBook(){
@@ -49,10 +55,10 @@ class Request {
         this.status = "onBorrow";
     }
 
-    fun rate(rating: Int, comment: String){
+    fun rate(rating: String, comment: String){
         this.status = "rated";
-        this.rating = rating;
-        this.comment = comment;
+        this.ratingSender = rating;
+        this.commentSender = comment;
     }
 
     override fun toString(): String {
@@ -64,5 +70,4 @@ class Request {
                 ", Status ='" + status + '\'' +
                 '}'
     }
-
 }

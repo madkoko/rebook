@@ -3,21 +3,16 @@ package it.polito.mad.koko.kokolab3.messaging.tabShowChat
 import android.app.Fragment
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
-import com.firebase.ui.database.SnapshotParser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
 import com.squareup.picasso.Picasso
 import it.polito.mad.koko.kokolab3.R
 import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.request.Request
-import kotlin.reflect.KClass
 import it.polito.mad.koko.kokolab3.request.RequestManager
 
 
@@ -110,6 +105,7 @@ class BookRequest() : Fragment() {
                     acceptButton.setOnClickListener {
                         ProfileManager.getInstance().setRating(model.senderId, ratingBar.numStars)
                         RequestManager.ratedTransition(getRef(position).key)
+                        RequestManager.putSenderRate(model.senderId, ratingBar.numStars)
                     }
                     //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().setRating(model.receiverId, ratingBar.numStars) })
                 }else {

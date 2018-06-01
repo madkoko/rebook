@@ -1,21 +1,10 @@
 package it.polito.mad.koko.kokolab3.request
 
-import android.annotation.SuppressLint
-import android.util.Log
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
-import it.polito.mad.koko.kokolab3.books.Book
-import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
-import it.polito.mad.koko.kokolab3.messaging.UserChatInfo
-import it.polito.mad.koko.kokolab3.profile.Profile
-import it.polito.mad.koko.kokolab3.profile.ProfileManager
-import it.polito.mad.koko.kokolab3.ui.ImageManager
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 /**
  * Created by Franci on 23/05/18.
@@ -126,7 +115,20 @@ class RequestManager() {
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("status")
-                    .setValue("returned")
+                    .setValue("rated")
+        }
+
+        fun putReciverRate(reqId: String?, rate: Int){
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("ratingReciver")
+                    .setValue(rate)
+        }
+        fun putSenderRate(reqId: String?, rate: Int){
+            val reqDatabaseRef = database.reference.child("requests")
+                    .child(reqId)
+                    .child("ratingSender")
+                    .setValue(rate)
         }
 
     }
