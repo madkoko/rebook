@@ -198,6 +198,6 @@
     <string name="decline">decline</string>
     <string name="return_book">return book</string>
     <string name="check_if_return">check if returned</string>
-    <string name="currency">currency</string>
+    <string name="currency">rate</string>
 
 </resources>

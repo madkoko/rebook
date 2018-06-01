@@ -82,6 +82,8 @@ class BookRequest() : Fragment() {
                 val acceptButton = v.findViewById<Button>(R.id.accept)
                 val declineButton = v.findViewById<Button>(R.id.decline)
 
+                ratingBar.setVisibility(View.INVISIBLE)
+
                 if (model.status.equals("pending")) {
                     acceptButton.setVisibility(View.VISIBLE)
                     declineButton.setVisibility(View.VISIBLE)
