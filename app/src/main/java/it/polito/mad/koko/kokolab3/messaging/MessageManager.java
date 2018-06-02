@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.util.JsonUtil;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -744,21 +747,51 @@ public class MessageManager {
      * @param messageText content of the message
      */
     public static void createMessage(String chatID, String senderId, String receiverId, String messageText) {
+        // Obtaining the new message ID
+        messageID = DatabaseManager.get("chats", chatID, "messages").push().getKey();
 
-        // Creating a message entry
-        DatabaseReference messagesRef = DatabaseManager.get("chats", chatID, "messages");
-        messageID = messagesRef.push().getKey();
+        // Creating the new message object
         Message message = new Message();
         message.setSender(senderId);
         message.setText(messageText);
         message.setCheck("false");
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
         message.setTimestamp(timeStamp);
-        messagesRef.child(messageID).setValue(message);
 
-        // Creating the last message entry on both receiver and sender
-        DatabaseManager.set(messageText, "users/" + senderId + "/chats/" + chatID + "/lastMessage");
-        DatabaseManager.set(messageText, "users/" + receiverId + "/chats/" + chatID + "/lastMessage");
+        // Uploading the new message on Firebase
+        DatabaseManager.set(message, "chats", chatID, "messages", messageID);
+
+        /*  Listener to create the sender's UserChatInfo object once the
+            receiver's information will be retreived */
+        OnGetDataListener receiverInfoListener = new OnGetDataListener() {
+            @Override
+            public void onStart() {}
+
+            @Override
+            public void onSuccess(DataSnapshot data) {
+                // Creating the sender's UserChatInfo object
+                Profile receiverProfile = data.getValue(Profile.class);
+                UserChatInfo receiverUserChatInfo = new UserChatInfo(receiverId, receiverProfile, messageText);
+                DatabaseManager.set(receiverUserChatInfo, "users/" + senderId + "/chats/" + chatID);
+            }
+
+            @Override
+            public void onFailed(DatabaseError databaseError) {}
+        };
+
+        // Retrieving the receiver's info
+        DatabaseManager.get("users/" + receiverId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) { receiverInfoListener.onSuccess(dataSnapshot); }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { receiverInfoListener.onFailed(databaseError); }
+        });
+
+        // Creating the receiver's UserChatInfo object using the local sender's information
+        Profile senderProfile = ProfileManager.getProfile();
+        UserChatInfo receiverUserChatInfo = new UserChatInfo(senderId, senderProfile, messageText);
+        DatabaseManager.set(receiverUserChatInfo, "users/" + receiverId + "/chats/" + chatID);
     }
 
     /**

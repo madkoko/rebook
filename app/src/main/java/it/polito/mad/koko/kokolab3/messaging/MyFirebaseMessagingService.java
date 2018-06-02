@@ -207,6 +207,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String senderImageURL = senderObject.get("image");
         String senderToken = senderObject.get("token");
         Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
+        Log.d(TAG, "senderImageBitmap: " + senderImageBitmap);
         UserChatInfo senderInfo = new UserChatInfo(senderId, senderUsername, senderImageURL, null, senderToken); // risolvere lastMessage null?!
 
         // 4.   Retrieving the * Receiver * data object

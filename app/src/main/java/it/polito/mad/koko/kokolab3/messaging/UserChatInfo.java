@@ -3,6 +3,8 @@ package it.polito.mad.koko.kokolab3.messaging;
 import java.io.Serializable;
 import java.util.Map;
 
+import it.polito.mad.koko.kokolab3.profile.Profile;
+
 /**
  * Created by Francesco on 17/05/2018.
  */
@@ -21,7 +23,19 @@ public class UserChatInfo implements Serializable {
         this.secondPartyUsername = secondPartyUsername;
         this.secondPartyImage = secondPartyImage;
         this.secondPartyToken = secondPartyToken;
-        this.lastMessage=lastMessage;
+        this.lastMessage = lastMessage;
+    }
+
+    /**
+     * Constructor using the other user's profile object
+     * @param secondPartyProfile   the second party profile object
+     */
+    public UserChatInfo(String secondPartyId, Profile secondPartyProfile, String lastMessage) {
+        this.secondPartyId = secondPartyId;
+        this.secondPartyUsername = secondPartyProfile.getName();
+        this.secondPartyImage = secondPartyProfile.getImage();
+        this.secondPartyToken = secondPartyProfile.getTokenMessage();
+        this.lastMessage = lastMessage;
     }
 
     public String getSecondPartyId() {
