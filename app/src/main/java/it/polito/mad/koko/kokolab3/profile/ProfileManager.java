@@ -220,11 +220,12 @@ public class ProfileManager {
     /**
      * It performs the logout operation.
      */
-    public static void logout() {
+    public static void logout(String uid) {
         Log.d(TAG, "Logging out...");
-
+        //Remove tokenMessage from Firebase database
+        DatabaseManager.delete("users",uid, "tokenMessage");
+        //Log-out from FIoebase
         FirebaseAuth.getInstance().signOut();
-
         Log.d(TAG, "Logged out.");
     }
 

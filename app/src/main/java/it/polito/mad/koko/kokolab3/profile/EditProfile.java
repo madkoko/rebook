@@ -433,7 +433,7 @@ public class EditProfile extends AppCompatActivity {
      * Method to perform logout
      */
     private void logout() {
-        ProfileManager.logout();
+        ProfileManager.logout(ProfileManager.getCurrentUserID());
         AuthenticationUI.launch(this);
     }
 }
