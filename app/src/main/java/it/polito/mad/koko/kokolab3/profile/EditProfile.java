@@ -1,7 +1,6 @@
 package it.polito.mad.koko.kokolab3.profile;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
@@ -181,17 +179,6 @@ public class EditProfile extends AppCompatActivity {
                                     FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
                             );
 
-                            if (getIntent().getBooleanExtra("showLogoutButton", false)) {
-                                Context context = getApplicationContext();
-                                Button logoutButton = (Button) findViewById(R.id.logout_button);
-                                logoutButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        logout();
-                                    }
-                                });
-                            }
-
                             // Update the local file containing the current user profile information
                             ProfileManager.readProfile();
 
@@ -211,6 +198,20 @@ public class EditProfile extends AppCompatActivity {
 
             }
         });
+
+        Button logoutButton = (Button) findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //logout when edit profile return in home activity
+                finish();
+            }
+        });
+
+        // Logout button is invisible in Edit Profile if the user is coming from "ShowProfile"
+        if (!getIntent().getBooleanExtra("showLogoutButton",false)) {
+            logoutButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
@@ -429,11 +430,4 @@ public class EditProfile extends AppCompatActivity {
         }
     }
 
-    /**
-     * Method to perform logout
-     */
-    private void logout() {
-        ProfileManager.logout(ProfileManager.getCurrentUserID());
-        AuthenticationUI.launch(this);
-    }
 }

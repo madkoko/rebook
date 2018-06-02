@@ -41,7 +41,8 @@ public class ProfileManager {
      */
     private static Profile currentUserProfile;
     private static String currentUserImageURL;
-    private static final File profileFile = new File("data/data/it.polito.mad.koko.kokolab3/files/profile.bin");
+    private static String profileFilePath="data/data/it.polito.mad.koko.kokolab3/files/profile.bin";
+    private static final File profileFile = new File(profileFilePath);
 
     /**
      * All users' profiles

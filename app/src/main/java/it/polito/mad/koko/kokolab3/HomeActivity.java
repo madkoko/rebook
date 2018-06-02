@@ -58,6 +58,8 @@ public class HomeActivity extends AppCompatActivity
 
     private int INSERT_BOOK = 20;
 
+    private int LOGOUT_EDIT_PROFILE= 30;
+
     /**
      * Request code for the activity "ShowBooks" to show only the current user's books
      */
@@ -149,7 +151,7 @@ public class HomeActivity extends AppCompatActivity
                 Intent editProfileIntent=new Intent(getApplicationContext(), EditProfile.class);
                 editProfileIntent.putExtra("showLogoutButton",true);
                 // Start the EditProfile activity
-                startActivity(editProfileIntent);
+                startActivityForResult(editProfileIntent,LOGOUT_EDIT_PROFILE);
 
                 return;
             }
@@ -266,7 +268,7 @@ public class HomeActivity extends AppCompatActivity
                         Intent editProfileIntent=new Intent(getApplicationContext(), EditProfile.class);
                         editProfileIntent.putExtra("showLogoutButton",true);
                         // Start the EditProfile activity
-                        startActivity(editProfileIntent);
+                        startActivityForResult(editProfileIntent,LOGOUT_EDIT_PROFILE);
                     }
 
                     /*  If the user has already completed the registration and
@@ -282,6 +284,11 @@ public class HomeActivity extends AppCompatActivity
                 public void onFailed(DatabaseError databaseError) {
                 }
             });
+        }
+
+        else if (requestCode==LOGOUT_EDIT_PROFILE){
+            ProfileManager.logout();
+            AuthenticationUI.launch(this);
         }
     }
 
