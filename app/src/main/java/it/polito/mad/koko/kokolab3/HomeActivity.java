@@ -58,7 +58,9 @@ public class HomeActivity extends AppCompatActivity
 
     private int INSERT_BOOK = 20;
 
-    private int LOGOUT_EDIT_PROFILE= 30;
+    private int FIRST_LOGIN_EDIT_PROFILE = 30;
+
+    private int LOGOUT_FROM_EDIT_PROFILE = 3;
 
     /**
      * Request code for the activity "ShowBooks" to show only the current user's books
@@ -78,10 +80,10 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG,"onCreate() called");
+        Log.d(TAG, "onCreate() called");
 
         // If the local offline file containing the current user's information does not exist
-        if(!ProfileManager.profileFileExists())
+        if (!ProfileManager.profileFileExists())
             // Force a logout operation
             ProfileManager.logout();
 
@@ -126,19 +128,19 @@ public class HomeActivity extends AppCompatActivity
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Log.d(TAG,"onTabSelected"+String.valueOf(tab.getPosition()));
+                Log.d(TAG, "onTabSelected" + String.valueOf(tab.getPosition()));
                 selectFragment(tab.getPosition());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                Log.d(TAG,"onTabUnselected"+String.valueOf(tab.getPosition()));
+                Log.d(TAG, "onTabUnselected" + String.valueOf(tab.getPosition()));
                 removeFragment(tab.getPosition());
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                Log.d(TAG,"onTabReselected"+String.valueOf(tab.getPosition()));
+                Log.d(TAG, "onTabReselected" + String.valueOf(tab.getPosition()));
             }
         });
 
@@ -147,11 +149,11 @@ public class HomeActivity extends AppCompatActivity
             Log.d(TAG, "Registration completed: " + ProfileManager.hasCompletedRegistration());
 
             // If the user has not completed the registration process already
-            if(!ProfileManager.hasCompletedRegistration()) {
-                Intent editProfileIntent=new Intent(getApplicationContext(), EditProfile.class);
-                editProfileIntent.putExtra("showLogoutButton",true);
+            if (!ProfileManager.hasCompletedRegistration()) {
+                Intent editProfileIntent = new Intent(getApplicationContext(), EditProfile.class);
+                editProfileIntent.putExtra("showLogoutButton", true);
                 // Start the EditProfile activity
-                startActivityForResult(editProfileIntent,LOGOUT_EDIT_PROFILE);
+                startActivityForResult(editProfileIntent, FIRST_LOGIN_EDIT_PROFILE);
 
                 return;
             }
@@ -164,7 +166,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void removeFragment(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 getFragmentManager().beginTransaction().remove(homeListBook).commit();
                 break;
@@ -181,7 +183,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void selectFragment(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 if (viewSwitcher.getCurrentView() != layoutRecycler) {
                     viewSwitcher.showPrevious();
@@ -220,7 +222,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d(TAG,"onActivityResult() called");
+        Log.d(TAG, "onActivityResult() called");
 
         /*if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
 
@@ -234,10 +236,10 @@ public class HomeActivity extends AppCompatActivity
         Log.d(TAG, "resultCode: " + resultCode);
 
         //if (requestCode == INSERT_BOOK)
-            // Retrieving all user's books
-            //BookManager.populateUserBookList();
+        // Retrieving all user's books
+        //BookManager.populateUserBookList();
 
-            // Returning in HomeActivity from an Authentication procedure
+        // Returning in HomeActivity from an Authentication procedure
         if (resultCode == AUTH) {
             // Debug
             Log.d(TAG, "Returning in HomeActivity from an Authentication procedure.");
@@ -264,11 +266,11 @@ public class HomeActivity extends AppCompatActivity
                 public void onSuccess(DataSnapshot data) {
                     /*  If the user has not completed the registration procedure
                         (for instance it is a new user) */
-                    if(!ProfileManager.hasCompletedRegistration()) {
-                        Intent editProfileIntent=new Intent(getApplicationContext(), EditProfile.class);
-                        editProfileIntent.putExtra("showLogoutButton",true);
+                    if (!ProfileManager.hasCompletedRegistration()) {
+                        Intent editProfileIntent = new Intent(getApplicationContext(), EditProfile.class);
+                        editProfileIntent.putExtra("showLogoutButton", true);
                         // Start the EditProfile activity
-                        startActivityForResult(editProfileIntent,LOGOUT_EDIT_PROFILE);
+                        startActivityForResult(editProfileIntent, FIRST_LOGIN_EDIT_PROFILE);
                     }
 
                     /*  If the user has already completed the registration and
@@ -284,9 +286,7 @@ public class HomeActivity extends AppCompatActivity
                 public void onFailed(DatabaseError databaseError) {
                 }
             });
-        }
-
-        else if (requestCode==LOGOUT_EDIT_PROFILE){
+        } else if (resultCode == LOGOUT_FROM_EDIT_PROFILE) {
             ProfileManager.logout();
             AuthenticationUI.launch(this);
         }
@@ -294,7 +294,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG,"onBackPressed() called");
+        Log.d(TAG, "onBackPressed() called");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -313,7 +313,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG,"onOptionsItemSelected() called");
+        Log.d(TAG, "onOptionsItemSelected() called");
 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -331,7 +331,7 @@ public class HomeActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        Log.d(TAG,"onNavigationItemSelected() called");
+        Log.d(TAG, "onNavigationItemSelected() called");
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -374,6 +374,6 @@ public class HomeActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        Log.d(TAG,"onResume() called");
+        Log.d(TAG, "onResume() called");
     }
 }

@@ -50,7 +50,8 @@ public class EditProfile extends AppCompatActivity {
     private static final int
             CAMERA_REQUEST = 0,
             GALLERY = 1,
-            PLACE_PICKER_REQUEST = 2;
+            PLACE_PICKER_REQUEST = 2,
+            LOGOUT_FROM_EDIT_PROFILE=3;
 
     /**
      * Profile profile data.
@@ -203,6 +204,7 @@ public class EditProfile extends AppCompatActivity {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(LOGOUT_FROM_EDIT_PROFILE);
                 //logout when edit profile return in home activity
                 finish();
             }
