@@ -155,6 +155,7 @@ public class MessageManager {
                                                     final String receiverToken,
 
                                                     // Book info
+                                                    final String bookId,
                                                     final String bookTitle,
 
                                                     // Chat info
@@ -164,39 +165,26 @@ public class MessageManager {
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
-        // Creating the new chat intent >>> Spostato i ShowBooks -> Tutto da Cancellare!
-        /*
-
-        Intent newChat = new Intent();
-
-        newChat.putExtra("senderId", senderId);
-        newChat.putExtra("senderUsername", senderUsername);
-        newChat.putExtra("senderImage", senderImage);
-        newChat.putExtra("senderToken", senderToken);
-        newChat.putExtra("receiverId", receiverId);
-        newChat.putExtra("receiverUsername", receiverUsername);
-        newChat.putExtra("receiverImage", receiverImage);
-        newChat.putExtra("receiverToken", receiverToken);
-
-        // Creating a chat object in Firebase
-        createChat(newChat, bookTitle, false);
-
-        */
-
         Log.d(TAG,"CHAT ID: "+chatID);
         sendNotification(
                 notificationTitle,
                 notificationText,
+
                 senderId,
                 senderUsername,
                 senderImage,
                 senderToken,
+
                 receiverId,
                 receiverUsername,
                 receiverImage,
                 receiverToken,
+
+                bookId,
                 bookTitle,
+
                 chatID, // TODO make sure that it is already initialized
+
                 "request"
         );
     }
@@ -224,7 +212,8 @@ public class MessageManager {
         String senderToken = responseIntent.getStringExtra("receiverToken");
 
         // Book data
-        String bookTitle = responseIntent.getStringExtra("book");
+        String bookId = responseIntent.getStringExtra("bookId");
+        String bookTitle = responseIntent.getStringExtra("bookTitle");
 
         // Notification title
         String notificationTitle = ((accepted) ? BOOK_POSITIVE_RESPONSE_MESSAGE_TITLE : BOOK_NEGATIVE_RESPONSE_MESSAGE_TITLE)
@@ -237,16 +226,22 @@ public class MessageManager {
         sendNotification(
                 notificationTitle,
                 notificationText,
+
                 senderId,
                 senderUsername,
                 senderImage,
                 senderToken,
+
                 receiverId,
                 receiverUsername,
                 receiverImage,
                 receiverToken,
+
+                bookId,
                 bookTitle,
+
                 chatID,
+
                 accepted ? "accept" : "decline"
         );
     }
@@ -267,6 +262,7 @@ public class MessageManager {
                                                final String receiverToken,
 
                                                // Book info
+                                               final String bookId,
                                                final String bookTitle,
 
                                                // Chat info
@@ -289,8 +285,11 @@ public class MessageManager {
                 receiverImage,
                 receiverToken,
 
+                bookId,
                 bookTitle,
+
                 chatID,
+
                 "message"
         );
     }
@@ -316,25 +315,26 @@ public class MessageManager {
      *          "type": "request" | "accept" | "decline" | "message",
      *
      *          "chatID": chat_id,
-     * <p>
-     * "sender": {
-     * "id": "kE3ErSqw...",
-     * "username": sender_username,
-     * "image": "https://firebasestorage..."
-     * "token": sender_token
-     * }
-     * <p>
-     * "receiver": {
-     * "id": "f3j1lw...",
-     * "username": receiver_username,
-     * "image": "https://firebasestorage..."
-     * "token: receiver_token,
-     * }
-     * <p>
-     * "book": {
-     * "title": book_title
-     * }
-     * }
+     *
+     *          "sender": {
+     *              "id": "kE3ErSqw...",
+     *              "username": sender_username,
+     *              "image": "https://firebasestorage..."
+     *              "token": sender_token
+     *          }
+     *
+     *          "receiver": {
+     *              "id": "f3j1lw...",
+     *              "username": receiver_username,
+     *              "image": "https://firebasestorage..."
+     *              "token: receiver_token,
+     *          }
+     *
+     *          "book": {
+     *              "id": "b3kwEr...",
+     *              "title": book_title
+     *          }
+     *      }
      * }
      *
      * @param notificationTitle the notification title.
@@ -364,6 +364,7 @@ public class MessageManager {
                                              final String receiverToken,
 
                                              // Book info
+                                             final String bookId,
                                              final String bookTitle,
 
                                              // Chat info
@@ -396,6 +397,7 @@ public class MessageManager {
 
                     // Book
                     JSONObject book = new JSONObject();
+                    book.put("id", bookId);
                     book.put("title", bookTitle);
 
                     // Data
@@ -412,7 +414,9 @@ public class MessageManager {
                     root.put("priority", "high");
                     root.put("to", receiverToken);
                     root.put("data", data);
-                    //Log.d(TAG, "JSON message: " + JsonUtil.formatJson(root.toString()));
+
+                    // TODO debugging JSON messages
+                    Log.d(TAG, "JSON message: " + JsonUtil.formatJson(root.toString()));
 
                     // Sending the JSON packet to FCM
                     String result = postToFCM(root.toString());

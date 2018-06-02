@@ -17,7 +17,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -58,7 +57,7 @@ public class ShowBook extends AppCompatActivity
     private String receiverToken;
 
     private String bookId;
-    private String bookName;
+    private String bookTitle;
 
     private String chatID = null;
 
@@ -84,8 +83,8 @@ public class ShowBook extends AppCompatActivity
             book = (Book) i.getExtras().get("book");
             if (book.getISBN() != null) isbn.setText(book.getISBN());
             if (book.getTitle() != null) {
-                bookName = book.getTitle();
-                title.setText(bookName);
+                bookTitle = book.getTitle();
+                title.setText(bookTitle);
             }
             if (book.getAuthor() != null) author.setText(book.getAuthor());
             if (book.getPublisher() != null) publisher.setText(book.getPublisher());
@@ -162,7 +161,8 @@ public class ShowBook extends AppCompatActivity
                                     receiverToken,                          // Receiver Token
 
                                     // Book info
-                                    book.getTitle(),                        // Book Title
+                                    bookId,                                 // Book ID
+                                    bookTitle,                               // Book Title
 
                                     // Chat info
                                     MessageManager.getChatID()
@@ -177,7 +177,7 @@ public class ShowBook extends AppCompatActivity
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
                             //      >>> Create a new Request
-                            Request req = new Request(senderId, receiverId, bookId, bookName, book.getImage(),"","");
+                            Request req = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(),"","");
                             String reqId = senderId+""+bookId;
                             RequestManager.Companion.createRequest(req, shown_image, reqId);
 

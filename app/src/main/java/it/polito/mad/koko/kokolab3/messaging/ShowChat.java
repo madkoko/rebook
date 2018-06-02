@@ -161,7 +161,8 @@ public class ShowChat extends AppCompatActivity {
                         receiverUsername,
                         receiverImage,
                         receiverToken,
-                        null, // perchè?
+                        null,
+                        null,
                         chatID,
                         messageText
                 );

@@ -235,10 +235,6 @@ public class HomeActivity extends AppCompatActivity
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
-        //if (requestCode == INSERT_BOOK)
-        // Retrieving all user's books
-        //BookManager.populateUserBookList();
-
         // Returning in HomeActivity from an Authentication procedure
         if (resultCode == AUTH) {
             // Debug

@@ -373,7 +373,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         exchangeIntent.putExtra("receiverToken", receiver.get("token"));
 
         // Book info
-        exchangeIntent.putExtra("book", book.get("title"));
+        exchangeIntent.putExtra("bookId", book.get("id"));
+        exchangeIntent.putExtra("bookTitle", book.get("title"));
     }
 
     /**
