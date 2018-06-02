@@ -83,7 +83,7 @@ public class HomeActivity extends AppCompatActivity
         // If the local offline file containing the current user's information does not exist
         if(!ProfileManager.profileFileExists())
             // Force a logout operation
-            ProfileManager.logout(ProfileManager.getCurrentUserID());
+            ProfileManager.logout();
 
         // UI
         setContentView(R.layout.activity_main);
@@ -361,7 +361,7 @@ public class HomeActivity extends AppCompatActivity
             /*startActivity(new Intent(getApplicationContext(), ShowChats.class));*/
 
         } else if (id == R.id.sign_out) {
-            ProfileManager.logout(ProfileManager.getCurrentUserID());
+            ProfileManager.logout();
             AuthenticationUI.launch(this);
         }
 

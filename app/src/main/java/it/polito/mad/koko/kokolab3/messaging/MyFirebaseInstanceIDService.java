@@ -18,10 +18,19 @@ package it.polito.mad.koko.kokolab3.messaging;
 
 import android.util.Log;
 
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
@@ -35,33 +44,56 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      * the previous token had been compromised. Note that this is called when the InstanceID token
      * is initially generated so this is where you would retrieve the token.
      */
-    // [START refresh_token]
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
 
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // Instance ID token to your app server.
-        sendRegistrationToServer(refreshedToken);
-    }
-    // [END refresh_token]
+        // If the current user has performed the login operation
+        if(ProfileManager.hasLoggedIn()) {
+            // Update the token field on Firebase
+            DatabaseManager.set(refreshedToken, "users/" + ProfileManager.getCurrentUserID() + "/tokenMessage");
 
-    /**
-     * Persist token to third-party servers.
-     *
-     * Modify this method to associate the user's FCM InstanceID token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
-    private void sendRegistrationToServer(String token) {
-        String uid = ProfileManager.getCurrentUserID();
+            /*  For each chat opened with another user, the second party's UserChatInfo
+                object must be updated with the new current user's token */
+            ProfileManager.getCurrentUserReference().child("chats").addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()) {
+                                // Retrieving all current user's chats
+                                Map<String, UserChatInfo> currentUserChats = new HashMap<>();
+                                for(DataSnapshot currentUserChat : dataSnapshot.getChildren())
+                                    currentUserChats.put(
+                                        currentUserChat.getKey(),
+                                        currentUserChat.getValue(UserChatInfo.class)
+                                    );
 
-        // No user has performed a login
-        if(uid != null)
-            ProfileManager.addToken(uid, token);
+                                // If the current user has opened at least one chat
+                                if(!currentUserChats.isEmpty()) {
+                                    // For each current user's chat
+                                    for(Map.Entry<String, UserChatInfo> userChat : currentUserChats.entrySet()) {
+                                        // Update the current user's token in the other UserChatInfo object
+                                        DatabaseManager.set(
+                                            refreshedToken,
+                                            "users/"
+                                                + userChat.getValue().getSecondPartyId()
+                                                + "/chats/"
+                                                + userChat.getKey()
+                                                + "/secondPartyToken"
+                                        );
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    }
+            );
+        }
     }
 }

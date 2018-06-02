@@ -102,7 +102,7 @@ public class ShowBooks extends AppCompatActivity
                         sharingUser.setOnClickListener(v -> {
                             Intent showProfile = new Intent(getApplicationContext(), ShowProfile.class);
                             showProfile.putExtra("UserID", uid);
-                            ProfileManager.retriveInformationUser(uid);
+                            ProfileManager.retrieveInformationUser(uid);
                             startActivity(showProfile);
                         });
                         return view;

@@ -214,17 +214,15 @@ public class ProfileManager {
         userChildFirebaseReference.updateChildren(newUserObject);
     }
 
-    public static void addToken(String uid, String token) {
-        DatabaseManager.set(token, "users", uid, "tokenMessage");
-    }
-
     /**
      * It performs the logout operation.
      */
-    public static void logout(String uid) {
+    public static void logout(/*String uid*/) {
         Log.d(TAG, "Logging out...");
+
         //Remove tokenMessage from Firebase database
-        DatabaseManager.delete("users",uid, "tokenMessage");
+        //DatabaseManager.delete("users",uid, "tokenMessage");
+
         //Log-out from FIoebase
         FirebaseAuth.getInstance().signOut();
         Log.d(TAG, "Logged out.");
@@ -309,7 +307,7 @@ public class ProfileManager {
         return profileFile.exists();
     }
 
-    public static void retriveInformationUser(String uid) {
+    public static void retrieveInformationUser(String uid) {
         DatabaseManager.get("users", uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -337,7 +335,9 @@ public class ProfileManager {
         });
     }
 
-    public static Profile getOtherUser() {return otherUser;}
+    public static Profile getOtherUser() {
+        return otherUser;
+    }
 
     /**
      * listener to check if the username already exists in Firebase
