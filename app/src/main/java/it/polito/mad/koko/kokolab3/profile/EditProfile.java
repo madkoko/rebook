@@ -111,6 +111,7 @@ public class EditProfile extends AppCompatActivity {
         //
         et_phone = findViewById(R.id.edit_user_phone);
         et_location = findViewById(R.id.text_view_edit_location);
+        et_location.setPaintFlags(et_location.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         et_bio = findViewById(R.id.edit_user_bio);
         user_photo = findViewById(R.id.user_photo_edit);
 

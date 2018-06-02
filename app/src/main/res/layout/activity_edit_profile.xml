@@ -72,7 +72,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="2dp">
 
                     <TextView
 
@@ -83,6 +85,7 @@
                         android:hint="@string/user_email"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
+                        android:paddingTop="4dp"
                         android:textSize="12sp" />
 
                     <TextView
@@ -92,6 +95,7 @@
                         android:ems="10"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
+                        android:paddingTop="8dp"
                         android:singleLine="false"
                         android:text="@string/user_email"
                         android:textSize="18sp" />
@@ -164,6 +168,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_user_bio">
@@ -193,25 +198,48 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_input_name">
 
 
-                <android.support.design.widget.TextInputLayout
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/text_user_phone"
-                    android:layout_gravity="bottom"
-                    android:ems="10"
-                    android:hint="@string/user_location">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="2dp">
+
+                    <TextView
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:ems="10"
+                        android:hint="@string/user_location"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:paddingTop="4dp"
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/text_view_edit_location"
+                        android:hint="@string/edit_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/edit_location" />
-                </android.support.design.widget.TextInputLayout>
+                        android:ems="10"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:paddingTop="8dp"
+                        android:singleLine="false"
+                        android:textSize="18sp" />
+
+
+                </LinearLayout>
+
+
             </android.support.v7.widget.CardView>
 
 
@@ -245,11 +273,11 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/text_user_phone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_user_location">
+                app:layout_constraintTop_toBottomOf="@+id/extra_fields">
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -277,27 +305,31 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/text_user_bio"
 
+                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/save_button_label"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_user_phone" />
 
             <Button
                 android:id="@+id/logout_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="105dp"
+                android:layout_height="47dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/text_user_bio"
-
-                android:layout_marginEnd="288dp"
-                android:layout_marginRight="288dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:background="@color/rosso_scuro"
                 android:text="@string/logout_button_label"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="@+id/save_button"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_user_phone" />
 
         </android.support.constraint.ConstraintLayout>
