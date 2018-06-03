@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import it.polito.mad.koko.kokolab3.request.RequestManager;
+
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.ACCEPT_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.DECLINE_ACTION;
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.MESSAGE_ACTION;
@@ -24,6 +26,10 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
 
         // [ Debug ]
         Log.d(TAG, "New notification. Action: " + intent.getAction());
+
+
+        String senderId= intent.getStringExtra("senderId");
+        String bookId=intent.getStringExtra("bookId");
 
         // Retrieving all chat messages
         // MessageManager.removeUserChatsMessagesListener();
@@ -88,6 +94,8 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 // Creating a chat with the user
                 String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
 
+                RequestManager.Companion.acceptRequest(senderId+""+bookId);
+
                 // Sending a positive response notification
                 //intent.putExtra("chatID", chatID);
                 MessageManager.sendResponseNotification(intent, exchangeAccepted);
@@ -114,6 +122,7 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             else if (intent.getAction().compareTo(DECLINE_ACTION) == 0) {
                 // Showing a book exchange declined message
                 Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show();
+                RequestManager.Companion.declineRequest(senderId+""+bookId);
             }
             NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);

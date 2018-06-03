@@ -225,6 +225,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> bookObject = JsonUtil.deserialize(bookJsonString);
         //      Retrieving Book informations
         String bookTitle = bookObject.get("title");
+        String bookId = bookObject.get("id");
 
         // Intent used upon tapping the notification
         // ?? missing ??
@@ -235,6 +236,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         acceptIntent.putExtra("notificationID", counterNotificationId);
         acceptIntent.putExtra("chatID", chatID);
         acceptIntent.putExtra("bookTitle", bookTitle);
+        acceptIntent.putExtra("bookId", bookId);
         acceptIntent.putExtra("receiverInfo", receiverInfo);
         acceptIntent.putExtra("senderInfo", senderInfo);
         // acceptIntent.putExtra(); mi serve mettere qua dentro userchatinfo e chatinfo
@@ -246,6 +248,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent declineIntent = new Intent(this, NotificationReceiver.class);
         declineIntent.setAction(DECLINE_ACTION);
         declineIntent.putExtra("notificationID", counterNotificationId);
+        declineIntent.putExtra("senderId",senderId);
+        declineIntent.putExtra("bookId",bookId);
         loadExchangeIntentData(declineIntent, senderObject, receiverObject, bookObject);
         PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
