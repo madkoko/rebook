@@ -88,8 +88,6 @@ public class HomeListBook extends Fragment {
         mLayoutManagerBottom.setStackFromEnd(true);
         mRecyclerViewBottom.setAdapter(adapterReycler);
         mRecyclerViewBottom.setLayoutManager(mLayoutManagerBottom);
-
-
     }
 
     @Override

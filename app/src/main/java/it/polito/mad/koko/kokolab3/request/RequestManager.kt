@@ -1,11 +1,15 @@
 package it.polito.mad.koko.kokolab3.request
 
-import com.google.android.gms.tasks.OnSuccessListener
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener
+import it.polito.mad.koko.kokolab3.messaging.MessageManager
 
 /**
  * Created by Franci on 23/05/18.
@@ -24,52 +28,52 @@ class RequestManager() {
     // Create a new Request and push it on Firebase
     companion object {
 
-        private var reqIdRetrieved: String? = null
+        private var retrievedRequestId: String? = null
         private val database = FirebaseDatabase.getInstance()
 
-        fun createRequest(req: Request, data: ByteArray, reqId: String) {
 
-            val storage = FirebaseStorage.getInstance()
-            var downloadUrl: String;
-
-            checkExistingReq(reqId, object : OnGetDataListener {
-                override fun onStart() {
-                }
+        fun createRequest(request: Request, data: ByteArray, requestId: String) {
+            getRequest(requestId, object : OnGetDataListener {
+                override fun onStart() {}
 
                 override fun onSuccess(dataSnapshot: DataSnapshot?) {
-                    reqIdRetrieved = if (dataSnapshot!!.exists()) {
-                        dataSnapshot!!.key;
+                    Log.d("RequestManager", "dataSnapshot: " + dataSnapshot)
+                    Log.d("RequestManager", "dataSnapshot!!.exists(): " + dataSnapshot!!.exists())
+                    Log.d("RequestManager", "dataSnapshot.key: " + dataSnapshot.key)
+
+                    retrievedRequestId = if (dataSnapshot!!.exists()) {
+                        dataSnapshot!!.key
                     } else {
-                        null;
+                        null
                     }
 
-                    if (reqIdRetrieved == null) {
+                    if (retrievedRequestId == null) {
                         val reqDatabaseRef = database.reference.child("requests")
-                        reqDatabaseRef.child(reqId).setValue(req);
+                        reqDatabaseRef.child(requestId).setValue(request)
 
                         /*val reqStorageRef = storage.reference.child("requests")
-                        val uploadTask = reqStorageRef!!.child(reqId).putBytes(data)
+                        val uploadTask = reqStorageRef!!.child(requestId).putBytes(data)
 
                         uploadTask.addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
                             downloadUrl = taskSnapshot.downloadUrl!!.toString()
                             //Log.d(TAG,downloadUrl);
-                            req.bookImage = downloadUrl
+                            request.bookImage = downloadUrl
                             //ref.child(bookKey).child("image").setValue(downloadUrl);
-                            reqDatabaseRef.child(reqId).setValue(req)
+                            reqDatabaseRef.child(requestId).setValue(request)
                         })*/
                     }
                 }
 
-                override fun onFailed(databaseError: DatabaseError?) {
-                }
+                override fun onFailed(databaseError: DatabaseError?) {}
             })
 
 
         }
 
-
-        // Check if the same Request has already been sent
-        private fun checkExistingReq(reqId: String, listener: OnGetDataListener) {
+        /**
+         * It returns the specified request.
+         */
+        private fun getRequest(requestId: String, listener: OnGetDataListener) {
             listener?.onStart()
 
             /* 1. Create the 'requests' child
@@ -77,39 +81,43 @@ class RequestManager() {
             val reqRef = database.reference.child("requests")*/
 
             // 2. Search if a Request between Send & Receiver for the same book is already existing
-            val reqRef = FirebaseDatabase
-                    .getInstance()
-                    .reference
-                    .child("requests")
-                    .child(reqId);
+            DatabaseManager.get("requests", requestId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) { listener?.onSuccess(dataSnapshot) }
 
-            reqRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    listener?.onSuccess(dataSnapshot)
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    listener?.onFailed(databaseError)
-                }
-            });
+                override fun onCancelled(databaseError: DatabaseError) { listener?.onFailed(databaseError) }
+            })
         }
 
-        // *** ACCEPT a BOOK REQUEST ***
-        //      >>> Change Request status
-        public fun acceptRequest(reqId: String?) {
-            val reqDatabaseRef = database.reference.child("requests")
-                    .child(reqId)
-                    .child("status")
-                    .setValue("onBorrow")
+        public fun acceptRequest(requestId: String?, context: Context, intent: Intent?) {
+            // Sending a negative response notification
+            if(intent != null)
+                MessageManager.sendResponseNotification(intent, true)
+
+            // Showing a book exchange declined message
+            Toast.makeText(context, "Book exchange accepted!", Toast.LENGTH_LONG).show()
+
+            // Creating the request object on Firebase
+            DatabaseManager.set("onBorrow", "requests/$requestId/status")
+
+            // Deleting the request notification
+            if(intent != null)
+                (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(intent?.extras!!.get("notificationID") as Int)
         }
 
-        // *** DECLINE a BOOK REQUEST ***
-        //      >>> Delete the Request on Firebase
-        //      >>> Delete the Request on Book Requests List in the Tab Menu
-        public fun declineRequest(reqId: String?) {
-            val reqDatabaseRef = database.reference.child("requests")
-                    .child(reqId)
-                    .removeValue()
+        public fun declineRequest(requestId: String?, context: Context, intent: Intent?) {
+            // Sending a negative response notification
+            if(intent != null)
+                MessageManager.sendResponseNotification(intent, false)
+
+            // Showing a book exchange declined message
+            Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show()
+
+            // Deleting the request object on Firebase
+            DatabaseManager.get("requests/$requestId").removeValue()
+
+            // Deleting the request notification
+            if(intent != null)
+                (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(intent?.extras!!.get("notificationID") as Int)
         }
 
         public fun retunRequest(reqId: String?) {

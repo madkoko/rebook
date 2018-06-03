@@ -177,9 +177,9 @@ public class ShowBook extends AppCompatActivity
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
                             //      >>> Create a new Request
-                            Request req = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(),"","");
-                            String reqId = senderId+""+bookId;
-                            RequestManager.Companion.createRequest(req, shown_image, reqId);
+                            Request request = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(),"","");
+                            String requestId = senderId+""+bookId;
+                            RequestManager.Companion.createRequest(request, shown_image, requestId);
 
                         });
 

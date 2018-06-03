@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import it.polito.mad.koko.kokolab3.request.RequestManager;
 
@@ -85,20 +84,15 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
             UserChatInfo senderInfo = (UserChatInfo)intent.getExtras().get("senderInfo");
 
             // If the book exchange has not been accepted
-            if (!exchangeAccepted)
-                // Sending a negative response notification : !!! l'intent ha chatID nll!!!!
-                MessageManager.sendResponseNotification(intent, exchangeAccepted);
-
+            if (!exchangeAccepted) {
+                RequestManager.Companion.declineRequest(senderId + "" + bookId, context, intent);
+            }
             // If the book exchange has been accepted
-            if (exchangeAccepted) {
+            else if (exchangeAccepted) {
                 // Creating a chat with the user
                 String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
 
-                RequestManager.Companion.acceptRequest(senderId+""+bookId);
-
-                // Sending a positive response notification
-                //intent.putExtra("chatID", chatID);
-                MessageManager.sendResponseNotification(intent, exchangeAccepted);
+                RequestManager.Companion.acceptRequest(senderId+""+bookId, context, intent);
 
                 //MessageManager.populateUserMessages();
 
@@ -115,19 +109,7 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 if(!isActive) {
                     context.startActivity(showChatIntent);
                 }
-
             }
-
-            // If the book exchange has not been accepted
-            else if (intent.getAction().compareTo(DECLINE_ACTION) == 0) {
-                // Showing a book exchange declined message
-                Toast.makeText(context, "Book exchange declined!", Toast.LENGTH_LONG).show();
-                RequestManager.Companion.declineRequest(senderId+""+bookId);
-            }
-            NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-            notificationManager.cancel((int)intent.getExtras().get("notificationID"));
-
         }
     }
 }

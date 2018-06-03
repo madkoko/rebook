@@ -594,10 +594,8 @@ public class MessageManager {
                 .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
 
         chatsRef.addListenerForSingleValueEvent(chatRefListener = new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 String chatIdRetrieved;
                 if (chatID != null) {
                     chatIdRetrieved = chatID;
@@ -606,7 +604,6 @@ public class MessageManager {
                 }
 
                 if (dataSnapshot.exists() && chatIdRetrieved != null) {
-
                     // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
                     chatsInfo = new HashMap<String, UserChatInfo>();
                     chatsInfo.clear();
@@ -627,7 +624,6 @@ public class MessageManager {
                 }
 
                 if (chatIdRetrieved != null) {
-
                     // Create a new message (if click is on button "Request Book")
                     if (chatFlag) {
                         createMessage(chatIdRetrieved, senderId, receiverId, senderUsername

@@ -88,10 +88,18 @@ class BookRequest() : Fragment() {
                     acceptButton.setVisibility(View.VISIBLE)
                     declineButton.setVisibility(View.VISIBLE)
                     declineButton.setOnClickListener {
-                        RequestManager.declineRequest(getRef(position).key)
+                        RequestManager.declineRequest(
+                            getRef(position).key,
+                            activity.applicationContext,
+                            null
+                        )
                     }
                     acceptButton.setOnClickListener {
-                        RequestManager.acceptRequest(getRef(position).key)
+                        RequestManager.acceptRequest(
+                            getRef(position).key,
+                            activity.applicationContext,
+                            null
+                        )
                     }
                 } else if (model.status.equals("returning")) {
                     acceptButton.setVisibility(View.VISIBLE)
