@@ -124,6 +124,7 @@ public class ShowProfile extends AppCompatActivity {
         tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText(R.string.show_profile));
         tabs.addTab(tabs.newTab().setText(R.string.books));
+        tabs.addTab(tabs.newTab().setText(R.string.comments));
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabs.getTabCount(), mFirebaseUser);

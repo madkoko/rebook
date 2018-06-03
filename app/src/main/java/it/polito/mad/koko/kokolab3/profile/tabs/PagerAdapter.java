@@ -24,6 +24,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return new TabProfile(uid);
             case 1:
                 return new TabBooks(uid);
+            case 2:
+                return new TabComments(uid);
             default:
                 return null;
         }
