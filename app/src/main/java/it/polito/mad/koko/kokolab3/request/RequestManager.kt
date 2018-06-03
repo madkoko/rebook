@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import com.google.firebase.database.*
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener
 import it.polito.mad.koko.kokolab3.messaging.MessageManager
@@ -15,18 +17,11 @@ import it.polito.mad.koko.kokolab3.messaging.MessageManager
  * Created by Franci on 23/05/18.
  */
 class RequestManager() {
-    private val TAG = "RequestManager"
-
-
-    private var instance: RequestManager? = null
-
-    private var storageRef: StorageReference? = null
-    private var childUpdates: MutableMap<String, Any>? = null
-    private var downloadUrl: String? = null
-
 
     // Create a new Request and push it on Firebase
     companion object {
+
+        private val TAG = "RequestManager"
 
         private var retrievedRequestId: String? = null
         private val database = FirebaseDatabase.getInstance()
@@ -37,9 +32,9 @@ class RequestManager() {
                 override fun onStart() {}
 
                 override fun onSuccess(dataSnapshot: DataSnapshot?) {
-                    Log.d("RequestManager", "dataSnapshot: " + dataSnapshot)
-                    Log.d("RequestManager", "dataSnapshot!!.exists(): " + dataSnapshot!!.exists())
-                    Log.d("RequestManager", "dataSnapshot.key: " + dataSnapshot.key)
+                    Log.d(TAG, "dataSnapshot: " + dataSnapshot)
+                    Log.d(TAG, "dataSnapshot!!.exists(): " + dataSnapshot!!.exists())
+                    Log.d(TAG, "dataSnapshot.key: " + dataSnapshot.key)
 
                     retrievedRequestId = if (dataSnapshot!!.exists()) {
                         dataSnapshot!!.key

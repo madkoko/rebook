@@ -38,6 +38,14 @@ public class UserChatInfo implements Serializable {
         this.lastMessage = lastMessage;
     }
 
+    public UserChatInfo(Map<String, String> secondParty) {
+        this.secondPartyId = secondParty.get("id");
+        this.secondPartyUsername = secondParty.get("username");
+        this.secondPartyImage = secondParty.get("image");
+        this.secondPartyToken = secondParty.get("token");
+        this.lastMessage = null;
+    }
+
     public String getSecondPartyId() {
         return secondPartyId;
     }

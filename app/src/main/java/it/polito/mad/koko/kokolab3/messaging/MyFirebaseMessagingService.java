@@ -95,6 +95,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     protected static final String MESSAGE_ACTION = "message";
 
     /**
+     * Tapping on the notification actions
+     */
+    private static final int    ON_TAP_NO_ACTION = 0,
+                                ON_TAP_SHOW_PROFILE = 1,
+                                ON_TAP_SHOW_CHAT = 2;
+
+    /**
      * Called when message is received.
      *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
@@ -136,11 +143,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 boolean showResponseButtons = notificationType.compareTo("request") == 0;
 
                 // Figuring out what action should be performed upon tapping the notification
-                int onTapAction = 0; // nothing has to be performed
+                int onTapAction = ON_TAP_NO_ACTION; // nothing has to be performed
                 if (notificationType.compareTo("request") == 0)
-                    onTapAction = 1; // the sender's profile has to be shown
+                    onTapAction = ON_TAP_SHOW_PROFILE; // the sender's profile has to be shown
                 else if (notificationType.compareTo("message") == 0 || notificationType.compareTo("accept") == 0)
-                    onTapAction = 2; // the chat with the sender has to be opened
+                    onTapAction = ON_TAP_SHOW_CHAT; // the chat with the sender has to be opened
 
                 // If this is a new message notification
                 if (notificationType.compareTo("message") == 0) {
@@ -177,9 +184,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param showResponseButtons whether the response buttons should be displayed or not.
      * @param onTapAction         the action that must be performed upon tapping on the
      *                            notification. Possible values:
-     *                            0: nothing has to be performed
-     *                            1: the sender's profile has to be shown
-     *                            2: the chat with the sender has to be opened
+     *                            ON_TAP_NO_ACTION:     nothing has to be performed
+     *                            ON_TAP_SHOW_PROFILE:  the sender's profile has to be shown
+     *                            ON_TAP_SHOW_CHAT:     the chat with the sender has to be opened
      */
     private void showNotification(RemoteMessage receivedMessage, boolean showResponseButtons, int onTapAction) {
 
@@ -187,71 +194,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Log.d(TAG, "IMPORTANCE_FOREGROUND= " + isApplicationSentToBackground(MyFirebaseMessagingService.this));
 
-        // 1.   Retrieving the * Notification * data object
+        // Retrieving the notification data object
         String notificationJsonString = receivedMessage.getData().get("notification");
         Map<String, String> notificationObject = JsonUtil.deserialize(notificationJsonString);
-        //      Retrieving Notification informations
+
+        // Retrieving notification information
         String notificationTitle = notificationObject.get("title");
         String notificationBody = notificationObject.get("body");
         Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString())); // [Debug]
 
-        // 2.   Retrieving * Chat * informations
-        String chatID = receivedMessage.getData().get("chatID");
+        // Retrieving chat information
+        String chatId = receivedMessage.getData().get("chatID");
 
-        // 3.   Retrieving the * Sender * data object
+        // Retrieving the sender data object
         String senderJsonString = receivedMessage.getData().get("sender");
         Map<String, String> senderObject = JsonUtil.deserialize(senderJsonString);
-        //      Retrieving sender informations
-        String senderId = senderObject.get("id");
-        String senderUsername = senderObject.get("username");
-        String senderImageURL = senderObject.get("image");
-        String senderToken = senderObject.get("token");
-        Bitmap senderImageBitmap = ImageManager.getBitmapFromURL(senderImageURL);
-        Log.d(TAG, "senderImageBitmap: " + senderImageBitmap);
-        UserChatInfo senderInfo = new UserChatInfo(senderId, senderUsername, senderImageURL, null, senderToken); // risolvere lastMessage null?!
 
-        // 4.   Retrieving the * Receiver * data object
+        // Retrieving the receiver data object
         String receiverJsonString = receivedMessage.getData().get("receiver");
         Map<String, String> receiverObject = JsonUtil.deserialize(receiverJsonString);
-        //      Retrieving Receiver informations
-        String receiverId = receiverObject.get("id");
-        String receiverUsername = receiverObject.get("username");
-        String receiverImageURL = receiverObject.get("image");
-        String receiverToken = receiverObject.get("token");
-        UserChatInfo receiverInfo = new UserChatInfo(receiverId, receiverUsername, receiverImageURL, null, receiverToken); // risolvere lastMessage null?!
 
-        // 5.   Retrieving the * Book * data object
+        // Retrieving the book data object
         String bookJsonString = receivedMessage.getData().get("book");
         Map<String, String> bookObject = JsonUtil.deserialize(bookJsonString);
-        //      Retrieving Book informations
-        String bookTitle = bookObject.get("title");
-        String bookId = bookObject.get("id");
 
-        // Intent used upon tapping the notification
-        // ?? missing ??
-
-        // Intent used upon accepting the book exchange request NOOOO DA SPOSTARE a quando ACCETTA (invece compare quando riceve la notifica)
-        Intent acceptIntent = new Intent(this, NotificationReceiver.class);
-        acceptIntent.setAction(ACCEPT_ACTION);
-        acceptIntent.putExtra("notificationID", counterNotificationId);
-        acceptIntent.putExtra("chatID", chatID);
-        acceptIntent.putExtra("bookTitle", bookTitle);
-        acceptIntent.putExtra("bookId", bookId);
-        acceptIntent.putExtra("receiverInfo", receiverInfo);
-        acceptIntent.putExtra("senderInfo", senderInfo);
-        // acceptIntent.putExtra(); mi serve mettere qua dentro userchatinfo e chatinfo
-
-        loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject); //metti tutta sta roba in userchatinfo
-        PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Intent used upon accepting the book exchange request
+        PendingIntent acceptPendingIntent = createAcceptPendingIntent(this, chatId, senderObject, receiverObject, bookObject);
 
         // Intent used upon declining the book exchange request
-        Intent declineIntent = new Intent(this, NotificationReceiver.class);
-        declineIntent.setAction(DECLINE_ACTION);
-        declineIntent.putExtra("notificationID", counterNotificationId);
-        declineIntent.putExtra("senderId",senderId);
-        declineIntent.putExtra("bookId",bookId);
-        loadExchangeIntentData(declineIntent, senderObject, receiverObject, bookObject);
-        PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent declinePendingIntent = createDeclinePendingIntent(this, chatId, senderObject, receiverObject, bookObject);
 
         // Creating the notification
         String channelId = getString(R.string.default_notification_channel_id);
@@ -263,7 +234,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setSmallIcon(NOTIFICATION_ICON)
 
                         // Sender's user picture
-                        .setLargeIcon(ImageManager.getCircleBitmap(senderImageBitmap))
+                        .setLargeIcon(ImageManager.getCircleBitmap(ImageManager.getBitmapFromURL(senderObject.get("image"))))
 
                         // Title and expandable subtitle
                         .setContentTitle(notificationTitle)
@@ -290,16 +261,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Action to be performed upon tapping the notification
         switch (onTapAction) {
             // Nothing has to be performed
-            case 0:
+            case ON_TAP_NO_ACTION:
                 break;
 
             // The sender's profile has to be shown
-            case 1:
+            case ON_TAP_SHOW_PROFILE:
 
                 // Creating the requestIntent that will open the request sender's profile
                 Intent requestIntent = new Intent(this, NotificationReceiver.class);
                 requestIntent.setAction(REQUEST_ACTION);
-                requestIntent.putExtra("chatID", chatID); // * serve davvero?!
+                requestIntent.putExtra("chatID", chatId); // * serve davvero?!
                 requestIntent.putExtra("UserID", FirebaseAuth.getInstance().getUid()); //serve ?! /* TODO insert sender's ID */
                 // !!!! puttare qua userChaTInfo?!
                 PendingIntent requestPendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, requestIntent,
@@ -321,15 +292,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 break;
 
             // The chat with the sender has to be opened
-            case 2:
+            case ON_TAP_SHOW_CHAT:
                 // Creating the messageIntent that will open the chat with the request's sender
-                Intent messageIntent = new Intent(this, NotificationReceiver.class);
-                messageIntent.setAction(MESSAGE_ACTION);
-                messageIntent.putExtra("chatID", chatID);
-                messageIntent.putExtra("receiverInfo", receiverInfo);
-                messageIntent.putExtra("senderInfo", senderInfo);
-                PendingIntent messagePendingIntent = PendingIntent.getBroadcast(this, REQUEST_REQUEST_CODE, messageIntent,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent messagePendingIntent = createMessagePendingIntent(this, chatId, senderObject, receiverObject, bookObject);
 
                 // Setting the onTap intent
                 notificationBuilder.setContentIntent(messagePendingIntent);
@@ -364,6 +329,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                                Map<String, String> sender,
                                                Map<String, String> receiver,
                                                Map<String, String> book) {
+        // Notification ID
+        exchangeIntent.putExtra("notificationID", counterNotificationId);
+
         // Sender info
         exchangeIntent.putExtra("senderId", sender.get("id"));
         exchangeIntent.putExtra("senderUsername", sender.get("username"));
@@ -379,6 +347,49 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Book info
         exchangeIntent.putExtra("bookId", book.get("id"));
         exchangeIntent.putExtra("bookTitle", book.get("title"));
+    }
+
+    public static PendingIntent createAcceptPendingIntent(Context context,
+                                                          String chatId,
+                                                          Map<String, String> senderObject,
+                                                          Map<String, String> receiverObject,
+                                                          Map<String, String> bookObject) {
+        Intent acceptIntent = new Intent(context, NotificationReceiver.class);
+        acceptIntent.setAction(ACCEPT_ACTION);
+        acceptIntent.putExtra("chatID", chatId);
+
+        // TODO delete these useless fields: mantained for backward compatibility
+        acceptIntent.putExtra("receiverInfo", new UserChatInfo(receiverObject));
+        acceptIntent.putExtra("senderInfo", new UserChatInfo(senderObject));
+
+        loadExchangeIntentData(acceptIntent, senderObject, receiverObject, bookObject);
+        return PendingIntent.getBroadcast(context, ACCEPT_REQUEST_CODE, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static PendingIntent createDeclinePendingIntent(Context context,
+                                                           String chatId,
+                                                           Map<String, String> senderObject,
+                                                           Map<String, String> receiverObject,
+                                                           Map<String, String> bookObject) {
+        Intent declineIntent = new Intent(context, NotificationReceiver.class);
+        declineIntent.setAction(DECLINE_ACTION);
+        declineIntent.putExtra("chatID", chatId);
+        loadExchangeIntentData(declineIntent, senderObject, receiverObject, bookObject);
+        return PendingIntent.getBroadcast(context, DECLINE_REQUEST_CODE, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private static PendingIntent createMessagePendingIntent(Context context,
+                                                            String chatId,
+                                                            Map<String, String> senderObject,
+                                                            Map<String, String> receiverObject,
+                                                            Map<String, String> bookObject) {
+        Intent messageIntent = new Intent(context, NotificationReceiver.class);
+        messageIntent.setAction(MESSAGE_ACTION);
+        messageIntent.putExtra("chatID", chatId);
+        messageIntent.putExtra("receiverInfo", new UserChatInfo(receiverObject));
+        messageIntent.putExtra("senderInfo", new UserChatInfo(senderObject));
+        return PendingIntent.getBroadcast(context, REQUEST_REQUEST_CODE, messageIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     /**
