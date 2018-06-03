@@ -50,6 +50,9 @@
     <string name="extra_fields">Extra fields</string>
     <string name="edit_location"> Insert Your Position </string>
 
+   <!-- Rating -->
+    <string name="feedback_edit_text">Leave a feedback&#8230;</string>
+
 
     <!-- Camera -->
     <string name="image_file_creation_error_title">Cannot take a picture</string>

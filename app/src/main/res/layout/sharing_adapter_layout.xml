@@ -46,6 +46,19 @@
             android:stepSize="1.0"
             android:visibility="invisible"/>
 
+        <EditText
+            android:id="@+id/feedback_edit_text_sharing_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:lines="8"
+            android:maxLines="10"
+            android:minLines="6"
+            android:hint="@string/feedback_edit_text"
+            android:scrollbars="vertical"
+            android:visibility="invisible"/>
+
 
     </LinearLayout>
 

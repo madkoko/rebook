@@ -46,7 +46,7 @@ class BookRequest() : Fragment() {
 
         super.onCreate(savedInstanceState)
 
-        val myListView = activity.findViewById(R.id.list_chat) as ListView
+        val myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
 
         val myReqClass = Request::class
 
@@ -69,9 +69,10 @@ class BookRequest() : Fragment() {
 
             override fun populateView(v: View?, model: Request?, position: Int) {
 
-                val bookTitle = v!!.findViewById(R.id.req_book_title) as TextView
-                val bookRequest = v.findViewById(R.id.book_request) as ImageView
-                val ratingBar = v.findViewById(R.id.rating_bar_request) as RatingBar
+                val bookTitle = v!!.findViewById<TextView>(R.id.req_book_title) as TextView
+                val bookRequest = v.findViewById<ImageView>(R.id.book_request) as ImageView
+                val ratingBar = v.findViewById<RatingBar>(R.id.rating_bar_request) as RatingBar
+                val feedbackEditText= v.findViewById<EditText>(R.id.feedback_edit_text) as EditText
 
 
                 Log.d(TAG, "siamo in populate")
@@ -83,6 +84,7 @@ class BookRequest() : Fragment() {
                 val declineButton = v.findViewById<Button>(R.id.decline)
 
                 ratingBar.setVisibility(View.INVISIBLE)
+                feedbackEditText.setVisibility(View.INVISIBLE)
 
                 if (model.status.equals("pending")) {
                     acceptButton.setVisibility(View.VISIBLE)
@@ -113,8 +115,9 @@ class BookRequest() : Fragment() {
                     declineButton.setVisibility(View.INVISIBLE)
                     acceptButton.setText(R.string.currency)
                     ratingBar.setVisibility(View.VISIBLE)
+                    feedbackEditText.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
-                        ProfileManager.addRating(model.senderId, ratingBar.rating.toString())
+                        ProfileManager.addRating(model.senderId, ratingBar.rating.toString(),feedbackEditText.text.toString(),getRef(position).key)
                         RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
                         if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
                             RequestManager.ratedTransition(getRef(position).key)
@@ -127,6 +130,7 @@ class BookRequest() : Fragment() {
                 if (!model.ratingSender.equals("")){
                     ratingBar.setVisibility(View.INVISIBLE)
                     acceptButton.setVisibility(View.INVISIBLE)
+                    feedbackEditText.setVisibility(View.INVISIBLE)
                 }
 
             }

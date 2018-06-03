@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -27,6 +28,7 @@ public class HomeSharingBook extends Fragment {
     private static final String TAG = "HomeSharingBook";
     private FirebaseListAdapter<Request> adapter;
     private RatingBar ratingBar;
+    private EditText feedbackEditText;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -54,6 +56,9 @@ public class HomeSharingBook extends Fragment {
                 ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
                 ratingBar.setVisibility(View.INVISIBLE);
 
+                feedbackEditText= v.findViewById(R.id.feedback_edit_text_sharing_home);
+                feedbackEditText.setVisibility(View.INVISIBLE);
+
                 titleBook.setText(model.getBookName());
                 Picasso.get().load(model.getBookImage()).into(imageBook);
 
@@ -66,9 +71,10 @@ public class HomeSharingBook extends Fragment {
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
                     ratingBar.setVisibility(View.VISIBLE);
+                    feedbackEditText.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
-                        ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()));
+                        ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()),feedbackEditText.getText().toString(),getRef(position).getKey());
                         RequestManager.Companion.putReceiverRate(getRef(position).getKey(), String.valueOf((int) ratingBar.getRating()));
                         if (model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0) {
                             RequestManager.Companion.ratedTransition(getRef(position).getKey());
@@ -78,6 +84,7 @@ public class HomeSharingBook extends Fragment {
                     buttonReturn.setVisibility(View.INVISIBLE);
                 if(!model.getRatingReceiver().equals("")) {
                     ratingBar.setVisibility(View.INVISIBLE);
+                    feedbackEditText.setVisibility(View.INVISIBLE);
                     buttonReturn.setVisibility(View.INVISIBLE);
 
                 }

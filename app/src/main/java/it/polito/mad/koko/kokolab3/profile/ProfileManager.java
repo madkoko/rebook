@@ -41,7 +41,7 @@ public class ProfileManager {
      */
     private static Profile currentUserProfile;
     private static String currentUserImageURL;
-    private static String profileFilePath="data/data/it.polito.mad.koko.kokolab3/files/profile.bin";
+    private static String profileFilePath = "data/data/it.polito.mad.koko.kokolab3/files/profile.bin";
     private static final File profileFile = new File(profileFilePath);
 
     /**
@@ -109,8 +109,9 @@ public class ProfileManager {
 
     /**
      * It returns the specified user profile information.
-     * @param Uid   the desired user profile.
-     * @return      the specified user profile information.
+     *
+     * @param Uid the desired user profile.
+     * @return the specified user profile information.
      */
     public static Profile getProfile(String Uid) {
         synchronized (allUsers) {
@@ -133,15 +134,15 @@ public class ProfileManager {
     }
 
     /**
-     * @return  the current user profile information
+     * @return the current user profile information
      */
     public static Profile getProfile() {
         Profile currentUserProfile = null;
 
         // Retrieving the current profile object from the binary file
-        try(ObjectInputStream oinf = new ObjectInputStream(new FileInputStream(profileFile))) {
-            currentUserProfile = (Profile)oinf.readObject();
-        } catch(Exception e) {
+        try (ObjectInputStream oinf = new ObjectInputStream(new FileInputStream(profileFile))) {
+            currentUserProfile = (Profile) oinf.readObject();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -232,8 +233,8 @@ public class ProfileManager {
      * It checks whether this user has completed the registration.
      * This is done by checking that all minimum fields have been properly set.
      *
-     * @return  true if the user has completed the registration.
-     *          false otherwise.
+     * @return true if the user has completed the registration.
+     * false otherwise.
      */
     public static boolean hasCompletedRegistration() {
         // Retrieving the current profile object
@@ -262,10 +263,11 @@ public class ProfileManager {
 
     /**
      * It reads the current user profile information immediately.
-     * @param listener      the listener object that will process the retrieved data.
+     *
+     * @param listener the listener object that will process the retrieved data.
      */
     public static void readProfile(final OnGetDataListener listener) {
-        if(listener != null)
+        if (listener != null)
             listener.onStart();
 
         ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
@@ -277,15 +279,15 @@ public class ProfileManager {
 
                 /*  Saving the updated user info into a binary file in case the
                     application will be closed */
-                try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
+                try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
                     outputStream.writeObject(currentUserProfile);
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
 
                 // Calling the listener's callback
-                if(listener != null)
+                if (listener != null)
                     listener.onSuccess(dataSnapshot);
             }
 
@@ -293,15 +295,15 @@ public class ProfileManager {
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(TAG, "The read failed: " + databaseError.getCode());
 
-                if(listener != null)
+                if (listener != null)
                     listener.onFailed(databaseError);
             }
         });
     }
 
     /**
-     * @return  true if the current user profile file already exists.
-     *          false otherwise.
+     * @return true if the current user profile file already exists.
+     * false otherwise.
      */
     public static boolean profileFileExists() {
         return profileFile.exists();
@@ -341,46 +343,49 @@ public class ProfileManager {
 
     /**
      * listener to check if the username already exists in Firebase
+     *
      * @param username username to be checked
      * @param listener
      */
-    public static void usernameExists(String username, final OnGetDataListener listener){
-        if(listener != null)
+    public static void usernameExists(String username, final OnGetDataListener listener) {
+        if (listener != null)
             listener.onStart();
 
         DatabaseManager.get("users").orderByChild("name").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(listener != null)
+                if (listener != null)
                     listener.onSuccess(dataSnapshot);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                if(listener != null)
+                if (listener != null)
                     listener.onFailed(databaseError);
             }
         });
     }
 
     /**
-     * userID
-     *       totalStars
-     *       completedExchanges
+     * Add the rating and the feedback to the user
+     * @param uid userId to which add the rating and the feedback
+     * @param rating total stars rated
+     * @param feedback feedback leaved by the user
+     * @param reqId id of the request that will be the key of the feedback under the "feedbacks" child
      */
 
-    public static void addRating(String uid, String rating){
+    public static void addRating(String uid, String rating, String feedback, String reqId) {
         DatabaseManager.get("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
                     // Retrieving the total number of stars received by the user
                     int totalStars = 0;
-                    if(dataSnapshot.child("totalStars").exists())
+                    if (dataSnapshot.child("totalStars").exists())
                         try {
                             totalStars = Integer.parseInt((String) dataSnapshot.child("totalStars").getValue());
-                        } catch(NumberFormatException e){
+                        } catch (NumberFormatException e) {
                             Log.e(TAG, "totalStars is NaN");
                         }
                     Log.d(TAG, dataSnapshot.child("name").getValue() + " has totalStars = " + totalStars);
@@ -394,10 +399,10 @@ public class ProfileManager {
 
                     // Retrieving the total number of completed exchanges
                     int completedExchanges = 0;
-                    if(dataSnapshot.child("completedExchanges").exists())
+                    if (dataSnapshot.child("completedExchanges").exists())
                         try {
                             completedExchanges = Integer.parseInt((String) dataSnapshot.child("completedExchanges").getValue());
-                        } catch(NumberFormatException e){
+                        } catch (NumberFormatException e) {
                             Log.e(TAG, "completedExchanges is NaN");
                         }
                     Log.d(TAG, dataSnapshot.child("name").getValue() + " has completedExchanges = " + completedExchanges);
@@ -407,6 +412,10 @@ public class ProfileManager {
 
                     String completedExchangesString = String.valueOf(completedExchanges);
                     DatabaseManager.get("users").child(uid).child("completedExchanges").setValue(completedExchangesString);
+
+                    if (feedback != null && !feedback.equals(""))
+                        // Insert the feedback into the child "feedbacks" in the receiver user with key=requestId
+                        DatabaseManager.get("users", uid, "feedbacks", reqId).setValue(feedback);
 
                     //usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
                 }
