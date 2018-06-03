@@ -35,6 +35,15 @@
             android:layout_height="0dp"
             android:layout_weight="8"
             android:scrollbarAlwaysDrawHorizontalTrack="true" />
+        <TextView
+            android:id="@+id/no_requests_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="21sp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/no_requests" />
 
          <LinearLayout android:id="@+id/send_msg_layout"
              android:layout_width="match_parent"

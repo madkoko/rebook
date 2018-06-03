@@ -58,6 +58,9 @@ public class ShowBooks extends AppCompatActivity
         requestCode = getIntent().getIntExtra("request_code", -1);
 
         ListView bookListView = findViewById(R.id.books_listview);
+        TextView emptyView = findViewById(R.id.no_books_found);
+        bookListView.setEmptyView(emptyView);
+
         book_list = new ArrayList<>();
 
         // In case this activity is called by "SearchBooks"

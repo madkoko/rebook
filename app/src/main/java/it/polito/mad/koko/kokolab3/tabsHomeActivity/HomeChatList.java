@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
@@ -18,12 +19,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
+import it.polito.mad.koko.kokolab3.HomeActivity;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.messaging.ShowChat;
 import it.polito.mad.koko.kokolab3.messaging.UserChatInfo;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.ui.CircleTransform;
+
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class HomeChatList extends Fragment{
     private static final String TAG = "HomeChatListFragment";
@@ -44,7 +48,10 @@ public class HomeChatList extends Fragment{
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");
 
         ListView chatsListView = getActivity().findViewById(R.id.list_home_chats);
-
+        TextView emptyView = getActivity().findViewById(R.id.no_chats_found);
+        TextView borrowedEmptyView = getActivity().findViewById(R.id.no_borrowed_found);
+        borrowedEmptyView.setVisibility(View.INVISIBLE);
+        chatsListView.setEmptyView(emptyView);
 
         //FirebaseListOptions<UserChatInfo> to retrieve user chat informations from firebase
         //query is reference
@@ -96,7 +103,14 @@ public class HomeChatList extends Fragment{
                 });
             }
         };
-        chatsListView.setAdapter(adapter);
+
+        if (adapter.isEmpty()) {
+            Toast.makeText(getActivity().getApplicationContext(), "No chats found.", Toast.LENGTH_LONG).show();
+            getActivity().finish();
+        }
+        else {
+            chatsListView.setAdapter(adapter);
+        }
 
     }
 

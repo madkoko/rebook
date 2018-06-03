@@ -205,4 +205,11 @@
     <string name="check_if_return">check if returned</string>
     <string name="currency">rate</string>
 
+
+    <!-- Empty view -->
+    <string name="no_chats">No chats found</string>
+    <string name="no_books">No books found</string>
+    <string name="no_requests">No requests found</string>
+    <string name="no_borrowed">No books borrowed yet</string>
+
 </resources>

@@ -110,17 +110,17 @@ public class ShowChat extends AppCompatActivity {
 
         // >>> CASE C) Default case: user is coming from anywhere else (Tapping the notification)
         else{
-            // B1. Retrieve Chat ID
+            // C1. Retrieve Chat ID
             chatID = (String) i.getExtras().get("chatID");
 
-            // B2. Retrieve *Sender* informations
+            // C2. Retrieve *Sender* informations
             senderProfile = ProfileManager.getProfile();
             senderId = FirebaseAuth.getInstance().getUid();
             senderUsername = senderProfile.getName();
             senderImage = senderProfile.getImage();
             senderToken = senderProfile.getTokenMessage();
 
-            // B3. Retrieve *Receiver* informations
+            // C3. Retrieve *Receiver* informations
             UserChatInfo secondParty = (UserChatInfo) i.getExtras().get("senderInfo"); // SWAP >>> correttp!?
             receiverId = secondParty.getSecondPartyId();
             receiverUsername = secondParty.getSecondPartyUsername();

@@ -22,6 +22,15 @@
         android:orientation="vertical"
         tools:context=".books.ShowBooks">
     </ListView>
+    <TextView
+        android:id="@+id/no_books_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_books" />
 
     <!--<fragment
         xmlns:tools="http://schemas.android.com/tools"

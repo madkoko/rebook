@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
@@ -35,6 +36,10 @@ public class HomeSharingBook extends Fragment {
         super.onCreate(bundle);
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ListView listView = getActivity().findViewById(R.id.list_home_chats);
+        TextView emptyView = getActivity().findViewById(R.id.no_borrowed_found);
+        TextView chatEmptyView = getActivity().findViewById(R.id.no_chats_found);
+        chatEmptyView.setVisibility(View.INVISIBLE);
+        listView.setEmptyView(emptyView);
 
         Query query = FirebaseDatabase
                 .getInstance()
@@ -92,6 +97,12 @@ public class HomeSharingBook extends Fragment {
             }
 
         };
+
+        if (adapter.isEmpty()) {
+            Toast.makeText(getActivity().getApplicationContext(), "No books borrowed yet.", Toast.LENGTH_LONG).show();
+            getActivity().finish();
+        }
+
         listView.setAdapter(adapter);
     }
 

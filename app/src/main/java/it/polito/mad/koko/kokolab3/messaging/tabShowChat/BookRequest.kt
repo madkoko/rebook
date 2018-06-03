@@ -47,6 +47,8 @@ class BookRequest() : Fragment() {
         super.onCreate(savedInstanceState)
 
         val myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
+        val emptyView = activity.findViewById<TextView>(R.id.no_requests_found)
+        myListView.setEmptyView(emptyView)
 
         val myReqClass = Request::class
 

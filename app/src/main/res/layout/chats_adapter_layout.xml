@@ -6,7 +6,6 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
-
     <ImageView
         android:id="@+id/user_thumbnail"
         android:layout_width="70dp"
@@ -36,6 +35,5 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:layout_below="@+id/chat_dest"/>
-
 
 </LinearLayout>
