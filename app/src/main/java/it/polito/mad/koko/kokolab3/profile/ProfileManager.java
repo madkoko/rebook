@@ -372,10 +372,9 @@ public class ProfileManager {
      * @param uid userId to which add the rating and the feedback
      * @param rating total stars rated
      * @param feedback feedback leaved by the user
-     * @param reqId id of the request that will be the key of the feedback under the "feedbacks" child
      */
 
-    public static void addRating(String uid, String rating, String feedback, String reqId) {
+    public static void addRating(String uid, String rating, String feedback) {
         DatabaseManager.get("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -415,7 +414,7 @@ public class ProfileManager {
 
                     if (feedback != null && !feedback.equals(""))
                         // Insert the feedback into the child "feedbacks" in the receiver user with key=requestId
-                        DatabaseManager.get("users", uid, "feedbacks", reqId).setValue(feedback);
+                        DatabaseManager.get("users", uid, "feedback").push().setValue(feedback);
 
                     //usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
                 }

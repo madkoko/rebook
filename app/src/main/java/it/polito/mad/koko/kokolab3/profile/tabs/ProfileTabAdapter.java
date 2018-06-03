@@ -45,8 +45,8 @@ public class ProfileTabAdapter extends FirebaseListAdapter<Profile> {
         valueEmail = v.findViewById(R.id.value_email);
         valueEmail.setText(model.getEmail());
 
-        valueLocation = v.findViewById(R.id.value_location);
-        valueLocation.setText(model.getLocation());
+        //valueLocation = v.findViewById(R.id.value_location);
+        //valueLocation.setText(model.getLocation());
         //valueLocation.setOnClickListener(vPlace -> PlaceApi());
 
         valueBio = v.findViewById(R.id.value_bio);

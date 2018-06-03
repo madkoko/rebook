@@ -74,7 +74,7 @@ public class HomeSharingBook extends Fragment {
                     feedbackEditText.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
-                        ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()),feedbackEditText.getText().toString(),getRef(position).getKey());
+                        ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()),feedbackEditText.getText().toString());
                         RequestManager.Companion.putReceiverRate(getRef(position).getKey(), String.valueOf((int) ratingBar.getRating()));
                         if (model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0) {
                             RequestManager.Companion.ratedTransition(getRef(position).getKey());

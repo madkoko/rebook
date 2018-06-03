@@ -1,12 +1,15 @@
 package it.polito.mad.koko.kokolab3.profile.tabs;
 
 import android.annotation.SuppressLint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
@@ -15,9 +18,11 @@ import com.google.firebase.database.Query;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
+import it.polito.mad.koko.kokolab3.profile.Profile;
 
 @SuppressLint("ValidFragment")
 class TabComments extends Fragment {
+    private final String TAG = "TabComments";
     private final String uid;
     private Query query;
     private FirebaseListAdapter adapter;
@@ -32,19 +37,27 @@ class TabComments extends Fragment {
 
         ListView comentsListView = view.findViewById(R.id.books_listview);
 
-        //query = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("uid").equalTo(uid);
+        query = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("feedback");
 
-        /*FirebaseListOptions<> options = new FirebaseListOptions.Builder<Book>()
-                .setLayout(R.layout.books_adapter_layout)
-                .setQuery(query, .class)
+        FirebaseListOptions<Object> options = new FirebaseListOptions.Builder<>()
+                .setLayout(R.layout.conversation_fragment)
+                .setQuery(query, Object.class)
                 .build();
-        adapter = new FirebaseListAdapter(options) {
+        adapter = new FirebaseListAdapter<Object>(options) {
             @Override
             protected void populateView(View v, Object model, int position) {
 
+                Log.d(TAG,model.toString());
+                TextView feedback =(TextView)v.findViewById(R.id.message_text);
+                String feedbackText="'"+model.toString()+"'";
+                feedback.setText(feedbackText);
+                feedback.setTypeface(feedback.getTypeface(), Typeface.BOLD_ITALIC);
+
+
+
             }
         };
-        comentsListView.setAdapter(adapter);*/
+        comentsListView.setAdapter(adapter);
 
         return view;
     }
