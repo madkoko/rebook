@@ -142,6 +142,15 @@ class BookRequest(flag: Int) : Fragment() {
                 }
 
             }
+
+
+            override fun onDataChanged() {
+                if (adapter!!.getCount() == 0) {
+                    myListView.setEmptyView(activity.findViewById<View>(R.id.no_requests_found))
+                    Toast.makeText(activity.applicationContext, "No requests found.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
 
         if (adapter != null) {

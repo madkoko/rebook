@@ -36,10 +36,6 @@ public class HomeSharingBook extends Fragment {
         super.onCreate(bundle);
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ListView listView = getActivity().findViewById(R.id.list_home_chats);
-        TextView emptyView = getActivity().findViewById(R.id.no_borrowed_found);
-        TextView chatEmptyView = getActivity().findViewById(R.id.no_chats_found);
-        chatEmptyView.setVisibility(View.INVISIBLE);
-        listView.setEmptyView(emptyView);
 
         Query query = FirebaseDatabase
                 .getInstance()
@@ -52,7 +48,9 @@ public class HomeSharingBook extends Fragment {
                 .setLayout(R.layout.sharing_adapter_layout)
                 .setQuery(query, Request.class)
                 .build();
+
         adapter = new FirebaseListAdapter<Request>(options) {
+
             @Override
             protected void populateView(View v, Request model, int position) {
                 ImageView imageBook = v.findViewById(R.id.book_sharing_home);
@@ -96,14 +94,18 @@ public class HomeSharingBook extends Fragment {
 
             }
 
+            @Override
+            public void onDataChanged() {
+                if(adapter.getCount()==0) {
+                    listView.setEmptyView(getActivity().findViewById(R.id.no_borrowed_found));
+                    Toast.makeText(getActivity().getApplicationContext(), "No books borrowed found.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
         };
 
-        if (adapter.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "No books borrowed yet.", Toast.LENGTH_LONG).show();
-            getActivity().finish();
-        }
-
         listView.setAdapter(adapter);
+
     }
 
     @Override

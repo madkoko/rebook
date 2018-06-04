@@ -65,8 +65,6 @@ public class ShowBooks extends AppCompatActivity
         requestCode = getIntent().getIntExtra("request_code", -1);
 
         ListView bookListView = findViewById(R.id.books_listview);
-        TextView emptyView = findViewById(R.id.no_books_found);
-        bookListView.setEmptyView(emptyView);
 
         book_list = new ArrayList<>();
 
@@ -76,8 +74,7 @@ public class ShowBooks extends AppCompatActivity
             bookMap = JsonUtil.deserializeBooks(getIntent().getStringExtra("searchedBooks"));
 
             if (bookMap != null && bookMap.size() == 0) {
-                Toast.makeText(getApplicationContext(), "No books found", Toast.LENGTH_LONG).show();
-                finish();
+                Toast.makeText(getApplicationContext(), "No books found", Toast.LENGTH_SHORT).show();
             } else {
 
                 bookListView.setAdapter(new BaseAdapter() {
@@ -147,7 +144,17 @@ public class ShowBooks extends AppCompatActivity
                     book_list.add(model);
 
                 }
+
+                @Override
+                public void onDataChanged() {
+                    if(booksAdapter.getCount()==0) {
+                        bookListView.setEmptyView(findViewById(R.id.no_books_found));
+                        Toast.makeText(getApplicationContext(), "No books found", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
             };
+
             bookListView.setAdapter(booksAdapter);
         }
     }

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,15 +44,11 @@ public class HomeChatList extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ListView chatsListView = getActivity().findViewById(R.id.list_home_chats);
+
         String currentUserID = ProfileManager.getCurrentUserID();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").child(currentUserID).child("chats");
-
-        ListView chatsListView = getActivity().findViewById(R.id.list_home_chats);
-        TextView emptyView = getActivity().findViewById(R.id.no_chats_found);
-        TextView borrowedEmptyView = getActivity().findViewById(R.id.no_borrowed_found);
-        borrowedEmptyView.setVisibility(View.INVISIBLE);
-        chatsListView.setEmptyView(emptyView);
 
         //FirebaseListOptions<UserChatInfo> to retrieve user chat informations from firebase
         //query is reference
@@ -62,6 +59,11 @@ public class HomeChatList extends Fragment{
 
         //FirebaseListAdapter to create ListAdapter Ui from firebaseUi
         adapter = new FirebaseListAdapter<UserChatInfo>(options) {
+
+            @Override
+            public int getCount(){
+                return options.getSnapshots().size();
+            }
 
             @Override
             protected void populateView(View view, UserChatInfo model, int position) {
@@ -102,15 +104,18 @@ public class HomeChatList extends Fragment{
                     startActivity(showChat);
                 });
             }
+
+            @Override
+            public void onDataChanged() {
+                if(adapter.getCount()==0) {
+                    chatsListView.setEmptyView(getActivity().findViewById(R.id.no_chats_found));
+                    Toast.makeText(getActivity().getApplicationContext(), "No chats found.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
         };
 
-        if (adapter.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "No chats found.", Toast.LENGTH_LONG).show();
-            getActivity().finish();
-        }
-        else {
-            chatsListView.setAdapter(adapter);
-        }
+        chatsListView.setAdapter(adapter);
 
     }
 
