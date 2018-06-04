@@ -67,9 +67,7 @@ public class HomeSharingBook extends Fragment {
 
                 if (model.getStatus().equals("onBorrow")) {
                     buttonReturn.setVisibility(View.VISIBLE);
-                    buttonReturn.setOnClickListener(v1 -> {
-                        RequestManager.Companion.retunRequest(getRef(position).getKey());
-                    });
+                    buttonReturn.setOnClickListener(v1 -> RequestManager.Companion.returnRequest(getRef(position).getKey()));
                 } else if (model.getStatus().equals("returned")) {
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);

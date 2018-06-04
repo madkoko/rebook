@@ -18,13 +18,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import java.util.ArrayList;
@@ -275,6 +279,9 @@ public class HomeActivity extends AppCompatActivity
             ProfileManager.readProfile(new OnGetDataListener() {
                 @Override
                 public void onSuccess(DataSnapshot data) {
+                    // Loading the user email in the sidebar menu
+                    ((TextView)findViewById(R.id.sideMenuEmail)).setText(ProfileManager.getProfile().getName());
+
                     /*  If the user has not completed the registration procedure
                         (for instance it is a new user) */
                     if (!ProfileManager.hasCompletedRegistration()) {
@@ -283,12 +290,16 @@ public class HomeActivity extends AppCompatActivity
                         // Start the EditProfile activity
                         startActivityForResult(editProfileIntent, FIRST_LOGIN_EDIT_PROFILE);
                     }
-                    /*  If the user has already completed the registration and
-                        has a profile picture */
-                    else if (ProfileManager.getProfile().getImage() != null) {
-                        // Load the profile picture in the UI
-                        Profile p = ProfileManager.getProfile();
-                        ImageManager.loadBitmap(p.getImage());
+                    else {
+                        /*  If the user has already completed the registration and
+                            has a profile picture */
+                        if (ProfileManager.getProfile().getImage() != null) {
+                            // Load the profile picture in the UI
+                            Profile p = ProfileManager.getProfile();
+                            ImageManager.loadBitmap(p.getImage());
+
+                            
+                        }
                     }
                 }
 
@@ -364,12 +375,6 @@ public class HomeActivity extends AppCompatActivity
             // BookManager.removeUserBooksEventListener();
             // startActivityForResult(searchBooks, SEARCH_BOOKS);
             startActivity(searchBooks);
-
-        } else if (id == R.id.nav_chats) {
-            //DefaultDialogsActivity.open(this);
-
-            /*startActivity(new Intent(getApplicationContext(), ShowChats.class));*/
-
         } else if (id == R.id.sign_out) {
             ProfileManager.logout();
             AuthenticationUI.launch(this);

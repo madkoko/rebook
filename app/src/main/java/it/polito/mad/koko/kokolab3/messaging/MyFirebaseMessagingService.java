@@ -38,6 +38,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -158,11 +159,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         // !! If the chat corresponding to this notification is not currently active
                         if (chatID.compareTo(activeChatId) != 0)
                             // Show the new message notification
-                            showNotification(remoteMessage, showResponseButtons, onTapAction);
+                            showNotification(remoteMessage, onTapAction);
                     }
                 } else {
                     // Always show the notification
-                    showNotification(remoteMessage, showResponseButtons, onTapAction);
+                    showNotification(remoteMessage, onTapAction);
                 }
             }
 
@@ -181,42 +182,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Create and show a simple notification containing the received FCM message.
      *
      * @param receivedMessage     the received remote message.
-     * @param showResponseButtons whether the response buttons should be displayed or not.
      * @param onTapAction         the action that must be performed upon tapping on the
      *                            notification. Possible values:
      *                            ON_TAP_NO_ACTION:     nothing has to be performed
      *                            ON_TAP_SHOW_PROFILE:  the sender's profile has to be shown
      *                            ON_TAP_SHOW_CHAT:     the chat with the sender has to be opened
      */
-    private void showNotification(RemoteMessage receivedMessage, boolean showResponseButtons, int onTapAction) {
-
-        //DEBUG THE VALUE OF "IMPORTANCE_FOREGROUND" TO CHECK IF ANY ACTIVITY IS RUNNING ON FOREGROUND
-
-        Log.d(TAG, "IMPORTANCE_FOREGROUND= " + isApplicationSentToBackground(MyFirebaseMessagingService.this));
-
+    private void showNotification(RemoteMessage receivedMessage, int onTapAction) {
         // Retrieving the notification data object
-        String notificationJsonString = receivedMessage.getData().get("notification");
-        Map<String, String> notificationObject = JsonUtil.deserialize(notificationJsonString);
+        Map<String, String> notificationObject = JsonUtil.deserialize(receivedMessage.getData().get("notification"));
 
         // Retrieving notification information
         String notificationTitle = notificationObject.get("title");
         String notificationBody = notificationObject.get("body");
-        Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString())); // [Debug]
+        Log.d(TAG, "Notification data: " + JsonUtil.formatJson(receivedMessage.getData().toString()));
 
         // Retrieving chat information
         String chatId = receivedMessage.getData().get("chatID");
 
         // Retrieving the sender data object
-        String senderJsonString = receivedMessage.getData().get("sender");
-        Map<String, String> senderObject = JsonUtil.deserialize(senderJsonString);
+        Map<String, String> senderObject = JsonUtil.deserialize(receivedMessage.getData().get("sender"));
 
         // Retrieving the receiver data object
-        String receiverJsonString = receivedMessage.getData().get("receiver");
-        Map<String, String> receiverObject = JsonUtil.deserialize(receiverJsonString);
+        Map<String, String> receiverObject = JsonUtil.deserialize(receivedMessage.getData().get("receiver"));
 
         // Retrieving the book data object
-        String bookJsonString = receivedMessage.getData().get("book");
-        Map<String, String> bookObject = JsonUtil.deserialize(bookJsonString);
+        Map<String, String> bookObject = JsonUtil.deserialize(receivedMessage.getData().get("book"));
 
         // Intent used upon accepting the book exchange request
         PendingIntent acceptPendingIntent = createAcceptPendingIntent(this, chatId, senderObject, receiverObject, bookObject);
@@ -228,6 +219,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+        // Retrieving the notification group
+        String notificationType = receivedMessage.getData().get("type");
+
+        // Building the base notification
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         // Notification's icon
@@ -239,11 +234,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         // Title and expandable subtitle
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationBody)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationBody))
                         // .setSubText() // TODO cumulative number of requests
 
                         // Stack notification
-                        .setGroup("Koko")
+                        .setGroup(notificationType)
 
                         // Priorities, sound and style
                         .setAutoCancel(true)
@@ -252,11 +246,43 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setOnlyAlertOnce(false)
                         .setColorized(true);
 
-        // Notification action buttons
-        if (showResponseButtons)
-            notificationBuilder
-                    .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
-                    .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent);
+        switch(notificationType) {
+            case "message":
+                // Retrieving the sender's username
+                String senderUsername = senderObject.get("username");
+
+                // Building the message object
+                NotificationCompat.MessagingStyle.Message message =
+                        new NotificationCompat.MessagingStyle.Message(
+                                notificationBody,
+                                System.currentTimeMillis(), // TODO sent time or received time?
+                                senderUsername
+                        );
+
+                // Setting the message notification style
+                notificationBuilder.setStyle(
+                        new NotificationCompat.MessagingStyle(senderUsername).addMessage(message)
+                );
+
+                break;
+
+            case "request":
+                // Notification action buttons
+                notificationBuilder
+                        .addAction(ACCEPT_ICON, ACCEPT_BUTTON_STRING, acceptPendingIntent)
+                        .addAction(DECLINE_ICON, DECLINE_BUTTON_STRING, declinePendingIntent);
+
+                break;
+
+            default:
+
+        }
+
+        if(notificationType.compareTo("message") != 0)
+            // Setting the big text notification style
+            notificationBuilder.setStyle(
+                    new NotificationCompat.BigTextStyle().bigText(notificationBody)
+            );
 
         // Action to be performed upon tapping the notification
         switch (onTapAction) {

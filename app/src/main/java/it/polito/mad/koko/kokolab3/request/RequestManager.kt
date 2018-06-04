@@ -118,7 +118,7 @@ class RequestManager() {
                 (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(intent?.extras!!.get("notificationID") as Int)
         }
 
-        public fun retunRequest(reqId: String?) {
+        public fun returnRequest(reqId: String?) {
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("status")

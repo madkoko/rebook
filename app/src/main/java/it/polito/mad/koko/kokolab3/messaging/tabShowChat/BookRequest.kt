@@ -2,7 +2,6 @@ package it.polito.mad.koko.kokolab3.messaging.tabShowChat
 
 import android.annotation.SuppressLint
 import android.app.Fragment
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,20 +9,16 @@ import android.view.ViewGroup
 import android.widget.*
 import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import it.polito.mad.koko.kokolab3.R
-import it.polito.mad.koko.kokolab3.books.Book
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener
 import it.polito.mad.koko.kokolab3.messaging.UserChatInfo
-import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
 import it.polito.mad.koko.kokolab3.profile.ProfileManager
-import it.polito.mad.koko.kokolab3.profile.ShowProfile
 import it.polito.mad.koko.kokolab3.request.Request
 import it.polito.mad.koko.kokolab3.request.RequestManager
 import org.w3c.dom.Text
@@ -33,7 +28,12 @@ import java.util.*
 @SuppressLint("ValidFragment")
 class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
 
-    private val TAG = "BookRequest"
+    companion object {
+        private val TAG = "BookRequest"
+
+
+    }
+
 
     var adapter: FirebaseListAdapter<Request>? = null       // All requests sent to the user
     //var requesterId: String? = null                         // Second party id
@@ -125,7 +125,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                         declineButton.visibility = View.INVISIBLE
                         acceptButton.setText(R.string.check_if_return)
                         acceptButton.setOnClickListener {
-                            RequestManager.retunBook(getRef(position).key)
+                            RequestManager.returnBook(getRef(position).key)
                             FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                         }
                     } else if (model.status == "returned") {
@@ -190,9 +190,9 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                     val thisChatRequests = HashMap<String, Request>()
                     // For each current user's request
                     for ((key, value) in allCurrentUserRequests)
-                    // If the request involves the user with whom the chat is opened
+                        // If the request involves the user with whom the chat is opened
                         if (requester!!.secondPartyId.compareTo(allCurrentUserRequests.get(key)!!.senderId!!) === 0)
-                        // Add it to the current chat requests map
+                            // Add it to the current chat requests map
                             thisChatRequests.put(key, value)
 
                     myListView.adapter = object : BaseAdapter() {
@@ -258,7 +258,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                 declineButton.visibility = View.INVISIBLE
                                 acceptButton.setText(R.string.check_if_return)
                                 acceptButton.setOnClickListener {
-                                    RequestManager.retunBook(requestId)
+                                    RequestManager.returnBook(requestId)
                                     FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                                 }
                             } else if (model.status == "returned") {
@@ -297,7 +297,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                 override fun onFailed(databaseError: DatabaseError) {}
             }
 
-            query.addListenerForSingleValueEvent(object : ValueEventListener {
+            query.addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(databaseError: DatabaseError?) {
                     thisChatRequestsListener.onFailed(databaseError!!)
                 }
@@ -306,8 +306,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                     thisChatRequestsListener.onSuccess(dataSnapshot)
                 }
             })
-
-
         }
     }
 
