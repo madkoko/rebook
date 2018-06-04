@@ -83,7 +83,7 @@ class RequestManager() {
             })
         }
 
-        public fun acceptRequest(requestId: String?, context: Context, intent: Intent?) {
+        public fun acceptRequest(requestId: String?, context: Context, intent: Intent?, bookId: String?) {
             // Sending a negative response notification
             if (intent != null)
                 MessageManager.sendResponseNotification(intent, true)
@@ -93,6 +93,9 @@ class RequestManager() {
 
             // Creating the request object on Firebase
             DatabaseManager.set("onBorrow", "requests/$requestId/status")
+
+            // Set field "sharable" to "no" in the book corresponding to the bookId
+            DatabaseManager.get("books",bookId,"sharable").setValue("no");
 
             // Deleting the request notification
             if (intent != null)

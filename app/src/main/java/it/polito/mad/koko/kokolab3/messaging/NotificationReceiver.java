@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.request.RequestManager;
 
 import static it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService.ACCEPT_ACTION;
@@ -92,9 +93,12 @@ public class NotificationReceiver extends BroadcastReceiver { //entra come prima
                 // Creating a chat with the user
                 String chatID = intent.getStringExtra("chatID"); //MessageManager.getChatID();
 
-                RequestManager.Companion.acceptRequest(senderId+""+bookId, context, intent);
+                RequestManager.Companion.acceptRequest(senderId+""+bookId, context, intent, bookId);
 
                 //MessageManager.populateUserMessages();
+
+
+                DatabaseManager.get("books",bookId,"sharable").setValue("no");
 
                 // Starting the showChat activity
                 Intent showChatIntent = new Intent(context, ShowChat.class);

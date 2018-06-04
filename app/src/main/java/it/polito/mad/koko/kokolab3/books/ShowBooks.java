@@ -191,6 +191,7 @@ public class ShowBooks extends AppCompatActivity
 
                     Intent showBook = new Intent(getApplicationContext(), ShowBook.class);
                     showBook.putExtra("book", model);
+                    showBook.putExtra("sharable",sharable);
 
                     if (bookId != null)
                         showBook.putExtra("bookId", bookId);
