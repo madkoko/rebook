@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
@@ -203,4 +204,27 @@ public class BookManager {
         });
 
     }
+
+    /**
+     * listener to check if the book is still sharable when the users click "send request" button
+     *
+     * @param bookID bookID to be checked
+     * @param listener
+     */
+    public static void isSharable(String bookID, final OnGetDataListener listener) {
+        DatabaseManager.get("books",bookID,"sharable").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (listener != null)
+                    listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if (listener != null)
+                    listener.onFailed(databaseError);
+            }
+        });
+    }
+
 }

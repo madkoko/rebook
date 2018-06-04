@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KokoLab3</string>
+    <string name="app_name">ReBook</string>
 
     <!-- General UI -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -209,7 +209,7 @@
     <string name="accept">accept</string>
     <string name="decline">decline</string>
     <string name="return_book">return book</string>
-    <string name="check_if_return">check if returned</string>
+    <string name="check_if_return">got it back!</string>
     <string name="currency">rate</string>
 
 

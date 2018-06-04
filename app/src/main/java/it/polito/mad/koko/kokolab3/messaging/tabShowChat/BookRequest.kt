@@ -29,8 +29,7 @@ class BookRequest(flag: Int) : Fragment() {
     var reqId: String? = null
     var bookId: String? = null
 
-    val flag :Int = flag
-
+    val flag: Int = flag
 
 
     /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
@@ -50,17 +49,20 @@ class BookRequest(flag: Int) : Fragment() {
 
         val myListView : ListView
 
-        if(flag==0){
-            myListView = activity.findViewById<ListView>(R.id.list_home_chats) as ListView
-        }else {
-            myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
-        }
+
 
         val myReqClass = Request::class
 
         myId = FirebaseAuth.getInstance().currentUser!!.uid //ok not null
 
         val query = FirebaseDatabase.getInstance().reference.child("requests").orderByChild("receiverId").equalTo(myId)
+
+        if(flag==0){
+            myListView = activity.findViewById<ListView>(R.id.list_home_chats) as ListView
+        }else {
+            myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
+            //query.addListenerForSingleValueEvent()
+        }
 
 
         val options = FirebaseListOptions.Builder<Request>() //savedInstanceState null
@@ -80,7 +82,7 @@ class BookRequest(flag: Int) : Fragment() {
                 val bookTitle = v!!.findViewById<TextView>(R.id.req_book_title) as TextView
                 val bookRequest = v.findViewById<ImageView>(R.id.book_request) as ImageView
                 val ratingBar = v.findViewById<RatingBar>(R.id.rating_bar_request) as RatingBar
-                val feedbackEditText= v.findViewById<EditText>(R.id.feedback_edit_text) as EditText
+                val feedbackEditText = v.findViewById<EditText>(R.id.feedback_edit_text) as EditText
 
 
                 Log.d(TAG, "siamo in populate")
@@ -99,16 +101,17 @@ class BookRequest(flag: Int) : Fragment() {
                     declineButton.setVisibility(View.VISIBLE)
                     declineButton.setOnClickListener {
                         RequestManager.declineRequest(
-                            getRef(position).key,
-                            activity.applicationContext,
-                            null
+                                getRef(position).key,
+                                activity.applicationContext,
+                                null
                         )
                     }
                     acceptButton.setOnClickListener {
                         RequestManager.acceptRequest(
-                            getRef(position).key,
-                            activity.applicationContext,
-                            null
+                                getRef(position).key,
+                                activity.applicationContext,
+                                null,
+                                model.bookId
                         )
                     }
                 } else if (model.status.equals("returning")) {
@@ -117,6 +120,7 @@ class BookRequest(flag: Int) : Fragment() {
                     acceptButton.setText(R.string.check_if_return)
                     acceptButton.setOnClickListener {
                         RequestManager.retunBook(getRef(position).key)
+                        FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes");
                     }
                 } else if (model.status == "returned") {
                     acceptButton.setVisibility(View.VISIBLE)
@@ -125,17 +129,17 @@ class BookRequest(flag: Int) : Fragment() {
                     ratingBar.setVisibility(View.VISIBLE)
                     feedbackEditText.setVisibility(View.VISIBLE)
                     acceptButton.setOnClickListener {
-                        ProfileManager.addRating(model.senderId, ratingBar.rating.toString(),feedbackEditText.text.toString())
+                        ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                         RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
                         if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
                             RequestManager.ratedTransition(getRef(position).key)
                     }
                     //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
-                }else {
+                } else {
                     acceptButton.setVisibility(View.INVISIBLE)
                     declineButton.setVisibility(View.INVISIBLE)
                 }
-                if (!model.ratingSender.equals("")){
+                if (!model.ratingSender.equals("")) {
                     ratingBar.setVisibility(View.INVISIBLE)
                     acceptButton.setVisibility(View.INVISIBLE)
                     feedbackEditText.setVisibility(View.INVISIBLE)

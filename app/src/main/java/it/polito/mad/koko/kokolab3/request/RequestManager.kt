@@ -73,15 +73,19 @@ class RequestManager() {
 
             // 2. Search if a Request between Send & Receiver for the same book is already existing
             DatabaseManager.get("requests", requestId).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) { listener?.onSuccess(dataSnapshot) }
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    listener?.onSuccess(dataSnapshot)
+                }
 
-                override fun onCancelled(databaseError: DatabaseError) { listener?.onFailed(databaseError) }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    listener?.onFailed(databaseError)
+                }
             })
         }
 
-        public fun acceptRequest(requestId: String?, context: Context, intent: Intent?) {
+        public fun acceptRequest(requestId: String?, context: Context, intent: Intent?, bookId: String?) {
             // Sending a negative response notification
-            if(intent != null)
+            if (intent != null)
                 MessageManager.sendResponseNotification(intent, true)
 
             // Showing a book exchange declined message
@@ -90,14 +94,17 @@ class RequestManager() {
             // Creating the request object on Firebase
             DatabaseManager.set("onBorrow", "requests/$requestId/status")
 
+            // Set field "sharable" to "no" in the book corresponding to the bookId
+            DatabaseManager.get("books",bookId,"sharable").setValue("no");
+
             // Deleting the request notification
-            if(intent != null)
+            if (intent != null)
                 (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(intent?.extras!!.get("notificationID") as Int)
         }
 
         public fun declineRequest(requestId: String?, context: Context, intent: Intent?) {
             // Sending a negative response notification
-            if(intent != null)
+            if (intent != null)
                 MessageManager.sendResponseNotification(intent, false)
 
             // Showing a book exchange declined message
@@ -107,7 +114,7 @@ class RequestManager() {
             DatabaseManager.get("requests/$requestId").removeValue()
 
             // Deleting the request notification
-            if(intent != null)
+            if (intent != null)
                 (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(intent?.extras!!.get("notificationID") as Int)
         }
 
@@ -131,15 +138,19 @@ class RequestManager() {
                     .child(reqId)
                     .child("status")
                     .setValue("rated")
+
+            // Deleting the request object on Firebase
+            DatabaseManager.get("requests/$reqId").removeValue()
         }
 
-        fun putReceiverRate(reqId: String?, rate: String?){
+        fun putReceiverRate(reqId: String?, rate: String?) {
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("ratingReceiver")
                     .setValue(rate)
         }
-        fun putSenderRate(reqId: String?, rate: String?){
+
+        fun putSenderRate(reqId: String?, rate: String?) {
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("ratingSender")
