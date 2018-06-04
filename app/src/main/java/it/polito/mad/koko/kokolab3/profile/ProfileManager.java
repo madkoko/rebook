@@ -21,10 +21,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
@@ -155,6 +157,27 @@ public class ProfileManager {
         }
 
         return currentUserProfile;
+    }
+
+    /**
+     * @param listener  action to be perfomed upon retrieving all user's books
+     */
+    public static void getBooks(final OnGetDataListener listener) {
+        DatabaseManager.get("books").orderByChild("uid").equalTo(ProfileManager.getCurrentUserID()).addListenerForSingleValueEvent(
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (listener != null)
+                        listener.onSuccess(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    if (listener != null)
+                        listener.onFailed(databaseError);
+                }
+            }
+        );
     }
 
     /**

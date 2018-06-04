@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
@@ -14,7 +15,9 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
@@ -78,6 +81,21 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                         }
                     }
             );
+
+            ProfileManager.getBooks(new OnGetDataListener() {
+                @Override
+                public void onStart() {}
+
+                @Override
+                public void onSuccess(DataSnapshot data) {
+                    if(data.exists()) {
+
+                    }
+                }
+
+                @Override
+                public void onFailed(DatabaseError databaseError) {}
+            });
         }
     }
 }

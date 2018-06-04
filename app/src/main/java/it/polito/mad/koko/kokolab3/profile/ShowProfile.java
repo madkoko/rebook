@@ -135,7 +135,6 @@ public class ShowProfile extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                setPosition(tab.getPosition());
             }
 
             @Override
@@ -169,6 +168,7 @@ public class ShowProfile extends AppCompatActivity {
         }*/
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        Log.d(TAG, "profile.getImage(): " + profile.getImage());
         bmp = ImageManager.getBitmapFromURL(profile.getImage());
 
         if (bmp != null) {
