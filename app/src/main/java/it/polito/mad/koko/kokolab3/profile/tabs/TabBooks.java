@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.BookManager;
-
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 @SuppressLint("ValidFragment")
 public class TabBooks extends Fragment {
