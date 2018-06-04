@@ -172,8 +172,8 @@ public class ShowChat extends AppCompatActivity {
 
         // 5. Final UI implementation
         conversation = new Conversation();
-
-        bookRequestList = new BookRequest();
+        int flag=1;
+        bookRequestList = new BookRequest(flag);
 
         // Parameters to be sent to ConversationFragment
         Bundle bun = new Bundle();
@@ -195,7 +195,7 @@ public class ShowChat extends AppCompatActivity {
         TabLayout tab_layout = findViewById(R.id.tabs_chat);
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
         tab_layout.addTab(tab_layout.newTab().setText("chat"));
-        tab_layout.addTab(tab_layout.newTab().setText("requested books"));
+        tab_layout.addTab(tab_layout.newTab().setText(R.string.request_book));
 
         selectFragment(0);
 
