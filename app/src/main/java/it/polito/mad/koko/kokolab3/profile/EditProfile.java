@@ -2,6 +2,7 @@ package it.polito.mad.koko.kokolab3.profile;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
@@ -9,6 +10,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +38,8 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
@@ -62,6 +67,11 @@ public class EditProfile extends AppCompatActivity {
     private TextView et_location;
     private EditText et_bio;
     private ImageView user_photo;
+
+    /**
+     * User profile information
+     */
+    private ProfileManager profileManager;
 
     /**
      * Firebase login profile, firebase database
@@ -350,7 +360,7 @@ public class EditProfile extends AppCompatActivity {
         imageBitmap = (Bitmap) extras.get("data");
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
@@ -423,7 +433,7 @@ public class EditProfile extends AppCompatActivity {
         super.onResume();
 
         if (flagCamera) {
-            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             user_photo.setImageBitmap(tmp);
         } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
@@ -431,5 +441,4 @@ public class EditProfile extends AppCompatActivity {
             Picasso.get().load(currentUserProfile.getImage()).fit().centerCrop().into(user_photo);
         }
     }
-
 }

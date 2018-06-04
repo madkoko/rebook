@@ -9,8 +9,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -91,6 +93,12 @@ public class ProfileManager {
      */
     public static FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    public ConcurrentMap<String, Profile> getAllUsers() {
+        synchronized (allUsers) {
+            return allUsers;
+        }
     }
 
     /**

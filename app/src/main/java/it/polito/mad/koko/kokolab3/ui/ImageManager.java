@@ -27,7 +27,7 @@ public class ImageManager {
 
     private static final String TAG = "ImageManager";
 
-    private static final String TEMPORARY_PICTURE_NAME = "temp_profile";
+    private static final String TEMPORARY_PICTURE_NAME = "/temp_profile";
 
     public static void loadBitmap(String url) {
         Target loadtarget = new Target() {

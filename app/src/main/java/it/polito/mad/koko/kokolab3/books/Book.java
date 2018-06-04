@@ -2,6 +2,8 @@ package it.polito.mad.koko.kokolab3.books;
 
 import java.io.Serializable;
 
+import it.polito.mad.koko.kokolab3.profile.Profile;
+
 /**
  * Created by Francesco on 10/04/2018.
  */
@@ -15,21 +17,27 @@ public class Book implements Serializable {
     private String author;
     private String publisher;
     private String editionYear;
-    private String conditions;
-    private String uid;
+    private String bookConditions;
     private String image;
+    private String uid;
+    private String borrowedTo;
+    private String sharable;
+    private Profile bookOwner;
 
     public Book(){};
 
-    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions, String uid,String image) {
+    public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions, String image, String uid, String borrowedTo, String sharable, Profile bookOwner) {
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
         this.publisher = publisher;
         this.editionYear = editionYear;
-        this.conditions = bookConditions;
+        this.bookConditions = bookConditions;
+        this.image = image;
         this.uid=uid;
-        this.image=image;
+        this.borrowedTo = borrowedTo;
+        this.sharable = sharable;
+        this.bookOwner=new Profile(bookOwner.getName(),null,null,bookOwner.getLocation(),null,bookOwner.getImage(),bookOwner.getPosition(),bookOwner.getTokenMessage());
     }
 
     public String getISBN() {
@@ -73,19 +81,11 @@ public class Book implements Serializable {
     }
 
     public String getBookConditions() {
-        return conditions;
+        return bookConditions;
     }
 
     public void setBookConditions(String bookConditions) {
-        this.conditions = bookConditions;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getUid() {
-        return uid;
+        this.bookConditions = bookConditions;
     }
 
     public void setImage(String image) {
@@ -96,6 +96,38 @@ public class Book implements Serializable {
         return image;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getBorrowedTo() {
+        return borrowedTo;
+    }
+
+    public void setBorrowedTo(String borrowedTo) {
+        this.borrowedTo = borrowedTo;
+    }
+
+    public String getSharable() {
+        return sharable;
+    }
+
+    public void setSharable(String sharable) {
+        this.sharable = sharable;
+    }
+
+    public Profile getBookOwner() {
+        return bookOwner;
+    }
+
+    public void setBookOwner(Profile bookOwner) {
+        this.bookOwner = bookOwner;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -104,12 +136,14 @@ public class Book implements Serializable {
                 ", author='" + author + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", editionYear='" + editionYear + '\'' +
-                ", bookConditions='" + conditions + '\'' +
-                ", userId='" + uid + '\'' +
+                ", bookConditions='" + bookConditions + '\'' +
                 ", image='" + image + '\'' +
+                ", uid='" + uid + '\'' +
+                ", borrowedTo='" + borrowedTo + '\'' +
+                ", sharable='" + sharable + '\'' +
+                ", bookOwner=" + bookOwner +
                 '}';
     }
-
 
 }
 

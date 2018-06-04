@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/edit_book_photo"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/user_profile_pic"
+                    android:src="@mipmap/ic_launcher_round" />
+
+                <ImageButton
+                    android:id="@+id/edit_book_photo_button"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="false"
+                    android:layout_below="@+id/edit_book_photo"
+                    android:layout_gravity="bottom"
+                    android:background="#ffffff"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/ic_menu_camera" />
+
+
+                <TextView
+                    android:id="@+id/text_edit_book_isbn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edit_book_photo_button"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/book_ISBN"
+                    android:textSize="10sp" />
+
+                <EditText
+                    android:id="@+id/edit_book_isbn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_edit_book_isbn"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_ISBN"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/text_edit_book_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edit_book_isbn"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_title"
+                    android:textSize="10sp" />
+
+                <EditText
+                    android:id="@+id/edit_book_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_edit_book_title"
+                    android:hint="@string/book_title"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/text_edit_book_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edit_book_title"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_author"
+                    android:textSize="10sp" />
+
+                <EditText
+                    android:id="@+id/edit_book_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_edit_book_author"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_author"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/text_edit_book_publisher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edit_book_author"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_publisher"
+                    android:textSize="10sp" />
+
+                <EditText
+                    android:id="@+id/edit_book_publisher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_edit_book_publisher"
+                    android:hint="@string/book_publisher"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/text_edit_book_edition_year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edit_book_publisher"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_edition_year"
+                    android:textSize="10sp" />
+
+                <EditText
+                    android:id="@+id/edit_book_edition_year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_edit_book_edition_year"
+                    android:hint="@string/book_edition_year"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/text_edit_book_conditions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edit_book_edition_year"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/book_conditions"
+                    android:textSize="10sp" />
+
+                <EditText
+                    android:id="@+id/edit_book_conditions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_edit_book_conditions"
+                    android:hint="@string/book_conditions"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/save_edit_book"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/edit_book_conditions"
+                    android:hint="@string/save_button_label"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
+        </ScrollView>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

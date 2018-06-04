@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+
 /**
  * Created by Francesco on 13/04/2018.
  */
@@ -149,6 +152,7 @@ public class BookManager {
                     }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -163,5 +167,35 @@ public class BookManager {
 
         return allBooks;
     }
-}
 
+    /**
+     * Method to remove a book from Firebase
+     *
+     * @param bookId id of the book to be removed
+     */
+    public static void removeBook(String bookId) {
+        booksDatabaseRef.child(bookId).removeValue();
+    }
+
+    /**
+     * Method to update in Firebase when is edited by the owner
+     * @param bookId Id of the book to be updated
+     * @param bookValues Map with all the values to be updated in Firebase
+     */
+    public static void updateBook(String bookId, Map<String, Object> bookValues, byte[] data) {
+
+        Map<String, Object> bookUpdates = new HashMap<>();
+        UploadTask uploadTask = booksStorageRef.child(bookId).putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                //Log.d(TAG,downloadUrl);
+                bookValues.put("image",downloadUrl);
+                bookUpdates.put(bookId, bookValues);
+                //ref.child(bookKey).child("image").setValue(downloadUrl);
+                booksDatabaseRef.updateChildren(bookUpdates);
+            }
+        });
+    }
+}
