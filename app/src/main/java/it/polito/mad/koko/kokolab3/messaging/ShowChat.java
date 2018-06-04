@@ -173,7 +173,7 @@ public class ShowChat extends AppCompatActivity {
         // 5. Final UI implementation
         conversation = new Conversation();
         int flag=1;
-        bookRequestList = new BookRequest(flag);
+        bookRequestList = new BookRequest(flag,(UserChatInfo) i.getExtras().get("receiverInfo"));
 
         // Parameters to be sent to ConversationFragment
         Bundle bun = new Bundle();

@@ -36,6 +36,7 @@ import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
+import it.polito.mad.koko.kokolab3.messaging.UserChatInfo;
 import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequest;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
@@ -137,7 +138,7 @@ public class HomeActivity extends AppCompatActivity
         tab_layout.addTab(tab_layout.newTab().setText(R.string.request_book));
         //Fag for fragment
         int flag=0;
-        homeRequestBook = new BookRequest(flag);
+        homeRequestBook = new BookRequest(flag,null);
         //Set first fragment
         selectFragment(0);
         //Add listener to tab_layout
