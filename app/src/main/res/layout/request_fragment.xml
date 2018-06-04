@@ -28,6 +28,14 @@
             android:layout_weight="0.25"
             android:hint="@string/book_title"
             android:textSize="20sp" />
+        <TextView
+            android:id="@+id/req_requester"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.25"
+            android:hint="@string/book_title"
+            android:textSize="15sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,28 +60,52 @@
 
         </LinearLayout>
 
-        <RatingBar
-            android:id="@+id/rating_bar_request"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:numStars="5"
-            android:stepSize="1.0"
-            android:visibility="visible" />
-
-        <EditText
-            android:id="@+id/feedback_edit_text"
+        <ViewSwitcher
+            android:id="@+id/rated_switch"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="top|start"
-            android:inputType="textMultiLine"
-            android:lines="8"
-            android:maxLines="10"
-            android:minLines="6"
-            android:hint="@string/feedback_edit_text"
-            android:scrollbars="vertical"
-            android:visibility="visible"/>
+            android:layout_height="wrap_content">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/rated_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RatingBar
+                    android:id="@+id/rating_bar_request"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:visibility="visible" />
+
+                <EditText
+                    android:id="@+id/feedback_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:hint="@string/feedback_edit_text"
+                    android:inputType="textMultiLine"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:minLines="1"
+                    android:scrollbars="vertical"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+
+        </ViewSwitcher>
 
     </LinearLayout>
 

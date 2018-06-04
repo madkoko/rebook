@@ -13,7 +13,8 @@ data class Request (
         var bookImage: String? = null,
         var status: String? = null,
         var ratingReceiver: String? = null,
-        var ratingSender: String? = null
+        var ratingSender: String? = null,
+        var senderName: String? = null
         //var commentSender: String? = null
         //var commentReceiver: String? = null
 ) {
@@ -39,6 +40,7 @@ data class Request (
                 ", Book Name='" + bookName + '\''.toString() +
                 ", Book Image='" + bookImage + '\''.toString() +
                 ", Status ='" + status + '\''.toString() +
+                ", SenderName ='" + senderName + '\''.toString() +
                 '}'.toString()
     }
 }

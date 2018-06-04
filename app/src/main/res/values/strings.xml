@@ -201,7 +201,7 @@
     <string name="title_activity_show_chat_recycler">ShowChatRecycler</string>
 
     <!-- Chat UI-->
-    <string name="borrowed">borrowed</string>
+    <string name="borrowed">borrow</string>
     <string name="request_book">pending</string>
     <string name="element_text">Element</string>
     <string name="chats_activity_title">Chats</string>
@@ -211,6 +211,7 @@
     <string name="return_book">return book</string>
     <string name="check_if_return">got it back!</string>
     <string name="currency">rate</string>
+    <string name="rated_added">rated_added</string>
 
 
     <!-- Empty view -->
