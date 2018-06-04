@@ -765,9 +765,6 @@ public class MessageManager {
             receiver's information will be retreived */
         OnGetDataListener receiverInfoListener = new OnGetDataListener() {
             @Override
-            public void onStart() {}
-
-            @Override
             public void onSuccess(DataSnapshot data) {
                 // Creating the sender's UserChatInfo object
                 Profile receiverProfile = data.getValue(Profile.class);

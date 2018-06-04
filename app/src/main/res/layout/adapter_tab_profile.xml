@@ -111,7 +111,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/value_email" />
 
 
-                <View
+                <!--<View
                     android:id="@+id/divider2"
                     android:layout_width="0dp"
                     android:layout_height="2dp"
@@ -164,7 +164,7 @@
                     android:textColor="@color/secondary_text"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/value_location" />
+                    app:layout_constraintTop_toBottomOf="@+id/value_location" /> -->
 
 
                 <ImageView
@@ -188,7 +188,7 @@
                     android:background="?android:attr/listDivider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/value_email"
-                    app:layout_constraintTop_toBottomOf="@+id/hint_location" />
+                    app:layout_constraintTop_toBottomOf="@+id/hint_email" />
 
 
                 <TextView

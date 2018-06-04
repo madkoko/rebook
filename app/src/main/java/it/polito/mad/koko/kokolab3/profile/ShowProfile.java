@@ -103,6 +103,7 @@ public class ShowProfile extends AppCompatActivity {
 
         if (mFirebaseUser.equals(ProfileManager.getCurrentUserID())) {
             profile = ProfileManager.getProfile();
+            Log.d(TAG,profile.toString());
             edit.setVisibility(View.VISIBLE);
         } else {
             edit.setVisibility(View.INVISIBLE);
@@ -124,6 +125,7 @@ public class ShowProfile extends AppCompatActivity {
         tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText(R.string.show_profile));
         tabs.addTab(tabs.newTab().setText(R.string.books));
+        tabs.addTab(tabs.newTab().setText(R.string.comments));
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabs.getTabCount(), mFirebaseUser);
@@ -134,7 +136,6 @@ public class ShowProfile extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                setPosition(tab.getPosition());
             }
 
             @Override
@@ -168,6 +169,7 @@ public class ShowProfile extends AppCompatActivity {
         }*/
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        Log.d(TAG, "profile.getImage(): " + profile.getImage());
         bmp = ImageManager.getBitmapFromURL(profile.getImage());
 
         if (bmp != null) {

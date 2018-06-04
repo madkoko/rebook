@@ -18,13 +18,19 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class InsertBook extends AppCompatActivity {
@@ -42,9 +48,7 @@ public class InsertBook extends AppCompatActivity {
     private static final int SCAN_BOOK_INFO = 1;
 
     private Uri imageRef;
-    private Bitmap imageBitmap;
-    private boolean flagCamera;
-
+    private ProfileManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +62,6 @@ public class InsertBook extends AppCompatActivity {
         bookEditionYear = findViewById(R.id.edit_book_edition_year);
         bookConditions = findViewById(R.id.edit_book_conditions);
         bookPhoto = findViewById(R.id.insert_book_photo);
-
 
         ImageButton photoButton = findViewById(R.id.book_photo_button);
         photoButton.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +122,7 @@ public class InsertBook extends AppCompatActivity {
                         bookAuthor.setText(bookInfo.get("authors"));
                         bookPublisher.setText((bookInfo.get("publisher")));
                         bookEditionYear.setText(bookInfo.get("editionYear"));
+
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
@@ -127,6 +131,11 @@ public class InsertBook extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Method to create the book to be inserted in Firebase
+     * @param uid current user ID inserted into the book
+     */
 
     public void createBook(String uid) {
 
@@ -144,12 +153,11 @@ public class InsertBook extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] shown_image = baos.toByteArray();
 
-        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, uid, null);
+        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, null,uid,null,"yes",ProfileManager.getProfile());
 
-        BookManager.insertBook(book, shown_image);
+        BookManager.insertBook(book,shown_image);
 
         finish();
-
     }
 
     @Override
@@ -166,9 +174,9 @@ public class InsertBook extends AppCompatActivity {
             //create a new BitMap
             createImageFile(extras);
             // set flags for future state
-            flagCamera = true;
+            boolean flagCamera = true;
 
-            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             bookPhoto.setImageBitmap(tmp);
 
         }
@@ -188,6 +196,7 @@ public class InsertBook extends AppCompatActivity {
                 bookAuthor.setText(bookInfo.get("authors"));
                 bookPublisher.setText((bookInfo.get("publisher")));
                 bookEditionYear.setText(bookInfo.get("editionYear"));
+
             } else {
                 Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();
             }
@@ -195,10 +204,10 @@ public class InsertBook extends AppCompatActivity {
     }
 
     private void createImageFile(Bundle extras) {
-        imageBitmap = (Bitmap) extras.get("data");
+        Bitmap imageBitmap = (Bitmap) extras.get("data");
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();

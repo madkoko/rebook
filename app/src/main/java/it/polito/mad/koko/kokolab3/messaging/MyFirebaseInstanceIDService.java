@@ -1,19 +1,3 @@
-/**
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package it.polito.mad.koko.kokolab3.messaging;
 
 import android.util.Log;
@@ -23,14 +7,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
@@ -88,12 +76,25 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                             }
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
+                        @Override public void onCancelled(DatabaseError databaseError) {}
                     }
             );
+
+            ProfileManager.getBooks(new OnGetDataListener() {
+                @Override
+                public void onSuccess(DataSnapshot data) {
+                    if(data.exists()) {
+                        // For each current user's book ID
+                        for(String bookId : ((Map<String, Book>) data.getValue()).keySet())
+                            DatabaseManager.set(
+                                refreshedToken,
+                                "books/" + bookId + "/bookOwner/tokenMessage"
+                            );
+                    }
+                }
+
+                @Override public void onFailed(DatabaseError databaseError) {}
+            });
         }
     }
 }

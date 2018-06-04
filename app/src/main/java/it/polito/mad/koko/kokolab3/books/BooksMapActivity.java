@@ -52,7 +52,9 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
         mapFragment.getMapAsync(this);
     }
 
-    /** Called when the map is ready. */
+    /**
+     * Called when the map is ready.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // Map
@@ -60,39 +62,37 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
 
         // Retrieving user IDs
         Intent mapsIntent = getIntent();
-        ArrayList<String> users = mapsIntent.getStringArrayListExtra("key");
+        HashMap<String, String> sharingUsersPositions = (HashMap<String, String>) mapsIntent.getSerializableExtra("sharingUsersPositions");
 
         // Collecting markers in order to zoom automatically
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        // For each user ID
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i) != null) {
-                if (ProfileManager.getProfile(users.get(i)) != null) {
-                    Profile user = ProfileManager.getProfile(users.get(i));
-                    String pos = user.getPosition();
-                    String nameUser = user.getName();
+        if (sharingUsersPositions != null) {
 
-                    //Transform String into a LetLng object
-                    String lat = pos.substring(pos.indexOf("(") + 1, pos.indexOf(","));
-                    String lng = pos.substring(pos.indexOf(",") + 1, pos.indexOf(")"));
-                    double latitude = Double.parseDouble(lat);
-                    double longitude = Double.parseDouble(lng);
-                    LatLng position = new LatLng(latitude, longitude);
+            for(String userName:sharingUsersPositions.keySet()) {
 
-                    // Add some markers to the map, and add a data title (name of users) to each marker.
-                    //Add only one time for point, if we have two equals point it marks only one time
-                    Marker marker = googleMap.addMarker(new MarkerOptions()
-                            .title(nameUser)
-                            .position(position));
+                String pos = sharingUsersPositions.get(userName);
 
-                    // Adding the marker to the set of markers in order to zoom automatically
-                    builder.include(marker.getPosition());
+                //Transform String into a LetLng object
+                String lat = pos.substring(pos.indexOf("(") + 1, pos.indexOf(","));
+                String lng = pos.substring(pos.indexOf(",") + 1, pos.indexOf(")"));
+                double latitude = Double.parseDouble(lat);
+                double longitude = Double.parseDouble(lng);
+                LatLng position = new LatLng(latitude, longitude);
 
-                    // Set a listener for marker click.
-                    mMap.setOnMarkerClickListener(this);
-                }
+                // Add some markers to the map, and add a data title (name of users) to each marker.
+                //Add only one time for point, if we have two equals point it marks only one time
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .title(userName)
+                        .position(position));
+
+                // Adding the marker to the set of markers in order to zoom automatically
+                builder.include(marker.getPosition());
+
+                // Set a listener for marker click.
+                mMap.setOnMarkerClickListener(this);
             }
+
         }
 
         // Building zoom bounds
@@ -103,16 +103,18 @@ public class BooksMapActivity extends FragmentActivity implements OnMapReadyCall
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
         // Map automatic zoom
-        if(ANIMATION)
+        if (ANIMATION)
             googleMap.animateCamera(cu);
         else
             googleMap.moveCamera(cu);
     }
 
-        /** Called when the user clicks a marker. */
+    /**
+     * Called when the user clicks a marker.
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        String g=marker.getTitle();
+        String g = marker.getTitle();
         // Quando avremo più utenti si aprirà un utente
         return false;
     }

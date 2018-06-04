@@ -21,6 +21,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
+import it.polito.mad.koko.kokolab3.profile.Profile;
+import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+
 /**
  * Created by Francesco on 13/04/2018.
  */
@@ -48,11 +52,11 @@ public class BookManager {
     /**
      * Arraylist with all the books in Firebase
      */
-    private static Map<String,Book> allBooks;
+    private static Map<String, Book> allBooks;
 
     static {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        booksDatabaseRef = database.getReference().child("books");
+        booksDatabaseRef = DatabaseManager.get("books");
         FirebaseStorage storage = FirebaseStorage.getInstance();
         booksStorageRef = storage.getReference().child("books");
     }
@@ -144,11 +148,12 @@ public class BookManager {
 
                     // Retrieve all the books from Firebase
                     for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
-                        Book book=bookSnapshot.getValue(Book.class);
-                        allBooks.put(bookSnapshot.getKey(),book);
+                        Book book = bookSnapshot.getValue(Book.class);
+                        allBooks.put(bookSnapshot.getKey(), book);
                     }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -159,9 +164,43 @@ public class BookManager {
     /**
      * @return Arraylist with all the books in Firebase
      */
-    public static Map<String,Book> getAllBooks() {
+    public static Map<String, Book> getAllBooks() {
 
         return allBooks;
     }
-}
 
+    /**
+     * Method to remove a book from Firebase
+     *
+     * @param bookId id of the book to be removed
+     */
+    public static void removeBook(String bookId) {
+        booksDatabaseRef.child(bookId).removeValue();
+    }
+
+    /**
+     * Method to update in Firebase when is edited by the owner
+     *
+     * @param bookId     Id of the book to be updated
+     * @param bookValues Map with all the values to be updated in Firebase
+     */
+    public static void updateBook(String bookId, Map<String, Object> bookValues, byte[] data) {
+
+        Map<String, Object> bookUpdates = new HashMap<>();
+
+
+        UploadTask uploadTask = booksStorageRef.child(bookId).putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                //Log.d(TAG,downloadUrl);
+                bookValues.put("image", downloadUrl);
+                bookUpdates.put(bookId, bookValues);
+                //ref.child(bookKey).child("image").setValue(downloadUrl);
+                booksDatabaseRef.updateChildren(bookUpdates);
+            }
+        });
+
+    }
+}

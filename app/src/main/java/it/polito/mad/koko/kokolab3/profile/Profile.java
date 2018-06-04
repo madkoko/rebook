@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.profile;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Properties that don't map to class fields are ignored when

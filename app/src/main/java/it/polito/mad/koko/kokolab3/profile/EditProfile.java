@@ -2,6 +2,7 @@ package it.polito.mad.koko.kokolab3.profile;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
@@ -9,6 +10,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,8 +38,15 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.books.Book;
+import it.polito.mad.koko.kokolab3.books.BookManager;
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
@@ -62,6 +72,11 @@ public class EditProfile extends AppCompatActivity {
     private TextView et_location;
     private EditText et_bio;
     private ImageView user_photo;
+
+    /**
+     * User profile information
+     */
+    private ProfileManager profileManager;
 
     /**
      * Firebase login profile, firebase database
@@ -150,15 +165,21 @@ public class EditProfile extends AppCompatActivity {
                 // listener to check if the username already exists in Firebase
                 ProfileManager.usernameExists(et_name.getText().toString(), new OnGetDataListener() {
                     @Override
-                    public void onStart() {
-
-                    }
-
-                    @Override
                     public void onSuccess(DataSnapshot data) {
+                        // The username already exists on Firebase
+                        boolean isCurrentUser=false;
+                        if(data.exists()) {
+                            Map<String, Profile> retrievedUser = (Map<String, Profile>)data.getValue();
 
-                        // if the data snapshot doesn't exists it means that that username doesn't exists in firebase
-                        if (!data.exists()) {
+                            // If the existing username corresponds to the current user
+                            if(retrievedUser.keySet().toArray()[0].toString().compareTo(ProfileManager.getCurrentUserID()) != 0)
+                                et_name.setError("This username already exists");
+                            else
+                                isCurrentUser=true;
+
+                        }
+                        // The username doesn't exists on Firebase
+                        if (!data.exists()||isCurrentUser) {
                             // Get the data from an ImageView as bytes
                             user_photo.setDrawingCacheEnabled(true);
                             user_photo.buildDrawingCache();
@@ -167,28 +188,58 @@ public class EditProfile extends AppCompatActivity {
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
 
+                            String name=et_name.getText().toString(),
+                                    email=et_email.getText().toString(),
+                                    phone=et_phone.getText().toString(),
+                                    location=et_location.getText().toString(),
+                                    bio=et_bio.getText().toString();
+
                             // Update the current user information on Firebase
                             ProfileManager.updateProfile(
                                     ProfileManager.getCurrentUserID(),
-                                    et_name.getText().toString(),
-                                    et_email.getText().toString(),
-                                    et_phone.getText().toString(),
-                                    et_location.getText().toString(),
-                                    et_bio.getText().toString(),
+                                    name,
+                                    email,
+                                    phone,
+                                    location,
+                                    bio,
                                     shown_image,
                                     latLng,
                                     FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
                             );
+
+                            ProfileManager.getBooks(new OnGetDataListener() {
+                                @Override
+                                public void onStart() {
+
+                                }
+
+                                @Override
+                                public void onSuccess(DataSnapshot data) {
+
+                                    Log.d(TAG,data.toString());
+                                    if(data.exists()){
+                                        for(String bookID:((Map<String,Object>)data.getValue()).keySet()) {
+                                            Log.d(TAG,bookID);
+                                            DatabaseManager.get("books",bookID,"bookOwner","name").setValue(name);
+                                            DatabaseManager.get("books",bookID,"bookOwner","email").setValue(email);
+                                            DatabaseManager.get("books",bookID,"bookOwner","location").setValue(location);
+                                            DatabaseManager.get("books",bookID,"bookOwner","position").setValue(latLng);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailed(DatabaseError databaseError) {
+
+                                }
+                            });
 
                             // Update the local file containing the current user profile information
                             ProfileManager.readProfile();
 
                             // Terminating the activity
                             finish();
-                        } else
-                            et_name.setError("This username already exists");
-
-
+                        }
                     }
 
                     @Override
@@ -350,7 +401,7 @@ public class EditProfile extends AppCompatActivity {
         imageBitmap = (Bitmap) extras.get("data");
         FileOutputStream out = null;
         try {
-            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
@@ -423,7 +474,7 @@ public class EditProfile extends AppCompatActivity {
         super.onResume();
 
         if (flagCamera) {
-            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "temp");
+            Bitmap tmp = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/temp");
             user_photo.setImageBitmap(tmp);
         } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
@@ -431,5 +482,4 @@ public class EditProfile extends AppCompatActivity {
             Picasso.get().load(currentUserProfile.getImage()).fit().centerCrop().into(user_photo);
         }
     }
-
 }

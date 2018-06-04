@@ -49,8 +49,10 @@
     <string name="required_fields">Required fields</string>
     <string name="extra_fields">Extra fields</string>
     <string name="edit_location"> Insert Your Position </string>
+    <string name="comments">comments</string>
 
-   <!-- Rating -->
+
+    <!-- Rating -->
     <string name="feedback_edit_text">Leave a feedback&#8230;</string>
 
 

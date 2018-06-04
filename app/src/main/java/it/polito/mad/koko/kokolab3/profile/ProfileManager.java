@@ -9,8 +9,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,10 +21,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
@@ -93,6 +97,12 @@ public class ProfileManager {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    public ConcurrentMap<String, Profile> getAllUsers() {
+        synchronized (allUsers) {
+            return allUsers;
+        }
+    }
+
     /**
      * @return the current user ID on Firebase.
      */
@@ -147,6 +157,27 @@ public class ProfileManager {
         }
 
         return currentUserProfile;
+    }
+
+    /**
+     * @param listener  action to be perfomed upon retrieving all user's books
+     */
+    public static void getBooks(final OnGetDataListener listener) {
+        DatabaseManager.get("books").orderByChild("uid").equalTo(ProfileManager.getCurrentUserID()).addListenerForSingleValueEvent(
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (listener != null)
+                        listener.onSuccess(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    if (listener != null)
+                        listener.onFailed(databaseError);
+                }
+            }
+        );
     }
 
     /**
@@ -267,9 +298,6 @@ public class ProfileManager {
      * @param listener the listener object that will process the retrieved data.
      */
     public static void readProfile(final OnGetDataListener listener) {
-        if (listener != null)
-            listener.onStart();
-
         ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -348,13 +376,9 @@ public class ProfileManager {
      * @param listener
      */
     public static void usernameExists(String username, final OnGetDataListener listener) {
-        if (listener != null)
-            listener.onStart();
-
         DatabaseManager.get("users").orderByChild("name").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 if (listener != null)
                     listener.onSuccess(dataSnapshot);
             }
@@ -372,10 +396,9 @@ public class ProfileManager {
      * @param uid userId to which add the rating and the feedback
      * @param rating total stars rated
      * @param feedback feedback leaved by the user
-     * @param reqId id of the request that will be the key of the feedback under the "feedbacks" child
      */
 
-    public static void addRating(String uid, String rating, String feedback, String reqId) {
+    public static void addRating(String uid, String rating, String feedback) {
         DatabaseManager.get("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -415,7 +438,7 @@ public class ProfileManager {
 
                     if (feedback != null && !feedback.equals(""))
                         // Insert the feedback into the child "feedbacks" in the receiver user with key=requestId
-                        DatabaseManager.get("users", uid, "feedbacks", reqId).setValue(feedback);
+                        DatabaseManager.get("users", uid, "feedback").push().setValue(feedback);
 
                     //usersRef.child(uid).child("completedExchanges").setValue(String.valueOf(completedExchanges));
                 }

@@ -5,9 +5,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +30,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.gson.Gson;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
+import java.util.ArrayList;
+import java.util.List;
+
+import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
+import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
@@ -58,9 +66,10 @@ public class HomeActivity extends AppCompatActivity
 
     private int INSERT_BOOK = 20;
 
-    private int FIRST_LOGIN_EDIT_PROFILE = 30;
+    private int FIRST_LOGIN_EDIT_PROFILE = 30,
+                LOGOUT_FROM_EDIT_PROFILE = 3;
 
-    private int LOGOUT_FROM_EDIT_PROFILE = 3;
+    private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 40;
 
     /**
      * Request code for the activity "ShowBooks" to show only the current user's books
@@ -82,6 +91,9 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG, "onCreate() called");
 
+        // check if camera and storage are allowed
+        checkAndRequestPermissions();
+
         // If the local offline file containing the current user's information does not exist
         if (!ProfileManager.profileFileExists())
             // Force a logout operation
@@ -95,8 +107,6 @@ public class HomeActivity extends AppCompatActivity
         fab.setOnClickListener(view -> {
             Intent insertBook = new Intent(getApplicationContext(), InsertBook.class);
             insertBook.putExtra("uid", ProfileManager.getCurrentUserID());
-            //BookManager.removeUserBooksEventListener();
-            //BookManager.removeSearchBooksEventListener();
             startActivityForResult(insertBook, INSERT_BOOK);
         });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -224,14 +234,8 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG, "onActivityResult() called");
 
-        /*if (requestCode == SEARCH_BOOKS && resultCode != RESULT_CANCELED) {
-
-            Intent showSearchBooks = new Intent(getApplicationContext(), ShowBooks.class);
-            showSearchBooks.putExtra("request_code", SEARCH_BOOKS);
-            startActivity(showSearchBooks);
-        }*/
-
         // Debugging
+        Log.d(TAG, "HomeActivity::onActivityResult() has been called");
         Log.d(TAG, "requestCode: " + requestCode);
         Log.d(TAG, "resultCode: " + resultCode);
 
@@ -254,10 +258,6 @@ public class HomeActivity extends AppCompatActivity
 
             // If this is a new user or the user has not finished the registration
             ProfileManager.readProfile(new OnGetDataListener() {
-                @Override
-                public void onStart() {
-                }
-
                 @Override
                 public void onSuccess(DataSnapshot data) {
                     /*  If the user has not completed the registration procedure
@@ -372,4 +372,32 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG, "onResume() called");
     }
+
+    /**
+     * method to check camera and storage permissions
+     */
+    private void checkAndRequestPermissions() {
+        int camera = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA);
+        int writeStorage = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readStorage = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        List<String> listPermissionsNeeded = new ArrayList<>();
+
+        if (camera != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.CAMERA);
+        }
+        if (writeStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (readStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray
+                    (new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+
+        }
+    }
+
 }
