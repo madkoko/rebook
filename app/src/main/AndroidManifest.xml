@@ -39,7 +39,9 @@
         <!-- Home Activity -->
         <activity
             android:name=".HomeActivity"
+            android:configChanges="orientation"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,46 +61,87 @@
         <!-- Auth activities -->
         <activity
             android:name=".auth.custom.ChooserActivity"
-            android:label="@string/chooser_activity_title" />
+            android:configChanges="orientation"
+            android:label="@string/chooser_activity_title"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.AnonymousAuthActivity"
-            android:label="@string/label_anonymous_auth" />
+            android:configChanges="orientation"
+            android:label="@string/label_anonymous_auth"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.CustomAuthActivity"
-            android:label="@string/label_custom_auth" />
+            android:configChanges="orientation"
+            android:label="@string/label_custom_auth"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.EmailPasswordActivity"
+            android:configChanges="orientation"
             android:label="@string/label_emailpassword"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".auth.provider.FacebookLoginActivity"
-            android:label="@string/label_facebook_login" />
+            android:configChanges="orientation"
+            android:label="@string/label_facebook_login"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.FirebaseUIActivity"
-            android:label="@string/label_firebase_ui" />
+            android:configChanges="orientation"
+            android:label="@string/label_firebase_ui"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.GoogleSignInActivity"
-            android:label="@string/label_google_sign_in" />
+            android:configChanges="orientation"
+            android:label="@string/label_google_sign_in"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.PhoneAuthActivity"
-            android:label="@string/label_phone_auth" />
+            android:configChanges="orientation"
+            android:label="@string/label_phone_auth"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".auth.provider.TwitterLoginActivity"
-            android:label="@string/label_twitter_login" />
+            android:configChanges="orientation"
+            android:label="@string/label_twitter_login"
+            android:screenOrientation="portrait" />
 
         <!-- Book-related activities -->
-        <activity android:name=".books.InsertBook" />
-        <activity android:name=".books.ShowBooks" />
-        <activity android:name=".books.ShowBook" />
-        <activity android:name=".books.SearchBooks" />
-        <activity android:name=".books.ScanISBNActivity" />
-        <activity android:name=".books.BooksMapActivity" />
+        <activity
+            android:name=".books.InsertBook"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".books.ShowBooks"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".books.ShowBook"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".books.SearchBooks"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".books.ScanISBNActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".books.BooksMapActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
         <!-- Profile-related activities -->
         <activity
             android:name=".profile.ShowProfile"
-            android:label="@string/show_profile" />
-        <activity android:name=".profile.EditProfile" />
+            android:configChanges="orientation"
+            android:label="@string/show_profile"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.EditProfile"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
         <!-- Exchange requests receivers -->
         <receiver
@@ -142,9 +185,18 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
 
-        <activity android:name=".messaging.ShowChats" />
-        <activity android:name=".messaging.ShowChat" />
-        <activity android:name=".books.EditBook"></activity>
+        <activity
+            android:name=".messaging.ShowChats"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".messaging.ShowChat"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".books.EditBook"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
