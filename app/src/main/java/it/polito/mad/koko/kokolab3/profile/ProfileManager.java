@@ -362,7 +362,6 @@ public class ProfileManager {
         DatabaseManager.get("users").orderByChild("name").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 if (listener != null)
                     listener.onSuccess(dataSnapshot);
             }

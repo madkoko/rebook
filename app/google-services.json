@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "761234817977",
-    "firebase_url": "https://kokolab2-a0129.firebaseio.com",
-    "project_id": "kokolab2-a0129",
-    "storage_bucket": "kokolab2-a0129.appspot.com"
+    "project_number": "143521046601",
+    "firebase_url": "https://kokolab-smartquerybook.firebaseio.com",
+    "project_id": "kokolab-smartquerybook",
+    "storage_bucket": "kokolab-smartquerybook.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:761234817977:android:be8ee89ca58dfc4c",
+        "mobilesdk_app_id": "1:143521046601:android:be8ee89ca58dfc4c",
         "android_client_info": {
           "package_name": "it.polito.mad.koko.kokolab3"
         }
       },
       "oauth_client": [
         {
-          "client_id": "761234817977-nv20n9bagp7rm96jporqve67cq4m76rj.apps.googleusercontent.com",
+          "client_id": "143521046601-uteib1f2pb8fillept7gtp3hk4aqpsru.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "it.polito.mad.koko.kokolab3",
@@ -23,17 +23,17 @@
           }
         },
         {
-          "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+          "client_id": "143521046601-h77lmmuocg58kkdsbeg4dafqh4srms7c.apps.googleusercontent.com",
           "client_type": 3
         },
         {
-          "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+          "client_id": "143521046601-h77lmmuocg58kkdsbeg4dafqh4srms7c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDrTztQPbOmc9C09g1hJMWFR-Q8A5-Ingw"
+          "current_key": "AIzaSyAdQa514xj4nRmFfRteVvtWw9wrud_zUDQ"
         }
       ],
       "services": {
@@ -44,7 +44,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "761234817977-g859cfga62vln1ed1u15c7vhpp4f0k2h.apps.googleusercontent.com",
+              "client_id": "143521046601-h77lmmuocg58kkdsbeg4dafqh4srms7c.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

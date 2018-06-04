@@ -24,7 +24,10 @@ public class Book implements Serializable {
     private String sharable;
     private Profile bookOwner;
 
-    public Book(){};
+    public Book() {
+    }
+
+    ;
 
     public Book(String ISBN, String title, String author, String publisher, String editionYear, String bookConditions, String image, String uid, String borrowedTo, String sharable, Profile bookOwner) {
         this.ISBN = ISBN;
@@ -34,10 +37,21 @@ public class Book implements Serializable {
         this.editionYear = editionYear;
         this.bookConditions = bookConditions;
         this.image = image;
-        this.uid=uid;
+        this.uid = uid;
         this.borrowedTo = borrowedTo;
         this.sharable = sharable;
-        this.bookOwner=new Profile(bookOwner.getName(),null,null,bookOwner.getLocation(),null,bookOwner.getImage(),bookOwner.getPosition(),bookOwner.getTokenMessage());
+        this.bookOwner = new Profile(
+                bookOwner.getName(),
+                null,
+                null,
+                bookOwner.getLocation(),
+                null,
+                bookOwner.getImage(),
+                bookOwner.getPosition(),
+                bookOwner.getTokenMessage(),
+                null,
+                null
+        );
     }
 
     public String getISBN() {

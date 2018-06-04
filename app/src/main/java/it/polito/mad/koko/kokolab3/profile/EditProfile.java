@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
@@ -160,15 +161,24 @@ public class EditProfile extends AppCompatActivity {
                 // listener to check if the username already exists in Firebase
                 ProfileManager.usernameExists(et_name.getText().toString(), new OnGetDataListener() {
                     @Override
-                    public void onStart() {
-
-                    }
+                    public void onStart() {}
 
                     @Override
                     public void onSuccess(DataSnapshot data) {
+                        // The username already exists on Firebase
+                        boolean isCurrentUser=false;
+                        if(data.exists()) {
+                            Map<String, Profile> retrievedUser = (Map<String, Profile>)data.getValue();
 
-                        // if the data snapshot doesn't exists it means that that username doesn't exists in firebase
-                        if (!data.exists()) {
+                            // If the existing username corresponds to the current user
+                            if(retrievedUser.keySet().toArray()[0].toString().compareTo(ProfileManager.getCurrentUserID()) != 0)
+                                et_name.setError("This username already exists");
+                            else
+                                isCurrentUser=true;
+
+                        }
+                        // The username doesn't exists on Firebase
+                        if (!data.exists()||isCurrentUser) {
                             // Get the data from an ImageView as bytes
                             user_photo.setDrawingCacheEnabled(true);
                             user_photo.buildDrawingCache();
@@ -195,10 +205,7 @@ public class EditProfile extends AppCompatActivity {
 
                             // Terminating the activity
                             finish();
-                        } else
-                            et_name.setError("This username already exists");
-
-
+                        }
                     }
 
                     @Override

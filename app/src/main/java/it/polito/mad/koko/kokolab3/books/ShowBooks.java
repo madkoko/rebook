@@ -99,7 +99,7 @@ public class ShowBooks extends AppCompatActivity
                         if (view == null)
                             view = getLayoutInflater().inflate(R.layout.search_books_adapter_layout, viewGroup, false);
 
-                        createBooksView(view, bookMap.get(bookMap.keySet().toArray()[i]), (String) bookMap.keySet().toArray()[i]);
+                        createBooksView(view, bookMap.get(bookMap.keySet().toArray()[i]), null,(String) bookMap.keySet().toArray()[i]);
 
                         TextView sharingUser = (TextView) view.findViewById(R.id.sharing_user);
                         String uid = bookMap.get(bookMap.keySet().toArray()[i]).getUid();
@@ -137,7 +137,7 @@ public class ShowBooks extends AppCompatActivity
 
                     Log.d(TAG, booksAdapter.getRef(position).getKey());
 
-                    createBooksView(view, model, null);
+                    createBooksView(view, model, position,null);
 
                     // Insert the current Book (model) into an array to use it in "showMap"
                     // IN MY_BOOKS "MAP" BUTTON IS NOT VISIBLE ANYMORE

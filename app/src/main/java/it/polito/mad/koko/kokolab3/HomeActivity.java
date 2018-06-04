@@ -91,6 +91,9 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG, "onCreate() called");
 
+        // check if camera and storage are allowed
+        checkAndRequestPermissions();
+
         // If the local offline file containing the current user's information does not exist
         if (!ProfileManager.profileFileExists())
             // Force a logout operation
@@ -243,9 +246,6 @@ public class HomeActivity extends AppCompatActivity
 
             // Inform the user of the successful authentication
             Toast.makeText(this, "Successfully signed in", Toast.LENGTH_LONG).show();
-
-            // check if camera and storage are allowed
-            checkAndRequestPermissions();
 
             // Retrieve all current user's chats
             MessageManager.setUserChatsIDListener();

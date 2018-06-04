@@ -55,10 +55,6 @@ public class InsertBook extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_book);
 
-        pm=ProfileManager.getInstance();
-
-        pm.retrieveCurrentUser();
-
         bookIsbn = findViewById(R.id.edit_book_ISBN);
         bookTitle = findViewById(R.id.edit_book_title);
         bookAuthor = findViewById(R.id.edit_book_author);
@@ -155,8 +151,6 @@ public class InsertBook extends AppCompatActivity {
         String editionYear = bookEditionYear.getText().toString();
         String conditions = bookConditions.getText().toString();
 
-        Profile currentUser=pm.getCurrentUser();
-
         bookPhoto.setDrawingCacheEnabled(true);
         bookPhoto.buildDrawingCache();
         Bitmap bitmap = bookPhoto.getDrawingCache();
@@ -164,7 +158,7 @@ public class InsertBook extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] shown_image = baos.toByteArray();
 
-        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, null,uid,null,"yes",currentUser);
+        Book book = new Book(isbn, title, author, publisher, editionYear, conditions, null,uid,null,"yes",ProfileManager.getProfile());
 
         BookManager.insertBook(book,shown_image);
 

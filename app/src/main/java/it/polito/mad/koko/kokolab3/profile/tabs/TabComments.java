@@ -21,7 +21,7 @@ import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 
 @SuppressLint("ValidFragment")
-class TabComments extends Fragment {
+public class TabComments extends Fragment {
     private final String TAG = "TabComments";
     private final String uid;
     private Query query;

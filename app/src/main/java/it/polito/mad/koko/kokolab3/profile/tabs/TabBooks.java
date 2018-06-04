@@ -38,7 +38,7 @@ public class TabBooks extends Fragment {
 
         query = FirebaseDatabase.getInstance().getReference().child("books").orderByChild("uid").equalTo(uid);
         FirebaseListOptions<Book> options = new FirebaseListOptions.Builder<Book>()
-                .setLayout(R.layout.books_adapter_layout)
+                .setLayout(R.layout.my_books_adapter_layout)
                 .setQuery(query, Book.class)
                 .build();
 
