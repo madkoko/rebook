@@ -2,9 +2,7 @@ package it.polito.mad.koko.kokolab3;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -27,21 +25,18 @@ import android.widget.ViewSwitcher;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.gson.Gson;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
-import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.books.InsertBook;
 import it.polito.mad.koko.kokolab3.books.SearchBooks;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseInstanceIDService;
-import it.polito.mad.koko.kokolab3.messaging.ShowChats;
+import it.polito.mad.koko.kokolab3.messaging.tabShowChat.BookRequest;
 import it.polito.mad.koko.kokolab3.profile.EditProfile;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -76,12 +71,13 @@ public class HomeActivity extends AppCompatActivity
      */
     private int USER_BOOKS = 0;
     private ListView listView;
-    private Fragment homeListBook;
-    private Fragment homeListChats;
     private ViewSwitcher viewSwitcher;
     private LinearLayout layoutRecycler;
     private LinearLayout layoutList;
+    private Fragment homeListBook;
+    private Fragment homeListChats;
     private Fragment homeSharingBook;
+    private Fragment homeRequestBook;
 
     //private int SEARCH_BOOKS = 2;
 
@@ -128,13 +124,23 @@ public class HomeActivity extends AppCompatActivity
         layoutList = findViewById(R.id.home_list_switcher);
         TabLayout tab_layout = findViewById(R.id.tabs_home);
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
-        tab_layout.addTab(tab_layout.newTab().setText("home"));
+        //Tab for list of Books
+        tab_layout.addTab(tab_layout.newTab().setText(R.string.home));
         homeListBook = new HomeListBook();
-        tab_layout.addTab(tab_layout.newTab().setText("chats"));
+        //Tab for list of Chats
+        tab_layout.addTab(tab_layout.newTab().setText(R.string.chats_activity_title));
         homeListChats = new HomeChatList();
-        tab_layout.addTab(tab_layout.newTab().setText("borrowed"));
+        //Tab for list of borrowed books
+        tab_layout.addTab(tab_layout.newTab().setText(R.string.borrowed));
         homeSharingBook = new HomeSharingBook();
+        //Tab for pending Request
+        tab_layout.addTab(tab_layout.newTab().setText(R.string.request_book));
+        //Fag for fragment
+        int flag=0;
+        homeRequestBook = new BookRequest(flag);
+        //Set first fragment
         selectFragment(0);
+        //Add listener to tab_layout
         tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -186,6 +192,9 @@ public class HomeActivity extends AppCompatActivity
             case 2:
                 getFragmentManager().beginTransaction().remove(homeSharingBook).commit();
                 break;
+            case 3:
+                getFragmentManager().beginTransaction().remove(homeRequestBook).commit();
+                break;
             default:
                 break;
         }
@@ -213,6 +222,11 @@ public class HomeActivity extends AppCompatActivity
                 }
                 getFragmentManager().beginTransaction().add(android.R.id.content, homeSharingBook).commit();
                 break;
+            case 3:
+                if(viewSwitcher.getCurrentView() != layoutList){
+                    viewSwitcher.showNext();
+                }
+                getFragmentManager().beginTransaction().add(android.R.id.content, homeRequestBook).commit();
             default:
 
                 break;

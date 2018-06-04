@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab3.messaging.tabShowChat
 
+import android.annotation.SuppressLint
 import android.app.Fragment
 import android.os.Bundle
 import android.util.Log
@@ -16,11 +17,8 @@ import it.polito.mad.koko.kokolab3.request.Request
 import it.polito.mad.koko.kokolab3.request.RequestManager
 
 
-/**
- * Created by Franci on 22/05/18.
- */
-
-class BookRequest() : Fragment() {
+@SuppressLint("ValidFragment")
+class BookRequest(flag: Int) : Fragment() {
 
     private val TAG = "BookRequest"
 
@@ -30,6 +28,10 @@ class BookRequest() : Fragment() {
     var reqListView: ListView? = null
     var reqId: String? = null
     var bookId: String? = null
+
+    val flag :Int = flag
+
+
 
     /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
 
@@ -46,7 +48,13 @@ class BookRequest() : Fragment() {
 
         super.onCreate(savedInstanceState)
 
-        val myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
+        val myListView : ListView
+
+        if(flag==0){
+            myListView = activity.findViewById<ListView>(R.id.list_home_chats) as ListView
+        }else {
+            myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
+        }
 
         val myReqClass = Request::class
 
