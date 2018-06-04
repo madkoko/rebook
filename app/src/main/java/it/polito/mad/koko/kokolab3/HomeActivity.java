@@ -259,10 +259,6 @@ public class HomeActivity extends AppCompatActivity
             // If this is a new user or the user has not finished the registration
             ProfileManager.readProfile(new OnGetDataListener() {
                 @Override
-                public void onStart() {
-                }
-
-                @Override
                 public void onSuccess(DataSnapshot data) {
                     /*  If the user has not completed the registration procedure
                         (for instance it is a new user) */

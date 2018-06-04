@@ -161,9 +161,6 @@ public class EditProfile extends AppCompatActivity {
                 // listener to check if the username already exists in Firebase
                 ProfileManager.usernameExists(et_name.getText().toString(), new OnGetDataListener() {
                     @Override
-                    public void onStart() {}
-
-                    @Override
                     public void onSuccess(DataSnapshot data) {
                         // The username already exists on Firebase
                         boolean isCurrentUser=false;

@@ -298,9 +298,6 @@ public class ProfileManager {
      * @param listener the listener object that will process the retrieved data.
      */
     public static void readProfile(final OnGetDataListener listener) {
-        if (listener != null)
-            listener.onStart();
-
         ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -379,9 +376,6 @@ public class ProfileManager {
      * @param listener
      */
     public static void usernameExists(String username, final OnGetDataListener listener) {
-        if (listener != null)
-            listener.onStart();
-
         DatabaseManager.get("users").orderByChild("name").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -29,8 +29,6 @@ class RequestManager() {
 
         fun createRequest(request: Request, data: ByteArray, requestId: String) {
             getRequest(requestId, object : OnGetDataListener {
-                override fun onStart() {}
-
                 override fun onSuccess(dataSnapshot: DataSnapshot?) {
                     Log.d(TAG, "dataSnapshot: " + dataSnapshot)
                     Log.d(TAG, "dataSnapshot!!.exists(): " + dataSnapshot!!.exists())
@@ -69,8 +67,6 @@ class RequestManager() {
          * It returns the specified request.
          */
         private fun getRequest(requestId: String, listener: OnGetDataListener) {
-            listener?.onStart()
-
             /* 1. Create the 'requests' child
             val database = FirebaseDatabase.getInstance()
             val reqRef = database.reference.child("requests")*/

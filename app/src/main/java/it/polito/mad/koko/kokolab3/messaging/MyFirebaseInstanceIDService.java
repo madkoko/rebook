@@ -14,6 +14,7 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
@@ -75,26 +76,24 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                             }
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
+                        @Override public void onCancelled(DatabaseError databaseError) {}
                     }
             );
 
             ProfileManager.getBooks(new OnGetDataListener() {
                 @Override
-                public void onStart() {}
-
-                @Override
                 public void onSuccess(DataSnapshot data) {
                     if(data.exists()) {
-
+                        // For each current user's book ID
+                        for(String bookId : ((Map<String, Book>) data.getValue()).keySet())
+                            DatabaseManager.set(
+                                refreshedToken,
+                                "books/" + bookId + "/bookOwner/tokenMessage"
+                            );
                     }
                 }
 
-                @Override
-                public void onFailed(DatabaseError databaseError) {}
+                @Override public void onFailed(DatabaseError databaseError) {}
             });
         }
     }
