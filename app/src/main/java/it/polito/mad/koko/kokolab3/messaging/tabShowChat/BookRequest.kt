@@ -26,6 +26,7 @@ import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.profile.ShowProfile
 import it.polito.mad.koko.kokolab3.request.Request
 import it.polito.mad.koko.kokolab3.request.RequestManager
+import org.w3c.dom.Text
 import java.util.*
 
 
@@ -93,6 +94,11 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                     val acceptButton = v.findViewById<Button>(R.id.accept)
                     val declineButton = v.findViewById<Button>(R.id.decline)
 
+                    val sendrName = v.findViewById<TextView>(R.id.req_requester)
+                    sendrName.setText(model.senderName)
+
+                    val ratedSwitch = v.findViewById<ViewSwitcher>(R.id.rated_switch)
+
                     ratingBar.visibility = View.INVISIBLE
                     feedbackEditText.visibility = View.INVISIBLE
 
@@ -123,6 +129,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                         }
                     } else if (model.status == "returned") {
+                        ratedSwitch.showNext();
                         acceptButton.visibility = View.VISIBLE
                         declineButton.visibility = View.INVISIBLE
                         acceptButton.setText(R.string.currency)
@@ -131,8 +138,12 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                         acceptButton.setOnClickListener {
                             ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                             RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
-                            if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
+                            val ratedText = v.findViewById<TextView>(R.id.rated_text)
+                            ratedText.setText(R.string.rated_added)
+                            if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0){
                                 RequestManager.ratedTransition(getRef(position).key)
+                                ratedSwitch.showPrevious();
+                            }
                         }
                         //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
                     } else {
@@ -176,7 +187,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             allCurrentUserRequests.put(bookSnapshot.key, request!!)
                         }
                     }
-                    val thisChatRequests= HashMap<String, Request>()
+                    val thisChatRequests = HashMap<String, Request>()
                     // For each current user's request
                     for ((key, value) in allCurrentUserRequests)
                     // If the request involves the user with whom the chat is opened
@@ -215,11 +226,14 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             bookTitle.text = model!!.bookName
                             Picasso.get().load(model.bookImage).into(bookRequest)
 
+                            val sendrName = v.findViewById<TextView>(R.id.req_requester)
+                            sendrName.setText(model.senderName)
+
                             val acceptButton = v.findViewById<Button>(R.id.accept)
                             val declineButton = v.findViewById<Button>(R.id.decline)
 
-                            ratingBar.visibility = View.INVISIBLE
-                            feedbackEditText.visibility = View.INVISIBLE
+                            val ratedSwitch = v.findViewById<ViewSwitcher>(R.id.rated_switch)
+
 
                             if (model.status.equals("pending")) {
                                 acceptButton.visibility = View.VISIBLE
@@ -248,6 +262,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                     FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                                 }
                             } else if (model.status == "returned") {
+                                ratedSwitch.showNext();
                                 acceptButton.visibility = View.VISIBLE
                                 declineButton.visibility = View.INVISIBLE
                                 acceptButton.setText(R.string.currency)
@@ -256,8 +271,12 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                 acceptButton.setOnClickListener {
                                     ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                                     RequestManager.putSenderRate(requestId, ratingBar.rating.toInt().toString())
-                                    if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0)
+                                    val ratedText = v.findViewById<TextView>(R.id.rated_text)
+                                    ratedText.setText(R.string.rated_added)
+                                    if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0){
                                         RequestManager.ratedTransition(requestId)
+                                        ratedSwitch.showPrevious();
+                                    }
                                 }
                                 //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
                             } else {
