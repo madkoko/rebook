@@ -12,9 +12,9 @@ data class Request (
         var bookName: String? = null,
         var bookImage: String? = null,
         var status: String? = null,
-        var ratingSender: String? = null,
+        var ratingReceiver: String? = null,
+        var ratingSender: String? = null
         //var commentSender: String? = null
-        var ratingReceiver: String? = null
         //var commentReceiver: String? = null
 ) {
     //constructor()
