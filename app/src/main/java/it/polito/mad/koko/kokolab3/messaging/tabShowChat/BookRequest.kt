@@ -26,10 +26,11 @@ import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.profile.ShowProfile
 import it.polito.mad.koko.kokolab3.request.Request
 import it.polito.mad.koko.kokolab3.request.RequestManager
+import java.util.*
 
 
 @SuppressLint("ValidFragment")
-class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
+class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
 
     private val TAG = "BookRequest"
 
@@ -39,7 +40,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
     var bookId: String? = null
 
     val flag: Int = flag
-    val requester: UserChatInfo = receiverInfo
+    val requester: UserChatInfo? = receiverInfo
 
     /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
 
@@ -92,12 +93,12 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                     val acceptButton = v.findViewById<Button>(R.id.accept)
                     val declineButton = v.findViewById<Button>(R.id.decline)
 
-                    ratingBar.setVisibility(View.INVISIBLE)
-                    feedbackEditText.setVisibility(View.INVISIBLE)
+                    ratingBar.visibility = View.INVISIBLE
+                    feedbackEditText.visibility = View.INVISIBLE
 
                     if (model.status.equals("pending")) {
-                        acceptButton.setVisibility(View.VISIBLE)
-                        declineButton.setVisibility(View.VISIBLE)
+                        acceptButton.visibility = View.VISIBLE
+                        declineButton.visibility = View.VISIBLE
                         declineButton.setOnClickListener {
                             RequestManager.declineRequest(
                                     getRef(position).key,
@@ -114,19 +115,19 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                             )
                         }
                     } else if (model.status.equals("returning")) {
-                        acceptButton.setVisibility(View.VISIBLE)
-                        declineButton.setVisibility(View.INVISIBLE)
+                        acceptButton.visibility = View.VISIBLE
+                        declineButton.visibility = View.INVISIBLE
                         acceptButton.setText(R.string.check_if_return)
                         acceptButton.setOnClickListener {
                             RequestManager.retunBook(getRef(position).key)
-                            FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes");
+                            FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                         }
                     } else if (model.status == "returned") {
-                        acceptButton.setVisibility(View.VISIBLE)
-                        declineButton.setVisibility(View.INVISIBLE)
+                        acceptButton.visibility = View.VISIBLE
+                        declineButton.visibility = View.INVISIBLE
                         acceptButton.setText(R.string.currency)
-                        ratingBar.setVisibility(View.VISIBLE)
-                        feedbackEditText.setVisibility(View.VISIBLE)
+                        ratingBar.visibility = View.VISIBLE
+                        feedbackEditText.visibility = View.VISIBLE
                         acceptButton.setOnClickListener {
                             ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                             RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
@@ -135,21 +136,21 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                         }
                         //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
                     } else {
-                        acceptButton.setVisibility(View.INVISIBLE)
-                        declineButton.setVisibility(View.INVISIBLE)
+                        acceptButton.visibility = View.INVISIBLE
+                        declineButton.visibility = View.INVISIBLE
                     }
                     if (!model.ratingSender.equals("")) {
-                        ratingBar.setVisibility(View.INVISIBLE)
-                        acceptButton.setVisibility(View.INVISIBLE)
-                        feedbackEditText.setVisibility(View.INVISIBLE)
+                        ratingBar.visibility = View.INVISIBLE
+                        acceptButton.visibility = View.INVISIBLE
+                        feedbackEditText.visibility = View.INVISIBLE
                     }
 
                 }
 
 
                 override fun onDataChanged() {
-                    if (adapter!!.getCount() == 0) {
-                        myListView.setEmptyView(activity.findViewById<View>(R.id.no_requests_found))
+                    if (adapter!!.count == 0) {
+                        myListView.emptyView = activity.findViewById<View>(R.id.no_requests_found)
                         Toast.makeText(activity.applicationContext, "No requests found.", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -157,7 +158,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
             }
 
             if (adapter != null) {
-                myListView!!.adapter = adapter
+                myListView.adapter = adapter
             }
             // Requests with the user with whom the chat is opened
         } else {
@@ -167,20 +168,23 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                 with the user with whom the chat is opened */
             val thisChatRequestsListener = object : OnGetDataListener {
                 override fun onSuccess(dataSnapshot: DataSnapshot) {
-                    // Every request that this user has sent
-                    val allCurrentUserRequests = dataSnapshot.value as Map<String, Request>
-
-                    // Requests sent only to the user with whom the chat is opened
-                    val thisChatRequests = HashMap<String, Request>()
-
+                    val allCurrentUserRequests = HashMap<String, Request>()
+                    if (dataSnapshot.exists()) {
+                        // Retrieve all the books from Firebase
+                        for (bookSnapshot in dataSnapshot.children) {
+                            val request = bookSnapshot.getValue(Request::class.java)
+                            allCurrentUserRequests.put(bookSnapshot.key, request!!)
+                        }
+                    }
+                    val thisChatRequests= HashMap<String, Request>()
                     // For each current user's request
                     for ((key, value) in allCurrentUserRequests)
                     // If the request involves the user with whom the chat is opened
-                        if (requester.secondPartyId.compareTo(allCurrentUserRequests.get(key)!!.senderId!!) === 0)
+                        if (requester!!.secondPartyId.compareTo(allCurrentUserRequests.get(key)!!.senderId!!) === 0)
                         // Add it to the current chat requests map
                             thisChatRequests.put(key, value)
 
-                    myListView.setAdapter(object : BaseAdapter() {
+                    myListView.adapter = object : BaseAdapter() {
 
                         override fun getCount(): Int {
                             return thisChatRequests.size
@@ -214,12 +218,12 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                             val acceptButton = v.findViewById<Button>(R.id.accept)
                             val declineButton = v.findViewById<Button>(R.id.decline)
 
-                            ratingBar.setVisibility(View.INVISIBLE)
-                            feedbackEditText.setVisibility(View.INVISIBLE)
+                            ratingBar.visibility = View.INVISIBLE
+                            feedbackEditText.visibility = View.INVISIBLE
 
                             if (model.status.equals("pending")) {
-                                acceptButton.setVisibility(View.VISIBLE)
-                                declineButton.setVisibility(View.VISIBLE)
+                                acceptButton.visibility = View.VISIBLE
+                                declineButton.visibility = View.VISIBLE
                                 declineButton.setOnClickListener {
                                     RequestManager.declineRequest(
                                             requestId,
@@ -236,19 +240,19 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                                     )
                                 }
                             } else if (model.status.equals("returning")) {
-                                acceptButton.setVisibility(View.VISIBLE)
-                                declineButton.setVisibility(View.INVISIBLE)
+                                acceptButton.visibility = View.VISIBLE
+                                declineButton.visibility = View.INVISIBLE
                                 acceptButton.setText(R.string.check_if_return)
                                 acceptButton.setOnClickListener {
                                     RequestManager.retunBook(requestId)
-                                    FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes");
+                                    FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                                 }
                             } else if (model.status == "returned") {
-                                acceptButton.setVisibility(View.VISIBLE)
-                                declineButton.setVisibility(View.INVISIBLE)
+                                acceptButton.visibility = View.VISIBLE
+                                declineButton.visibility = View.INVISIBLE
                                 acceptButton.setText(R.string.currency)
-                                ratingBar.setVisibility(View.VISIBLE)
-                                feedbackEditText.setVisibility(View.VISIBLE)
+                                ratingBar.visibility = View.VISIBLE
+                                feedbackEditText.visibility = View.VISIBLE
                                 acceptButton.setOnClickListener {
                                     ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                                     RequestManager.putSenderRate(requestId, ratingBar.rating.toInt().toString())
@@ -257,18 +261,18 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
                                 }
                                 //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
                             } else {
-                                acceptButton.setVisibility(View.INVISIBLE)
-                                declineButton.setVisibility(View.INVISIBLE)
+                                acceptButton.visibility = View.INVISIBLE
+                                declineButton.visibility = View.INVISIBLE
                             }
                             if (!model.ratingSender.equals("")) {
-                                ratingBar.setVisibility(View.INVISIBLE)
-                                acceptButton.setVisibility(View.INVISIBLE)
-                                feedbackEditText.setVisibility(View.INVISIBLE)
+                                ratingBar.visibility = View.INVISIBLE
+                                acceptButton.visibility = View.INVISIBLE
+                                feedbackEditText.visibility = View.INVISIBLE
                             }
 
                             return v
                         }
-                    })
+                    }
                 }
 
                 override fun onFailed(databaseError: DatabaseError) {}
@@ -286,14 +290,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
 
 
         }
-    }
-
-    override fun onResume() {   // non serve
-        super.onResume()
-    }
-
-    override fun onPause() {    // non serve
-        super.onPause()
     }
 
     override fun onStart() {

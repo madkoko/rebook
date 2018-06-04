@@ -1,75 +1,44 @@
 package it.polito.mad.koko.kokolab3.request
 
-import android.content.IntentSender
+import com.google.firebase.database.IgnoreExtraProperties
 
-/**
- * Created by Franci on 23/05/18.
- */
-class Request {
+import java.io.Serializable
 
-    val TAG = "Request"
+@IgnoreExtraProperties
+data class Request (
+        var senderId: String? = null,
+        var receiverId: String? = null,
+        var bookId: String? = null,
+        var bookName: String? = null,
+        var bookImage: String? = null,
+        var status: String? = null,
+        var ratingSender: String? = null,
+        //var commentSender: String? = null
+        var ratingReceiver: String? = null
+        //var commentReceiver: String? = null
+) {
+    //constructor()
 
-    var senderId: String? = null;
-    var receiverId: String? = null;
-    var bookId: String? = null;
-
-    var bookName: String? = null;
-    var bookImage: String? = null;
-    var status: String? = null;
-
-    var ratingSender: String? = null;
-    var commentSender: String? = null;
-    var ratingReceiver: String? = null;
-    var commentReceiver: String? = null;
-
-    constructor() : this("",
-                    "",
-                    "", "","","","")
-
-    constructor(_senderId: String, _receiverId: String, _bookId: String, _bookName: String, _bookImage: String, _ratingSender: String, _ratingReceiver: String) {
-        senderId = _senderId;
-        receiverId = _receiverId;
-        bookId = _bookId;
-
-        bookName = _bookName;
-        bookImage = _bookImage;
-        status = "pending";
-
-        ratingSender = _ratingSender;
-        //commentSender = commentSender;
-        ratingReceiver = _ratingReceiver;
-        //commentReceiver = commentReceiver;
-    }
-
-    /*constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, _ratingSender: String, _commentSender: String, _ratingReceiver: String, _commentReceiver: String):
-            this(senderId, receiverId, bookId, bookName, bookImage,) {
-        this.ratingSender = _ratingSender;
-        this.commentSender = _commentSender;
-        this.ratingReceiver = _ratingReceiver;
-        this.commentReceiver = _commentReceiver;
+    /*constructor(senderId: String, receiverId: String, bookId: String, bookName: String, bookImage: String, status: String, ratingSender: String, ratingReceiver: String) {
+        this.senderId = senderId
+        this.receiverId = receiverId
+        this.bookId = bookId
+        this.bookName = bookName
+        this.bookImage = bookImage
+        this.status = status
+        this.ratingSender = ratingSender
+        //this.commentSender = commentSender
+        this.ratingReceiver = ratingReceiver
+        //this.commentReceiver = commentReceiver
     }*/
-
-    fun returnBook(){
-        this.status = "return";
-    }
-
-    fun borrowBook(){
-        this.status = "onBorrow";
-    }
-
-    fun rate(rating: String, comment: String){
-        this.status = "rated";
-        this.ratingSender = rating;
-        this.commentSender = comment;
-    }
 
     override fun toString(): String {
         return "Request{" +
-                "Sender Id='" + senderId + '\'' +
-                ", Receiver Id='" + receiverId + '\'' +
-                ", Book Name='" + bookName + '\'' +
-                ", Book Image='" + bookImage + '\'' +
-                ", Status ='" + status + '\'' +
-                '}'
+                "Sender Id='" + senderId + '\''.toString() +
+                ", Receiver Id='" + receiverId + '\''.toString() +
+                ", Book Name='" + bookName + '\''.toString() +
+                ", Book Image='" + bookImage + '\''.toString() +
+                ", Status ='" + status + '\''.toString() +
+                '}'.toString()
     }
 }
