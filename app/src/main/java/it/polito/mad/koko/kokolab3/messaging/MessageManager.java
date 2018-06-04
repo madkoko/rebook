@@ -123,8 +123,8 @@ public class MessageManager {
      * Firebase server's key access
      */
     private static String SERVER_KEY =
-            "AAAAsT0hg7k:APA91bEfqnxkD9J_FkI1MBqo3NqBDgaYD1A1n9uRsrsR0HQScs1v4DddJ" +
-                    "KTsUh0muPmgHcgJFSjA-0zULkf-40Gurj4absEFz7AgKi_W6CRyVm2zQYIn3AcksIELpMuejGCb4QkgG4fD";
+            "AAAAIWqFYEk:APA91bELlRju6D0WnIjJsnXKCNugxw4u7AExuFwR2P4SEb4Xyq" +
+                    "0udn307rfcfLmZdejYB-IRQgVRcipvLJflOU5Lgcs_88EPy_ImM-HdgfRhbChYfHgM1UhG-IqeSDi_joW_M04hb59l";
     private static String messageID;
 
 

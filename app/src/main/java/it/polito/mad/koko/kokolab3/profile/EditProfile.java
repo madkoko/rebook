@@ -217,7 +217,6 @@ public class EditProfile extends AppCompatActivity {
                                         for(String bookID:((Map<String,Object>)data.getValue()).keySet()) {
                                             Log.d(TAG,bookID);
                                             DatabaseManager.get("books",bookID,"bookOwner","name").setValue(name);
-                                            DatabaseManager.get("books",bookID,"bookOwner","email").setValue(email);
                                             DatabaseManager.get("books",bookID,"bookOwner","location").setValue(location);
                                             DatabaseManager.get("books",bookID,"bookOwner","position").setValue(latLng);
                                         }
