@@ -50,17 +50,20 @@ class BookRequest(flag: Int) : Fragment() {
 
         val myListView : ListView
 
-        if(flag==0){
-            myListView = activity.findViewById<ListView>(R.id.list_home_chats) as ListView
-        }else {
-            myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
-        }
+
 
         val myReqClass = Request::class
 
         myId = FirebaseAuth.getInstance().currentUser!!.uid //ok not null
 
         val query = FirebaseDatabase.getInstance().reference.child("requests").orderByChild("receiverId").equalTo(myId)
+
+        if(flag==0){
+            myListView = activity.findViewById<ListView>(R.id.list_home_chats) as ListView
+        }else {
+            myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
+            //query.addListenerForSingleValueEvent()
+        }
 
 
         val options = FirebaseListOptions.Builder<Request>() //savedInstanceState null
