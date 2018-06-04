@@ -122,11 +122,6 @@ public class InsertBook extends AppCompatActivity {
                         bookAuthor.setText(bookInfo.get("authors"));
                         bookPublisher.setText((bookInfo.get("publisher")));
                         bookEditionYear.setText(bookInfo.get("editionYear"));
-                        String bookThumbnail=bookInfo.get("bookThumbnail");
-                        if(bookThumbnail!=null&&!bookThumbnail.equals("")) {
-                            bookPhoto.setImageBitmap(BitmapFactory.decodeFile(bookThumbnail));
-
-                        }
 
                     }
                 } else {
@@ -201,21 +196,6 @@ public class InsertBook extends AppCompatActivity {
                 bookAuthor.setText(bookInfo.get("authors"));
                 bookPublisher.setText((bookInfo.get("publisher")));
                 bookEditionYear.setText(bookInfo.get("editionYear"));
-                String bookThumbnail=bookInfo.get("bookThumbnail");
-                if(bookThumbnail!=null&&!bookThumbnail.equals("")) {
-                    URL url = null;
-                    try {
-                        url = new URL(bookThumbnail);
-                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        Log.d(TAG,bmp.toString());
-                        bookPhoto.setImageBitmap(bmp);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
 
             } else {
                 Toast.makeText(getApplicationContext(), "Insert a valid ISBN", Toast.LENGTH_SHORT).show();

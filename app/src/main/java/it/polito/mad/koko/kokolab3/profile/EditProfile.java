@@ -39,10 +39,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.books.Book;
+import it.polito.mad.koko.kokolab3.books.BookManager;
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
@@ -184,18 +188,51 @@ public class EditProfile extends AppCompatActivity {
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
 
+                            String name=et_name.getText().toString(),
+                                    email=et_email.getText().toString(),
+                                    phone=et_phone.getText().toString(),
+                                    location=et_location.getText().toString(),
+                                    bio=et_bio.getText().toString();
+
                             // Update the current user information on Firebase
                             ProfileManager.updateProfile(
                                     ProfileManager.getCurrentUserID(),
-                                    et_name.getText().toString(),
-                                    et_email.getText().toString(),
-                                    et_phone.getText().toString(),
-                                    et_location.getText().toString(),
-                                    et_bio.getText().toString(),
+                                    name,
+                                    email,
+                                    phone,
+                                    location,
+                                    bio,
                                     shown_image,
                                     latLng,
                                     FirebaseStorage.getInstance().getReference().child("users").child(ProfileManager.getCurrentUserID())
                             );
+
+                            ProfileManager.getBooks(new OnGetDataListener() {
+                                @Override
+                                public void onStart() {
+
+                                }
+
+                                @Override
+                                public void onSuccess(DataSnapshot data) {
+
+                                    Log.d(TAG,data.toString());
+                                    if(data.exists()){
+                                        for(String bookID:((Map<String,Object>)data.getValue()).keySet()) {
+                                            Log.d(TAG,bookID);
+                                            DatabaseManager.get("books",bookID,"bookOwner","name").setValue(name);
+                                            DatabaseManager.get("books",bookID,"bookOwner","email").setValue(email);
+                                            DatabaseManager.get("books",bookID,"bookOwner","location").setValue(location);
+                                            DatabaseManager.get("books",bookID,"bookOwner","position").setValue(latLng);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailed(DatabaseError databaseError) {
+
+                                }
+                            });
 
                             // Update the local file containing the current user profile information
                             ProfileManager.readProfile();

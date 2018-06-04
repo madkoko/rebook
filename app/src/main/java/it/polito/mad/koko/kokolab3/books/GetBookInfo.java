@@ -101,31 +101,11 @@ public class GetBookInfo extends AsyncTask<String, Void, Map<String, String>> {
 
         String editionYear = volumeInfo.get("publishedDate").toString().replace("\"", "");
 
-        JsonObject imagesObject = volumeInfo.getAsJsonObject("imageLinks");
-
-
-
         bookInfo.put("isbn", isbn);
         bookInfo.put("title", title);
         bookInfo.put("authors", authors.toString().substring(0, authors.length() - 1));
         bookInfo.put("publisher", publisher);
         bookInfo.put("editionYear", editionYear);
-        if(imagesObject!=null){
-            //Log.d(TAG,imagesObject.get("smallThumbnail").toString());
-            String bookThumbnail= imagesObject.get("smallThumbnail").toString().replace("\"", "");
-            URL url = null;
-            try {
-                url = new URL(bookThumbnail);
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                Log.d(TAG,bmp.toString());
-                bookInfo.put("bookThumbnail",bmp.toString());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
 
         //onPostExecute(bookInfo);
 
