@@ -166,20 +166,20 @@ public class EditProfile extends AppCompatActivity {
                 ProfileManager.usernameExists(et_name.getText().toString(), new OnGetDataListener() {
                     @Override
                     public void onSuccess(DataSnapshot data) {
-                        // The username already exists on Firebase
-                        boolean isCurrentUser=false;
-                        if(data.exists()) {
-                            Map<String, Profile> retrievedUser = (Map<String, Profile>)data.getValue();
+                        boolean isCurrentUser = false;
 
-                            // If the existing username corresponds to the current user
-                            if(retrievedUser.keySet().toArray()[0].toString().compareTo(ProfileManager.getCurrentUserID()) != 0)
+                        if (data.exists()) {
+                            Map<String, Profile> retrievedUser = (Map<String, Profile>) data.getValue();
+
+                            // If the existing username does not correspond to the current user
+                            if (retrievedUser.keySet().toArray()[0].toString().compareTo(ProfileManager.getCurrentUserID()) != 0)
+                                // The username already exists on Firebase
                                 et_name.setError("This username already exists");
                             else
-                                isCurrentUser=true;
-
+                                isCurrentUser = true;
                         }
                         // The username doesn't exists on Firebase
-                        if (!data.exists()||isCurrentUser) {
+                        if (!data.exists() || isCurrentUser) {
                             // Get the data from an ImageView as bytes
                             user_photo.setDrawingCacheEnabled(true);
                             user_photo.buildDrawingCache();
@@ -188,11 +188,33 @@ public class EditProfile extends AppCompatActivity {
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
 
-                            String name=et_name.getText().toString(),
-                                    email=et_email.getText().toString(),
-                                    phone=et_phone.getText().toString(),
-                                    location=et_location.getText().toString(),
-                                    bio=et_bio.getText().toString();
+                            String  name = et_name.getText().toString(),
+                                    email = et_email.getText().toString(),
+                                    phone = et_phone.getText().toString(),
+                                    location = et_location.getText().toString(),
+                                    bio = et_bio.getText().toString();
+
+                            // Updating user info in the sidebar menu upon receiving the profile data
+                            ProfileManager.readProfile(new OnGetDataListener() {
+                                @Override
+                                public void onSuccess(DataSnapshot data) {
+                                    if(ProfileManager.hasLoggedIn()) {
+                                        // Loading the user email in the sidebar menu
+                                        ((TextView)findViewById(R.id.sideMenuEmail)).setText(ProfileManager.getProfile().getEmail());
+
+                                        if(ProfileManager.hasCompletedRegistration()) {
+                                            // Loading the username in the sidebar menu
+                                            ((TextView)findViewById(R.id.sideMenuUsername)).setText(ProfileManager.getProfile().getName());
+
+                                            if(ProfileManager.getProfile().getImage() != null)
+                                                // Loading the profile picture in the sidebar menu
+                                                Picasso.get().load(ProfileManager.getProfile().getImage()).into((ImageView)findViewById(R.id.sideMenuImage));
+                                        }
+                                    }
+                                }
+
+                                @Override public void onFailed(DatabaseError databaseError) {}
+                            });
 
                             // Update the current user information on Firebase
                             ProfileManager.updateProfile(

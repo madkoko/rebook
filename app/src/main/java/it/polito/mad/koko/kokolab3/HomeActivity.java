@@ -275,12 +275,11 @@ public class HomeActivity extends AppCompatActivity
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
 
-            // If this is a new user or the user has not finished the registration
             ProfileManager.readProfile(new OnGetDataListener() {
                 @Override
                 public void onSuccess(DataSnapshot data) {
                     // Loading the user email in the sidebar menu
-                    ((TextView)findViewById(R.id.sideMenuEmail)).setText(ProfileManager.getProfile().getName());
+                    ((TextView)findViewById(R.id.sideMenuEmail)).setText(ProfileManager.getProfile().getEmail());
 
                     /*  If the user has not completed the registration procedure
                         (for instance it is a new user) */
@@ -291,6 +290,9 @@ public class HomeActivity extends AppCompatActivity
                         startActivityForResult(editProfileIntent, FIRST_LOGIN_EDIT_PROFILE);
                     }
                     else {
+                        // Loading the username in the sidebar menu
+                        ((TextView)findViewById(R.id.sideMenuUsername)).setText(ProfileManager.getProfile().getName());
+
                         /*  If the user has already completed the registration and
                             has a profile picture */
                         if (ProfileManager.getProfile().getImage() != null) {
@@ -298,7 +300,8 @@ public class HomeActivity extends AppCompatActivity
                             Profile p = ProfileManager.getProfile();
                             ImageManager.loadBitmap(p.getImage());
 
-                            
+                            // Loading the profile picture in the sidebar menu
+                            Picasso.get().load(ProfileManager.getProfile().getImage()).into((ImageView)findViewById(R.id.sideMenuImage));
                         }
                     }
                 }
@@ -390,6 +393,8 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
 
         Log.d(TAG, "onResume() called");
+
+
     }
 
     /**
