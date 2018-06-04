@@ -24,6 +24,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
@@ -33,6 +35,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
@@ -227,26 +230,46 @@ public class ShowBooks extends AppCompatActivity
             deleteBookButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlertDialog.Builder builder;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        builder = new AlertDialog.Builder(ShowBooks.this, android.R.style.Theme_Material_Dialog_Alert);
-                    } else {
-                        builder = new AlertDialog.Builder(ShowBooks.this);
-                    }
-                    builder.setTitle("Delete Book")
-                            .setMessage("Are you sure you want to delete this book?")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    BookManager.removeBook(String.valueOf(booksAdapter.getRef(position).getKey()));
+
+                    //check if the book is borrowed checking the child "sharable"
+                    //if is set to "no" the book is borrowed and it can't be deleted
+
+                    BookManager.isSharable(booksAdapter.getRef(position).getKey(), new OnGetDataListener() {
+                        @Override
+                        public void onSuccess(DataSnapshot data) {
+                            if (data.exists()) {
+                                if (data.getValue().toString().compareToIgnoreCase("no") == 0) {
+                                    Toast.makeText(ShowBooks.this, "You can't delete a book that has been shared!", Toast.LENGTH_LONG).show();
+                                } else {
+                                    AlertDialog.Builder builder;
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        builder = new AlertDialog.Builder(ShowBooks.this, android.R.style.Theme_Material_Dialog_Alert);
+                                    } else {
+                                        builder = new AlertDialog.Builder(ShowBooks.this);
+                                    }
+                                    builder.setTitle("Delete Book")
+                                            .setMessage("Are you sure you want to delete this book?")
+                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    BookManager.removeBook(String.valueOf(booksAdapter.getRef(position).getKey()));
+                                                }
+                                            })
+                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // do nothing
+                                                }
+                                            })
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .show();
                                 }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailed(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             });
 
