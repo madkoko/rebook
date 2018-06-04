@@ -208,7 +208,6 @@ public class EditProfile extends AppCompatActivity {
                             );
 
                             ProfileManager.getBooks(new OnGetDataListener() {
-
                                 @Override
                                 public void onSuccess(DataSnapshot data) {
 
@@ -228,9 +227,6 @@ public class EditProfile extends AppCompatActivity {
 
                                 }
                             });
-
-                            // Update the local file containing the current user profile information
-                            ProfileManager.readProfile();
 
                             // Terminating the activity
                             finish();

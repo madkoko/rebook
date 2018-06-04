@@ -30,6 +30,7 @@ import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
+import it.polito.mad.koko.kokolab3.util.JsonUtil;
 
 public class ProfileManager {
 
@@ -199,7 +200,7 @@ public class ProfileManager {
      * @param phone
      * @param location
      * @param bio
-     * @param data
+     * @param imageBytes
      * @param position
      * @param storageRef
      */
@@ -209,14 +210,14 @@ public class ProfileManager {
                                      String phone,
                                      String location,
                                      String bio,
-                                     byte[] data,
+                                     byte[] imageBytes,
                                      String position,
                                      StorageReference storageRef) {
 
         DatabaseReference userChildFirebaseReference = DatabaseManager.get("users", id);
 
         // Uploading the new profile image
-        storageRef.putBytes(data).addOnSuccessListener(taskSnapshot -> {
+        storageRef.putBytes(imageBytes).addOnSuccessListener(taskSnapshot -> {
             // Retrieving the new profile image URL
             currentUserImageURL = taskSnapshot.getDownloadUrl().toString();
 
@@ -229,21 +230,24 @@ public class ProfileManager {
             // Loading the new image in the UI
             if (currentUserImageURL != null)
                 ImageManager.loadBitmap(currentUserImageURL);
+
+            // New user info data structure
+            newUserObject = new HashMap<>();
+
+            // Filling the new user info map
+            newUserObject.put("name", name);
+            newUserObject.put("email", email);
+            newUserObject.put("phone", phone);
+            newUserObject.put("location", location);
+            newUserObject.put("bio", bio);
+            newUserObject.put("position", position);
+
+            // Saving new info in Firebase
+            userChildFirebaseReference.updateChildren(newUserObject);
+
+            // Update the local file containing the current user profile information
+            ProfileManager.readProfile();
         });
-
-        // New user info data structure
-        newUserObject = new HashMap<>();
-
-        // Filling the new user info map
-        newUserObject.put("name", name);
-        newUserObject.put("email", email);
-        newUserObject.put("phone", phone);
-        newUserObject.put("location", location);
-        newUserObject.put("bio", bio);
-        newUserObject.put("position", position);
-
-        // Saving new info in Firebase
-        userChildFirebaseReference.updateChildren(newUserObject);
     }
 
     /**

@@ -282,7 +282,6 @@ public class HomeActivity extends AppCompatActivity
                         // Start the EditProfile activity
                         startActivityForResult(editProfileIntent, FIRST_LOGIN_EDIT_PROFILE);
                     }
-
                     /*  If the user has already completed the registration and
                         has a profile picture */
                     else if (ProfileManager.getProfile().getImage() != null) {
