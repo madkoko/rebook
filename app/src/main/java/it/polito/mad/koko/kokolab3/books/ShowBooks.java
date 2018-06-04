@@ -97,11 +97,11 @@ public class ShowBooks extends AppCompatActivity
                     @Override
                     public View getView(final int i, View view, ViewGroup viewGroup) {
                         if (view == null)
-                            view = getLayoutInflater().inflate(R.layout.search_books_adapter_layout, viewGroup, false);
+                            view = getLayoutInflater().inflate(R.layout.books_adapter_layout, viewGroup, false);
 
                         createBooksView(view, bookMap.get(bookMap.keySet().toArray()[i]), null,(String) bookMap.keySet().toArray()[i]);
 
-                        TextView sharingUser = (TextView) view.findViewById(R.id.sharing_user);
+                        TextView sharingUser = (TextView) view.findViewById(R.id.search_book_sharing_user);
                         String uid = bookMap.get(bookMap.keySet().toArray()[i]).getUid();
                         String sharedBy = "Shared by: " + ProfileManager.getProfile(uid).getName();
                         sharingUser.setText(sharedBy);

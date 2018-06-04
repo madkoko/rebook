@@ -208,10 +208,6 @@ public class EditProfile extends AppCompatActivity {
                             );
 
                             ProfileManager.getBooks(new OnGetDataListener() {
-                                @Override
-                                public void onStart() {
-
-                                }
 
                                 @Override
                                 public void onSuccess(DataSnapshot data) {
