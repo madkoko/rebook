@@ -89,9 +89,7 @@ public class HomeSharingBook extends Fragment {
                     ratingBar.setVisibility(View.INVISIBLE);
                     feedbackEditText.setVisibility(View.INVISIBLE);
                     buttonReturn.setVisibility(View.INVISIBLE);
-
                 }
-
             }
 
             @Override

@@ -125,7 +125,7 @@ class RequestManager() {
                     .setValue("returning")
         }
 
-        fun retunBook(reqId: String?) {
+        fun returnBook(reqId: String?) {
             val reqDatabaseRef = database.reference.child("requests")
                     .child(reqId)
                     .child("status")

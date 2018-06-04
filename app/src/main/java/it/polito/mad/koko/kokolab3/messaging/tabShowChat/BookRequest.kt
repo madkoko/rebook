@@ -21,6 +21,7 @@ import it.polito.mad.koko.kokolab3.books.Book
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener
 import it.polito.mad.koko.kokolab3.messaging.UserChatInfo
+import it.polito.mad.koko.kokolab3.firebase.DatabaseManager
 import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.profile.ShowProfile
 import it.polito.mad.koko.kokolab3.request.Request
@@ -56,10 +57,9 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo) : Fragment() {
         val myListView: ListView
         val myReqClass = Request::class
 
+        myId = ProfileManager.getCurrentUserID()
 
-        myId = FirebaseAuth.getInstance().currentUser!!.uid //ok not null
-
-        val query = FirebaseDatabase.getInstance().reference.child("requests").orderByChild("receiverId").equalTo(myId)
+        val query = DatabaseManager.get("requests").orderByChild("receiverId").equalTo(myId)
 
         // All requests
         if (flag == 0) {
