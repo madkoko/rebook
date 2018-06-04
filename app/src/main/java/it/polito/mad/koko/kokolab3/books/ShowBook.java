@@ -195,7 +195,7 @@ public class ShowBook extends AppCompatActivity
                                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                                             byte[] shown_image = baos.toByteArray();
                                             //      >>> Create a new Request
-                                            Request request = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(), "", "");
+                                            Request request = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(), "", "","pending");
                                             String requestId = senderId + "" + bookId;
                                             RequestManager.Companion.createRequest(request, shown_image, requestId);
                                         }
@@ -207,47 +207,6 @@ public class ShowBook extends AppCompatActivity
 
                                 }
                             });
-
-                            // 3C. Create or resume Chat
-                            boolean chatFlag = true;
-                            MessageManager.createChat(i, book.getTitle(), chatFlag);
-
-                            // 3A. Sen a Request Notification
-                            MessageManager.sendRequestNotification(    //createMsg
-
-                                    // Sender info
-                                    senderId,                               // Sender ID
-                                    senderProfile.getName(),                // Sender Username
-                                    senderProfile.getImage(),               // sender Image
-                                    senderProfile.getTokenMessage(),        // Sender Token
-
-                                    // Receiver info
-                                    receiverId,                             // Receiver ID
-                                    receiverProfile.getName(),              // Receiver Username
-                                    receiverProfile.getImage(),             // Receiver Image
-                                    receiverToken,                          // Receiver Token
-
-                                    // Book info
-                                    bookId,                                 // Book ID
-                                    bookTitle,                               // Book Title
-
-                                    // Chat info
-                                    MessageManager.getChatID()
-                            );
-
-                            // 3B. Create a new Request
-                            //      >>> Create a ByteArray to save the image of the book on FireBase
-                            bookImage.setDrawingCacheEnabled(true);
-                            bookImage.buildDrawingCache();
-                            Bitmap bitmap = bookImage.getDrawingCache();
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                            byte[] shown_image = baos.toByteArray();
-                            //      >>> Create a new Request
-                            Request request = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(), "", "");
-                            String requestId = senderId + "" + bookId;
-                            RequestManager.Companion.createRequest(request, shown_image, requestId);
-
                         });
 
                 // 4. Click on "Open Chat"
