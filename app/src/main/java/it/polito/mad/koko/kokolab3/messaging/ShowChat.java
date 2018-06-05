@@ -70,11 +70,6 @@ public class ShowChat extends AppCompatActivity {
             // A1. Retrieve Chat ID
             chatID = MessageManager.getChatID();
 
-            // A2. Remove Event Listener
-            if (chatID != null) {
-                MessageManager.removeChatRefListener();
-            }
-
             // A3. Retrieve *Sender* informations
             senderId = MessageManager.getSenderId();
             senderUsername = MessageManager.getSenderUsername();

@@ -48,7 +48,6 @@ public class MessageManager {
 
     private static ValueEventListener userChatIDsListener;          // >>> Listener to all the current user's chats ID
     private static ChildEventListener userChatsMessagesListener;    // >>> Listener to all the current user's chats
-    private static ValueEventListener chatRefListener;              // >>> Listener to all the current user's chats
 
     private static DatabaseReference chatsRef;
 
@@ -165,7 +164,7 @@ public class MessageManager {
         String notificationTitle = BOOK_REQUEST_MESSAGE_TITLE.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
         String notificationText = BOOK_REQUEST_MESSAGE_TEXT.replaceAll(SENDER_USERNAME_PLACEHOLDER, senderUsername);
 
-        Log.d(TAG,"CHAT ID: "+chatID);
+        Log.d(TAG, "CHAT ID: " + chatID);
         sendNotification(
                 notificationTitle,
                 notificationText,
@@ -298,9 +297,9 @@ public class MessageManager {
      * It sends a general notification to a specific user.
      * The JSON message structure is defined by Firebase:
      * https://firebase.google.com/docs/cloud-messaging/send-message#http_post_request
-     *
+     * <p>
      * A JSON example is shown below:
-     *
+     * <p>
      * {
      *      "priority": "high",
      *
@@ -593,7 +592,7 @@ public class MessageManager {
                 .child(senderId)
                 .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
 
-        chatsRef.addListenerForSingleValueEvent(chatRefListener = new ValueEventListener() {
+        chatsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String chatIdRetrieved;
@@ -679,10 +678,6 @@ public class MessageManager {
             }
 
         });
-
-        /*if(chatID != null) {
-            chatsRef.removeEventListener(chatRefListener);
-        }*/
     }
 
 
@@ -701,15 +696,11 @@ public class MessageManager {
                 .child(senderId)
                 .child("chats");                                    // >>> Got all chats where Sender is involved, accessible by ChatID
 
-        chatsRef.addListenerForSingleValueEvent(chatRefListener = new ValueEventListener() {
+        chatsRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String chatIdRetrieved = null;
-
                 if (dataSnapshot.exists()) {
-
                     // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
                     chatsInfo = new HashMap<String, UserChatInfo>();
                     chatsInfo.clear();
@@ -721,8 +712,7 @@ public class MessageManager {
                     // 2. Check if the Sender & Receiver have already chat before
                     for (String chatKey : chatsInfo.keySet()) {
                         if (chatsInfo.get(chatKey).getSecondPartyId().equals(receiverId)) {     // >>> Chat between Sender & Receiver is already existing
-                            chatIdRetrieved = chatKey;
-                            chatID = chatIdRetrieved;
+                            chatID = chatKey;
                             //Log.d(TAG, "chattavoGiàConMaddalena");
                             break;
                         }
@@ -773,16 +763,21 @@ public class MessageManager {
             }
 
             @Override
-            public void onFailed(DatabaseError databaseError) {}
+            public void onFailed(DatabaseError databaseError) {
+            }
         };
 
         // Retrieving the receiver's info
         DatabaseManager.get("users/" + receiverId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) { receiverInfoListener.onSuccess(dataSnapshot); }
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                receiverInfoListener.onSuccess(dataSnapshot);
+            }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) { receiverInfoListener.onFailed(databaseError); }
+            public void onCancelled(DatabaseError databaseError) {
+                receiverInfoListener.onFailed(databaseError);
+            }
         });
 
         // Creating the receiver's UserChatInfo object using the local sender's information
@@ -863,9 +858,5 @@ public class MessageManager {
 
     public static String getReceiverToken() {
         return receiverToken;
-    }
-
-    public static void removeChatRefListener() {
-        chatsRef.removeEventListener(chatRefListener);
     }
 }
