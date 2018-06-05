@@ -374,11 +374,6 @@ public class HomeActivity extends AppCompatActivity
             showBooks.putExtra("request_code", USER_BOOKS);
             startActivity(showBooks);
 
-        } else if (id == R.id.search_books) {
-            Intent searchBooks = new Intent(getApplicationContext(), SearchBooks.class);
-            // BookManager.removeUserBooksEventListener();
-            // startActivityForResult(searchBooks, SEARCH_BOOKS);
-            startActivity(searchBooks);
         } else if (id == R.id.sign_out) {
             ProfileManager.logout();
             AuthenticationUI.launch(this);

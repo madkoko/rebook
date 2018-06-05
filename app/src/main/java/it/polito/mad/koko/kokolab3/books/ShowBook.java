@@ -1,5 +1,6 @@
 package it.polito.mad.koko.kokolab3.books;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -105,6 +107,8 @@ public class ShowBook extends AppCompatActivity
             bookId = i.getStringExtra("bookId");
 
             Picasso.get().load(book.getImage()).into(bookImage);
+            //bookImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
 
             if (book.getUid().compareToIgnoreCase(ProfileManager.getCurrentUserID()) != 0)
                 BookManager.addVisualization(bookId);
@@ -112,7 +116,7 @@ public class ShowBook extends AppCompatActivity
         }
         isImageFitToScreen =false;
         //int gravity = bookImage.getForegroundGravity();
-
+        /*
         bookImage.setOnClickListener(v -> {
             if(isImageFitToScreen) {
                 isImageFitToScreen=false;
@@ -124,12 +128,27 @@ public class ShowBook extends AppCompatActivity
                 bookImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 //bookImage.setScaleType(ImageView.ScaleType.FIT_XY);
             }
+        });*/
+        ViewSwitcher viewSwitcher = findViewById(R.id.switcher_for_map);
+        LinearLayout bookView = findViewById(R.id.book_view);
+        LinearLayout mapView = findViewById(R.id.map_view);
+        Button buttonShowMap = findViewById(R.id.show_book_position);
+        Button returnToBook = findViewById(R.id.return_to_book);
+
+        //viewSwitcher.getCurrentView();
+        buttonShowMap.setOnClickListener(v->{
+            if (viewSwitcher.getCurrentView()!= mapView){
+                viewSwitcher.showNext();
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_map_book);
+                mapFragment.getMapAsync(this);
+            }
         });
-
-
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        returnToBook.setOnClickListener(vReturn->{
+            if (viewSwitcher.getCurrentView()!=bookView)
+                viewSwitcher.showPrevious();
+        });
+        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        //mapFragment.getMapAsync(this);
 
         if (ProfileManager.getProfile(book.getUid()).getTokenMessage() != null) {
 
