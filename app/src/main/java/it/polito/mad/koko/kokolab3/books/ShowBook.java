@@ -2,16 +2,20 @@ package it.polito.mad.koko.kokolab3.books;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -63,8 +67,11 @@ public class ShowBook extends AppCompatActivity
     private String bookId;
     private String bookTitle;
 
+    private boolean isImageFitToScreen;
+
     private String chatID = null;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,10 +102,26 @@ public class ShowBook extends AppCompatActivity
             if (book.getEditionYear() != null) editionYear.setText(book.getEditionYear());
             if (book.getBookConditions() != null) conditions.setText(book.getBookConditions());
             bookId = i.getStringExtra("bookId");
+
             Picasso.get().load(book.getImage()).into(bookImage);
-            //Picasso.get().load(i.getExtras().get("bookPhoto").toString()).into(bookImage);
 
         }
+        isImageFitToScreen =false;
+        //int gravity = bookImage.getForegroundGravity();
+
+        bookImage.setOnClickListener(v -> {
+            if(isImageFitToScreen) {
+                isImageFitToScreen=false;
+                bookImage.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+                bookImage.setAdjustViewBounds(true);
+                bookImage.setScaleType(ImageView.ScaleType.CENTER);
+            }else{
+                isImageFitToScreen=true;
+                bookImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                //bookImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            }
+        });
+
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -127,6 +150,8 @@ public class ShowBook extends AppCompatActivity
             sendingLayout = findViewById(R.id.sending_layout);  // >>> Start Chat | Send Message Layout
             sendRequest = findViewById(R.id.send_request);      // >>> Send Request Button
             sendMessage = findViewById(R.id.open_chat);      // >>> Send Message Button
+
+
 
             //if the book isn't sharable the request button is hidden
             if (i.getStringExtra("sharable") != null)
