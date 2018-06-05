@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.BookManager;
+import it.polito.mad.koko.kokolab3.books.EditBook;
 import it.polito.mad.koko.kokolab3.books.ShowBook;
 import it.polito.mad.koko.kokolab3.books.ShowBooks;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
@@ -98,9 +99,13 @@ public class BookTabAdapter extends FirebaseListAdapter<Book> {
         });
 
         view.setOnClickListener(v -> {
-            Intent showBook = new Intent(context, ShowBook.class);
-            showBook.putExtra("book", model);
-            context.startActivity(showBook);
+            Intent editBook = new Intent(context, EditBook.class);
+
+            editBook.putExtra("updatingBook", model);
+            editBook.putExtra("bookKey", getRef(position).getKey());
+            //showBook.putExtra("bookPhoto",bookVals.get("image"));
+            context.startActivity(editBook);
+
         });
     }
 }

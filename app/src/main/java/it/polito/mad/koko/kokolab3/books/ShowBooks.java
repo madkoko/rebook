@@ -159,6 +159,7 @@ public class ShowBooks extends AppCompatActivity
             };
 
             bookListView.setAdapter(booksAdapter);
+            findViewById(R.id.books_map_button).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -285,8 +286,6 @@ public class ShowBooks extends AppCompatActivity
                     startActivity(editBook);
                 }
             });
-
-            findViewById(R.id.books_map_button).setVisibility(View.INVISIBLE);
         }
     }
 
