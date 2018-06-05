@@ -33,7 +33,7 @@
             android:id="@+id/list_chat"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="8"
+            android:layout_weight="2"
             android:scrollbarAlwaysDrawHorizontalTrack="true" />
         <TextView
             android:id="@+id/no_requests_found"
@@ -47,11 +47,10 @@
 
          <LinearLayout android:id="@+id/send_msg_layout"
              android:layout_width="match_parent"
-             android:layout_height="0dp"
-             android:layout_weight="1"
-             android:paddingTop="10dp"
+             android:layout_height="wrap_content"
              android:orientation="horizontal"
-             android:visibility="gone">
+             android:layout_gravity="top"
+             android:windowSoftInputMode="stateVisible|adjustResize">
 
              <EditText
                  android:id="@+id/send_message"

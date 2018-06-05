@@ -194,27 +194,6 @@ public class EditProfile extends AppCompatActivity {
                                     location = et_location.getText().toString(),
                                     bio = et_bio.getText().toString();
 
-                            // Updating user info in the sidebar menu upon receiving the profile data
-                            ProfileManager.readProfile(new OnGetDataListener() {
-                                @Override
-                                public void onSuccess(DataSnapshot data) {
-                                    if(ProfileManager.hasLoggedIn()) {
-                                        // Loading the user email in the sidebar menu
-                                        ((TextView)findViewById(R.id.sideMenuEmail)).setText(ProfileManager.getProfile().getEmail());
-
-                                        if(ProfileManager.hasCompletedRegistration()) {
-                                            // Loading the username in the sidebar menu
-                                            ((TextView)findViewById(R.id.sideMenuUsername)).setText(ProfileManager.getProfile().getName());
-
-                                            if(ProfileManager.getProfile().getImage() != null)
-                                                // Loading the profile picture in the sidebar menu
-                                                Picasso.get().load(ProfileManager.getProfile().getImage()).into((ImageView)findViewById(R.id.sideMenuImage));
-                                        }
-                                    }
-                                }
-
-                                @Override public void onFailed(DatabaseError databaseError) {}
-                            });
 
                             // Update the current user information on Firebase
                             ProfileManager.updateProfile(

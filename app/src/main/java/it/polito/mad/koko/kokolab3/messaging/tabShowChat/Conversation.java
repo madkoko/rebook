@@ -60,7 +60,11 @@ public class Conversation extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ListView myListView = getActivity().findViewById(R.id.list_chat); // da lasciare?!
+        ListView myListView = getActivity().findViewById(R.id.list_chat); // da lasciare?!++
+
+        // ----Set autoscroll of listview when a new message arrives----//
+        myListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        myListView.setStackFromBottom(true);
 
         // Parameters from ShowChat activity
         //senderId = getArguments().getString("senderId");
@@ -93,8 +97,10 @@ public class Conversation extends Fragment {
             @Override
             protected void populateView(View view, Message model, int position) {
                 Log.d(TAG, String.valueOf(model));
+
                 TextView messageText = view.findViewById(R.id.message_text);
                 ImageView checkImage = view.findViewById(R.id.check_image);
+
 
                 messageText.setText(model.getText());
 

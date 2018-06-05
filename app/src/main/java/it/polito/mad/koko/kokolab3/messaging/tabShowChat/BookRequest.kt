@@ -201,6 +201,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
             // Requests with the user with whom the chat is opened
         } else {
             myListView = activity.findViewById<ListView>(R.id.list_chat) as ListView
+            myListView.isStackFromBottom = false
 
             /*  Listener in charge of populating the ListView containing all chat requests
                 with the user with whom the chat is opened */

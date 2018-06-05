@@ -11,20 +11,18 @@
     tools:openDrawer="start">
 
 
-
-    <android.support.design.widget.CoordinatorLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/overview_coordinator_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/overview_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar_container_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:layout_marginTop="50dp">
+            android:layout_marginTop="50dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tabs_home"
@@ -33,100 +31,107 @@
                 android:background="@color/primary" />
         </android.support.design.widget.AppBarLayout>
 
-        <ViewSwitcher
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/home_switcher"
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <LinearLayout
-                android:id="@+id/home_list_switcher"
+            <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/home_switcher"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbarAlwaysDrawHorizontalTrack="true"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/list_home_chats"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-                <TextView
-                    android:id="@+id/no_chats_found"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="21sp"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:text="@string/no_chats" />
-                <TextView
-                    android:id="@+id/no_borrowed_found"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="21sp"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:text="@string/no_borrowed" />
+                <LinearLayout
+                    android:id="@+id/home_list_switcher"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            </LinearLayout>
+                    <ListView
+                        android:id="@+id/list_home_chats"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-            <LinearLayout
-            android:id="@+id/home_recycler_switcher"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarAlwaysDrawHorizontalTrack="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/no_chats_found"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/no_chats"
+                        android:textAlignment="center"
+                        android:textSize="21sp"
+                        android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/top_books"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoText="false"
-                android:gravity="center"
-                android:lineSpacingExtra="12sp"
-                android:text="Top Books"
-                android:textSize="18sp"
-                android:textStyle="italic" />
+                    <TextView
+                        android:id="@+id/no_borrowed_found"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/no_borrowed"
+                        android:textAlignment="center"
+                        android:textSize="21sp"
+                        android:visibility="gone" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_home_recyclerViewTop"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.5"
-            android:scrollbarAlwaysDrawHorizontalTrack="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/recent_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoText="false"
-                android:gravity="center"
-                android:lineSpacingExtra="12sp"
-                android:text="Recent Add"
-                android:textSize="18sp"
+                <LinearLayout
+                    android:id="@+id/home_recycler_switcher"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                android:textStyle="italic" />
+                    <TextView
+                        android:id="@+id/top_books"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoText="false"
+                        android:gravity="center"
+                        android:lineSpacingExtra="12sp"
+                        android:text="Top Books"
+                        android:textSize="18sp"
+                        android:textStyle="italic" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/list_home_recyclerViewBottom"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/list_home_recyclerViewTop"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.5"
+                        android:scrollbarAlwaysDrawHorizontalTrack="true"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-                android:scrollbarAlwaysDrawHorizontalTrack="true"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    <TextView
+                        android:id="@+id/recent_add"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoText="false"
+                        android:gravity="center"
+                        android:lineSpacingExtra="12sp"
+                        android:text="Recent Add"
+                        android:textSize="18sp"
 
-        </LinearLayout>
-        </ViewSwitcher>
+                        android:textStyle="italic" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/list_home_recyclerViewBottom"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+
+                        android:scrollbarAlwaysDrawHorizontalTrack="true"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+                </LinearLayout>
+            </ViewSwitcher>
+        </ScrollView>
+
 
     </android.support.design.widget.CoordinatorLayout>
-
 
 
     <include
@@ -144,5 +149,5 @@
         app:menu="@menu/activity_main_drawer" />
 
 
-    </android.support.v4.widget.DrawerLayout>
+</android.support.v4.widget.DrawerLayout>
 

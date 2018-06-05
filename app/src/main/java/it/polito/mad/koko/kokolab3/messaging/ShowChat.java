@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -59,6 +60,7 @@ public class ShowChat extends AppCompatActivity {
         Log.d(TAG,"OnCrreate");
         this.savedInstanceState = bundle;
         i = getIntent();
+        sendMsgLayout = findViewById(R.id.send_msg_layout);
 
         // 1. Check the origin class from whom user is coming
 
@@ -143,8 +145,18 @@ public class ShowChat extends AppCompatActivity {
 
 
         // 5 UI for send message
-
         messageEditor = findViewById(R.id.send_message);
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+        messageEditor.postDelayed(() -> {
+            messageEditor.requestFocus();
+            imm.showSoftInput(messageEditor, 0);
+        }, 100);
+        /*
+        sendMsgLayout.setOnClickListener(v -> {
+            findViewById(R.id.send_message).requestFocusFromTouch();
+
+        });*/
         send = findViewById(R.id.send);
 
         // 5.1 Send message
@@ -217,6 +229,7 @@ public class ShowChat extends AppCompatActivity {
             }
 
         });
+
     }
 
 
@@ -227,9 +240,7 @@ public class ShowChat extends AppCompatActivity {
             case 0: // *** CHAT TAB ***
 
                 // Set layout visibility: show send_msg_layout
-                sendMsgLayout = findViewById(R.id.send_msg_layout);
                 sendMsgLayout.setVisibility(View.VISIBLE);
-
                 getFragmentManager().beginTransaction().add(android.R.id.content, conversation).commit();
 
                 break;
@@ -237,9 +248,7 @@ public class ShowChat extends AppCompatActivity {
             case 1: // *** BOOK REQ TAB ***
 
                 // Set layout visibility: hide send_msg_layout
-                sendMsgLayout = findViewById(R.id.send_msg_layout);
                 sendMsgLayout.setVisibility(View.INVISIBLE);
-
                 getFragmentManager().beginTransaction().add(android.R.id.content, bookRequestList).commit();
 
                 break;
@@ -255,7 +264,6 @@ public class ShowChat extends AppCompatActivity {
 
             case 0: // *** CHAT TAB ***
                 getFragmentManager().beginTransaction().remove(conversation).commit();
-                sendMsgLayout = findViewById(R.id.send_msg_layout);
                 sendMsgLayout.setVisibility(View.GONE);
                 break;
 
@@ -268,4 +276,6 @@ public class ShowChat extends AppCompatActivity {
         }
 
     }
+
 }
+

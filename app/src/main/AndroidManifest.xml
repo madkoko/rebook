@@ -110,7 +110,8 @@
         <activity
             android:name=".books.InsertBook"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".books.ShowBooks"
             android:configChanges="orientation"
@@ -122,11 +123,13 @@
         <activity
             android:name=".books.SearchBooks"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".books.ScanISBNActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".books.BooksMapActivity"
             android:configChanges="orientation"
@@ -137,11 +140,13 @@
             android:name=".profile.ShowProfile"
             android:configChanges="orientation"
             android:label="@string/show_profile"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".profile.EditProfile"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
 
         <!-- Exchange requests receivers -->
         <receiver
@@ -192,11 +197,13 @@
         <activity
             android:name=".messaging.ShowChat"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible"/>
         <activity
             android:name=".books.EditBook"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
     </application>
 
 </manifest>
