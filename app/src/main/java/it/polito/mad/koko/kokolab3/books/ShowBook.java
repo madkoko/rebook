@@ -90,6 +90,7 @@ public class ShowBook extends AppCompatActivity
 
         i = getIntent();
 
+
         if (i.getExtras().get("book") != null) {
             book = (Book) i.getExtras().get("book");
             if (book.getISBN() != null) isbn.setText(book.getISBN());
@@ -104,6 +105,9 @@ public class ShowBook extends AppCompatActivity
             bookId = i.getStringExtra("bookId");
 
             Picasso.get().load(book.getImage()).into(bookImage);
+
+            if (book.getUid().compareToIgnoreCase(ProfileManager.getCurrentUserID()) != 0)
+                BookManager.addVisualization(bookId);
 
         }
         isImageFitToScreen =false;
@@ -220,7 +224,7 @@ public class ShowBook extends AppCompatActivity
                                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                                             byte[] shown_image = baos.toByteArray();
                                             //      >>> Create a new Request
-                                            Request request = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(),"pending", "", "",senderUsername);
+                                            Request request = new Request(senderId, receiverId, bookId, bookTitle, book.getImage(), "pending", "", "", senderUsername);
                                             String requestId = senderId + "" + bookId;
                                             RequestManager.Companion.createRequest(request, shown_image, requestId);
                                         }

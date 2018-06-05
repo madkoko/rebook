@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,11 +44,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.polito.mad.koko.kokolab3.HomeActivity;
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
 import it.polito.mad.koko.kokolab3.books.BookManager;
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
+import it.polito.mad.koko.kokolab3.ui.ImageManager;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 
 public class EditProfile extends AppCompatActivity {
@@ -188,7 +191,7 @@ public class EditProfile extends AppCompatActivity {
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                             byte[] shown_image = baos.toByteArray();
 
-                            String  name = et_name.getText().toString(),
+                            String name = et_name.getText().toString(),
                                     email = et_email.getText().toString(),
                                     phone = et_phone.getText().toString(),
                                     location = et_location.getText().toString(),
@@ -257,6 +260,7 @@ public class EditProfile extends AppCompatActivity {
         if (!getIntent().getBooleanExtra("showLogoutButton",false)) {
             logoutButton.setVisibility(View.INVISIBLE);
         }
+
     }
 
     /**
@@ -313,6 +317,7 @@ public class EditProfile extends AppCompatActivity {
     public void onBackPressed() {
         if (!infoIsMissingFromUser() && !infoIsMissingFromUI())
             finish();
+
     }
 
     private void PlaceApi() {
@@ -470,6 +475,7 @@ public class EditProfile extends AppCompatActivity {
             user_photo.setImageBitmap(tmp);
         } else if (flagGallery) {
             Picasso.get().load(imageRef).fit().centerCrop().into(user_photo);
+
         } else if (currentUserProfile.getImage() != null) {
             Picasso.get().load(currentUserProfile.getImage()).fit().centerCrop().into(user_photo);
         }

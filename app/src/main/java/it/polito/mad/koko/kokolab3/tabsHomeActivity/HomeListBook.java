@@ -2,28 +2,17 @@ package it.polito.mad.koko.kokolab3.tabsHomeActivity;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.books.Book;
@@ -34,7 +23,8 @@ public class HomeListBook extends Fragment {
     private static final String TAG = "topListBookFragment";
     private FirebaseListAdapter<Book> adapter;
     private ListView listView;
-    private HomeBookAdapter adapterReycler;
+    private HomeBookAdapter adapterReyclerMostViewed;
+    private HomeBookAdapter adapterReyclerRecentlyAdded;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,11 +36,41 @@ public class HomeListBook extends Fragment {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        RecyclerView mRecyclerViewTop = getActivity().findViewById(R.id.list_home_recyclerViewTop);
-        RecyclerView mRecyclerViewBottom =getActivity().findViewById(R.id.list_home_recyclerViewBottom);
-        Query queryRecycler = FirebaseDatabase.getInstance()
+        RecyclerView mRecyclerViewMostViewed = getActivity().findViewById(R.id.list_home_recyclerViewBottom);
+        RecyclerView mRecyclerViewRecentlyAdded =getActivity().findViewById(R.id.list_home_recyclerViewTop);
+
+        Query queryRecyclerRecentlyAdded = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("books");
+
+        Query queryRecyclerMostViewed = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("books")
+                .orderByChild("visualizations")
+                .limitToFirst(5);
+
+        FirebaseRecyclerOptions<Book> optionsRecyclerMostViewed = new FirebaseRecyclerOptions.Builder<Book>()
+                .setQuery(queryRecyclerMostViewed, Book.class)
+                .build();
+        FirebaseRecyclerOptions<Book> optionsRecyclerRecentlyAdded = new FirebaseRecyclerOptions.Builder<Book>()
+                .setQuery(queryRecyclerRecentlyAdded, Book.class)
+                .build();
+        adapterReyclerMostViewed = new HomeBookAdapter(optionsRecyclerMostViewed, 0,getActivity());
+        adapterReyclerRecentlyAdded = new HomeBookAdapter(optionsRecyclerRecentlyAdded, 0,getActivity());
+
+        // use a linear layout manager
+        LinearLayoutManager mLayoutManagerMostViewed = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true);
+        mLayoutManagerMostViewed.setStackFromEnd(true);
+
+        mRecyclerViewMostViewed.setAdapter(adapterReyclerMostViewed);
+        mRecyclerViewMostViewed.setLayoutManager(mLayoutManagerMostViewed);
+
+        LinearLayoutManager mLayoutManagerRecentlyAdded = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true);
+        mLayoutManagerRecentlyAdded.setStackFromEnd(true);
+
+        mRecyclerViewRecentlyAdded.setAdapter(adapterReyclerRecentlyAdded);
+        mRecyclerViewRecentlyAdded.setLayoutManager(mLayoutManagerRecentlyAdded);
+
 
         /*queryRecycler.addValueEventListener(new ValueEventListener() {
             @Override
@@ -72,34 +92,20 @@ public class HomeListBook extends Fragment {
 
             }
         });*/
-
-        FirebaseRecyclerOptions<Book> optionsRecycler = new FirebaseRecyclerOptions.Builder<Book>()
-                .setQuery(queryRecycler, Book.class)
-                .build();
-        adapterReycler = new HomeBookAdapter(optionsRecycler, 0,getActivity());
-
-        // use a linear layout manager
-        LinearLayoutManager mLayoutManagerTop = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-
-        mRecyclerViewTop.setAdapter(adapterReycler);
-        mRecyclerViewTop.setLayoutManager(mLayoutManagerTop);
-
-        LinearLayoutManager mLayoutManagerBottom = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true);
-        mLayoutManagerBottom.setStackFromEnd(true);
-        mRecyclerViewBottom.setAdapter(adapterReycler);
-        mRecyclerViewBottom.setLayoutManager(mLayoutManagerBottom);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        adapterReycler.startListening();
+        adapterReyclerMostViewed.startListening();
+        adapterReyclerRecentlyAdded.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapterReycler.stopListening();
+        adapterReyclerMostViewed.stopListening();
+        adapterReyclerRecentlyAdded.stopListening();
     }
 
 }

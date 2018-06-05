@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.auth.AuthenticationUI;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,7 @@ import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeChatList;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeListBook;
 import it.polito.mad.koko.kokolab3.tabsHomeActivity.HomeSharingBook;
+import it.polito.mad.koko.kokolab3.ui.CircleTransform;
 import it.polito.mad.koko.kokolab3.ui.ImageManager;
 
 public class HomeActivity extends AppCompatActivity
@@ -67,7 +69,8 @@ public class HomeActivity extends AppCompatActivity
     private int INSERT_BOOK = 20;
 
     private int FIRST_LOGIN_EDIT_PROFILE = 30,
-                LOGOUT_FROM_EDIT_PROFILE = 3;
+            LOGOUT_FROM_EDIT_PROFILE = 3,
+            EDIT_PROFILE = 50;
 
     private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 40;
 
@@ -83,6 +86,7 @@ public class HomeActivity extends AppCompatActivity
     private Fragment homeListChats;
     private Fragment homeSharingBook;
     private Fragment homeRequestBook;
+    private NavigationView navigationView;
 
     //private int SEARCH_BOOKS = 2;
 
@@ -115,8 +119,9 @@ public class HomeActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(HomeActivity.this);
 
         // Launching the authentication UI
         AuthenticationUI.launch(this);
@@ -141,8 +146,8 @@ public class HomeActivity extends AppCompatActivity
         //Tab for pending Request
         tab_layout.addTab(tab_layout.newTab().setText(R.string.request_book));
         //Fag for fragment
-        int flag=0;
-        homeRequestBook = new BookRequest(flag,null);
+        int flag = 0;
+        homeRequestBook = new BookRequest(flag, null);
         //Set first fragment
         selectFragment(0);
         //Add listener to tab_layout
@@ -228,7 +233,7 @@ public class HomeActivity extends AppCompatActivity
                 getFragmentManager().beginTransaction().add(android.R.id.content, homeSharingBook).commit();
                 break;
             case 3:
-                if(viewSwitcher.getCurrentView() != layoutList){
+                if (viewSwitcher.getCurrentView() != layoutList) {
                     viewSwitcher.showNext();
                 }
                 getFragmentManager().beginTransaction().add(android.R.id.content, homeRequestBook).commit();
@@ -275,12 +280,10 @@ public class HomeActivity extends AppCompatActivity
             MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
             myFirebaseInstanceIDService.onTokenRefresh();
 
+            // If this is a new user or the user has not finished the registration
             ProfileManager.readProfile(new OnGetDataListener() {
                 @Override
                 public void onSuccess(DataSnapshot data) {
-                    // Loading the user email in the sidebar menu
-                    ((TextView)findViewById(R.id.sideMenuEmail)).setText(ProfileManager.getProfile().getEmail());
-
                     /*  If the user has not completed the registration procedure
                         (for instance it is a new user) */
                     if (!ProfileManager.hasCompletedRegistration()) {
@@ -289,20 +292,13 @@ public class HomeActivity extends AppCompatActivity
                         // Start the EditProfile activity
                         startActivityForResult(editProfileIntent, FIRST_LOGIN_EDIT_PROFILE);
                     }
-                    else {
-                        // Loading the username in the sidebar menu
-                        ((TextView)findViewById(R.id.sideMenuUsername)).setText(ProfileManager.getProfile().getName());
+                    /*  If the user has already completed the registration and
+                        has a profile picture */
+                    else if (ProfileManager.getProfile().getImage() != null) {
+                        // Load the profile picture in the UI
+                        Profile p = ProfileManager.getProfile();
+                        ImageManager.loadBitmap(p.getImage());
 
-                        /*  If the user has already completed the registration and
-                            has a profile picture */
-                        if (ProfileManager.getProfile().getImage() != null) {
-                            // Load the profile picture in the UI
-                            Profile p = ProfileManager.getProfile();
-                            ImageManager.loadBitmap(p.getImage());
-
-                            // Loading the profile picture in the sidebar menu
-                            Picasso.get().load(ProfileManager.getProfile().getImage()).into((ImageView)findViewById(R.id.sideMenuImage));
-                        }
                     }
                 }
 
@@ -310,6 +306,7 @@ public class HomeActivity extends AppCompatActivity
                 public void onFailed(DatabaseError databaseError) {
                 }
             });
+
         } else if (resultCode == LOGOUT_FROM_EDIT_PROFILE) {
             ProfileManager.logout();
             AuthenticationUI.launch(this);
@@ -396,9 +393,12 @@ public class HomeActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        Log.d(TAG, "onResume() called");
-
-
+        ImageView sideMenuImage=navigationView.getHeaderView(0).findViewById(R.id.sideMenuImage);
+        Picasso.get().load(R.mipmap.logo).fit().centerCrop().into(sideMenuImage);
+        if(ProfileManager.getProfile()!=null){
+            TextView sideMenuEmail=navigationView.getHeaderView(0).findViewById(R.id.sideMenuEmail);
+            sideMenuEmail.setText(ProfileManager.getProfile().getEmail());
+        }
     }
 
     /**

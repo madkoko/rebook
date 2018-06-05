@@ -3,28 +3,22 @@ package it.polito.mad.koko.kokolab3.books;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import it.polito.mad.koko.kokolab3.firebase.DatabaseManager;
 import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
-import it.polito.mad.koko.kokolab3.profile.Profile;
-import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 
 /**
  * Created by Francesco on 13/04/2018.
@@ -208,11 +202,11 @@ public class BookManager {
     /**
      * listener to check if the book is still sharable when the users click "send request" button
      *
-     * @param bookID bookID to be checked
+     * @param bookID   bookID to be checked
      * @param listener
      */
     public static void isSharable(String bookID, final OnGetDataListener listener) {
-        DatabaseManager.get("books",bookID,"sharable").addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseManager.get("books", bookID, "sharable").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (listener != null)
@@ -227,4 +221,44 @@ public class BookManager {
         });
     }
 
+    /**
+     * Method to add one visualization to the current book
+     *
+     * @param bookID book id to add the visualization to
+     */
+    public static void addVisualization(String bookID) {
+        DatabaseManager.get("books", bookID, "visualizations").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // Retrieving the total number of stars received by the user
+                int visualizations = 0;
+                if (dataSnapshot.exists()) {
+
+                    try {
+                        visualizations = Integer.parseInt(dataSnapshot.getValue().toString());
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "visualizations is NaN");
+                    }
+
+                    // Updating the total number of stars received by the user
+
+                    visualizations++;
+                    //String visualizations = Integer.toString(visualizations);
+
+                    DatabaseManager.get("books", bookID, "visualizations").setValue(visualizations);
+
+                }
+                else{
+                    DatabaseManager.get("books", bookID, "visualizations").setValue(1);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 }

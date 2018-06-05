@@ -103,7 +103,7 @@ public class ShowProfile extends AppCompatActivity {
 
         if (mFirebaseUser.equals(ProfileManager.getCurrentUserID())) {
             profile = ProfileManager.getProfile();
-            Log.d(TAG,profile.toString());
+            Log.d(TAG, profile.toString());
             edit.setVisibility(View.VISIBLE);
         } else {
             edit.setVisibility(View.INVISIBLE);

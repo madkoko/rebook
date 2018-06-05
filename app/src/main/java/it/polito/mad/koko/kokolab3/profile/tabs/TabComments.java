@@ -49,6 +49,7 @@ public class TabComments extends Fragment {
 
                 Log.d(TAG,model.toString());
                 TextView feedback =(TextView)v.findViewById(R.id.message_text);
+                String feedbackRating=model.toString();
                 String feedbackText="'"+model.toString()+"'";
                 feedback.setText(feedbackText);
                 feedback.setTypeface(feedback.getTypeface(), Typeface.BOLD_ITALIC);

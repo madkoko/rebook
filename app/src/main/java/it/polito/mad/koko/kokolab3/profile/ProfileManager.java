@@ -2,6 +2,7 @@ package it.polito.mad.koko.kokolab3.profile;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.design.widget.NavigationView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -167,23 +168,23 @@ public class ProfileManager {
     }
 
     /**
-     * @param listener  action to be perfomed upon retrieving all user's books
+     * @param listener action to be perfomed upon retrieving all user's books
      */
     public static void getBooks(final OnGetDataListener listener) {
         DatabaseManager.get("books").orderByChild("uid").equalTo(ProfileManager.getCurrentUserID()).addListenerForSingleValueEvent(
-            new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (listener != null)
-                        listener.onSuccess(dataSnapshot);
-                }
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (listener != null)
+                            listener.onSuccess(dataSnapshot);
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    if (listener != null)
-                        listener.onFailed(databaseError);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        if (listener != null)
+                            listener.onFailed(databaseError);
+                    }
                 }
-            }
         );
     }
 
@@ -308,25 +309,29 @@ public class ProfileManager {
      * @param listener the listener object that will process the retrieved data.
      */
     public static void readProfile(final OnGetDataListener listener) {
+
+
         ProfileManager.getCurrentUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Retrieving the updated user info from Firebase
-                currentUserProfile = dataSnapshot.getValue(Profile.class);
-                Log.d(TAG, "This user profile has been updated: " + currentUserProfile.toString());
+                if (dataSnapshot.exists()) {
+                    currentUserProfile = dataSnapshot.getValue(Profile.class);
+                    Log.d(TAG, "This user profile has been updated: " + currentUserProfile.toString());
 
                 /*  Saving the updated user info into a binary file in case the
                     application will be closed */
-                try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
-                    outputStream.writeObject(currentUserProfile);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
+                    try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(profileFile))) {
+                        outputStream.writeObject(currentUserProfile);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(TAG, "Profile saved into: " + profileFile.getAbsolutePath());
 
-                // Calling the listener's callback
-                if (listener != null)
-                    listener.onSuccess(dataSnapshot);
+                    // Calling the listener's callback
+                    if (listener != null)
+                        listener.onSuccess(dataSnapshot);
+                }
             }
 
             @Override
@@ -337,6 +342,8 @@ public class ProfileManager {
                     listener.onFailed(databaseError);
             }
         });
+
+
     }
 
     /**
@@ -403,8 +410,9 @@ public class ProfileManager {
 
     /**
      * Add the rating and the feedback to the user
-     * @param uid userId to which add the rating and the feedback
-     * @param rating total stars rated
+     *
+     * @param uid      userId to which add the rating and the feedback
+     * @param rating   total stars rated
      * @param feedback feedback leaved by the user
      */
 
@@ -459,5 +467,7 @@ public class ProfileManager {
 
             }
         });
+
     }
+
 }

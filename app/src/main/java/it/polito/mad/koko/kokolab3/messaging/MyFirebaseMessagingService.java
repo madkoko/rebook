@@ -238,6 +238,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         // Stack notification
                         .setGroup(notificationType)
+                        .setGroupSummary(true)
 
                         // Priorities, sound and style
                         .setAutoCancel(true)

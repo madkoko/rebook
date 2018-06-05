@@ -28,8 +28,6 @@ import java.net.URL;
 import java.util.Map;
 
 import it.polito.mad.koko.kokolab3.R;
-import it.polito.mad.koko.kokolab3.profile.EditProfile;
-import it.polito.mad.koko.kokolab3.profile.Profile;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
 import it.polito.mad.koko.kokolab3.util.AlertManager;
 

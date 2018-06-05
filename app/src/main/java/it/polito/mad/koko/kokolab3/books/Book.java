@@ -1,5 +1,7 @@
 package it.polito.mad.koko.kokolab3.books;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.io.Serializable;
 
 import it.polito.mad.koko.kokolab3.profile.Profile;
@@ -7,7 +9,7 @@ import it.polito.mad.koko.kokolab3.profile.Profile;
 /**
  * Created by Francesco on 10/04/2018.
  */
-
+@IgnoreExtraProperties
 public class Book implements Serializable {
 
     private static final String TAG = "Book";

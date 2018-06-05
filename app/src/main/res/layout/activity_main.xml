@@ -87,13 +87,13 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                     <TextView
-                        android:id="@+id/top_books"
+                        android:id="@+id/recently_added"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:autoText="false"
                         android:gravity="center"
                         android:lineSpacingExtra="12sp"
-                        android:text="Top Books"
+                        android:text="Recently Added"
                         android:textSize="18sp"
                         android:textStyle="italic" />
 
@@ -106,15 +106,14 @@
                         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
                     <TextView
-                        android:id="@+id/recent_add"
+                        android:id="@+id/most_viewed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:autoText="false"
                         android:gravity="center"
                         android:lineSpacingExtra="12sp"
-                        android:text="Recent Add"
+                        android:text="Most Viewed"
                         android:textSize="18sp"
-
                         android:textStyle="italic" />
 
                     <android.support.v7.widget.RecyclerView
