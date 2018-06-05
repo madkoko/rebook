@@ -109,28 +109,11 @@ public class Conversation extends Fragment {
                     //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
                     messageText.setGravity(Gravity.RIGHT);
 
-                    MessageManager.isRead(chatID, adapter.getRef(position).getKey(), new OnGetDataListener() {
-                        @Override
-                        public void onSuccess(DataSnapshot data) {
-                            if (data.exists()) {
-                                Log.d(TAG, data.getValue().toString());
-                                if (data.child("sender").getValue().toString().compareToIgnoreCase(ProfileManager.getCurrentUserID()) == 0) {
+                    if (message.getCheck().compareTo("true") == 0)
+                        checkImage.setVisibility(View.VISIBLE);
 
-                                    if (data.child("check").getValue().toString().compareTo("true") == 0)
-                                        checkImage.setVisibility(View.VISIBLE);
-
-                                    else
-                                        checkImage.setVisibility(View.INVISIBLE);
-
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailed(DatabaseError databaseError) {
-
-                        }
-                    });
+                    else
+                        checkImage.setVisibility(View.INVISIBLE);
 
                 } else {
                     //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
