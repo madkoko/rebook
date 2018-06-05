@@ -595,12 +595,7 @@ public class MessageManager {
         chatsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String chatIdRetrieved;
-                if (chatID != null) {
-                    chatIdRetrieved = chatID;
-                } else {
-                    chatIdRetrieved = null;
-                }
+                String chatIdRetrieved = chatID;
 
                 if (dataSnapshot.exists() && chatIdRetrieved != null) {
                     // 1. Build a map to store informations about all users sender has chat with -> key:ChatID, value:UserChatInfo
@@ -809,11 +804,11 @@ public class MessageManager {
     }
 
     public static void setFirebaseCheck(String chatID, String messageID) {
-        // Creating the 'chats' child
-        DatabaseReference messagesRef = DatabaseManager.get("chats", chatID, "messages", messageID);
-
-        // Setting if the message has been checked child
-        messagesRef.child("check").setValue("true");
+        // Setting the message as read
+        DatabaseManager.set(
+                "true",
+                "chats/" + chatID + "/messages/" + messageID + "/check"
+        );
     }
 
     /*

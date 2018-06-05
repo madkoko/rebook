@@ -266,7 +266,7 @@ public class ProfileManager {
         //Remove tokenMessage from Firebase database
         //DatabaseManager.delete("users",uid, "tokenMessage");
 
-        //Log-out from FIoebase
+        //Log-out from Firebase
         FirebaseAuth.getInstance().signOut();
         Log.d(TAG, "Logged out.");
     }

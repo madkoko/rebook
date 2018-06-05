@@ -51,7 +51,7 @@
     <string name="required_fields">Required fields</string>
     <string name="extra_fields">Extra fields</string>
     <string name="edit_location"> Insert Your Position </string>
-    <string name="comments">comments</string>
+    <string name="feedback">Feedback</string>
 
 
     <!-- Rating -->
@@ -80,23 +80,23 @@
     <!-- Authentication -->
     <string name="chooser_activity_title">Sign In</string>
     <string name="label_google_sign_in">Google Sign In</string>
-    <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
+    <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate.</string>
     <string name="label_facebook_login">Facebook Login</string>
-    <string name="desc_facebook_login">Use a Facebook Login credential to authenticate with Firebase.</string>
+    <string name="desc_facebook_login">Use a Facebook Login credential to authenticate.</string>
     <string name="label_twitter_login">Twitter Login</string>
-    <string name="desc_twitter_login">Use a Twitter Login credential to authenticate with Firebase.</string>
+    <string name="desc_twitter_login">Use a Twitter Login credential to authenticate.</string>
     <string name="label_emailpassword">Email/Password</string>
-    <string name="desc_emailpassword">Use an email and password to authenticate with Firebase.</string>
+    <string name="desc_emailpassword">Use an email and password to authenticate.</string>
     <string name="label_passwordless">Passwordless Authentication</string>
-    <string name="desc_passwordless">Use only an email to authenticate with Firebase.</string>
+    <string name="desc_passwordless">Use only an email to authenticate.</string>
     <string name="label_phone_auth">Phone Number Authentication</string>
-    <string name="desc_phone_auth">Use a phone number to authenticate with Firebase.</string>
+    <string name="desc_phone_auth">Use a phone number to authenticate.</string>
     <string name="label_anonymous_auth">Anonymous Authentication</string>
-    <string name="desc_anonymous_auth">Sign in anonymously and then later upgrade to a full Firebase Auth user.</string>
+    <string name="desc_anonymous_auth">Sign in anonymously and then later upgrade to a full user.</string>
     <string name="label_custom_auth">Custom Authentication</string>
-    <string name="desc_custom_auth">Use a custom token signed by your own server to authenticate with Firebase.</string>
+    <string name="desc_custom_auth">Use a custom token signed by your own server to authenticate.</string>
     <string name="label_firebase_ui">FirebaseUI Auth</string>
-    <string name="desc_firebase_ui">Use the FirebaseUI-Android library to authenticate with Firebase.</string>
+    <string name="desc_firebase_ui">Use the FirebaseUI-Android library to authenticate.</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
@@ -216,7 +216,7 @@
 
     <!-- Empty view -->
     <string name="no_chats">No chats found</string>
-    <string name="no_books">No books found</string>
+    <string name="no_books">You don\'t have any books yet</string>
     <string name="no_requests">No requests found</string>
     <string name="no_borrowed">No books borrowed yet</string>
 

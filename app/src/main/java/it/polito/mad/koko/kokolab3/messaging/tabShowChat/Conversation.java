@@ -95,20 +95,18 @@ public class Conversation extends Fragment {
         //FirebaseListAdapter for create ListAdapter Ui from firebaseUi
         adapter = new FirebaseListAdapter<Message>(options) {
             @Override
-            protected void populateView(View view, Message model, int position) {
-                Log.d(TAG, String.valueOf(model));
-
+            protected void populateView(View view, Message message, int position) {
+                Log.d(TAG, String.valueOf(message));
                 TextView messageText = view.findViewById(R.id.message_text);
                 ImageView checkImage = view.findViewById(R.id.check_image);
 
+                messageText.setText(message.getText());
 
-                messageText.setText(model.getText());
-
-                if (model.getSender().equalsIgnoreCase(senderId)) {
+                if (message.getSender().equalsIgnoreCase(senderId)) {
                     //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
                     messageText.setGravity(Gravity.RIGHT);
 
-                    if (model.getCheck().compareTo("true") == 0)
+                    if (message.getCheck().compareTo("true") == 0)
                         checkImage.setVisibility(View.VISIBLE);
                 } else {
                     //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
