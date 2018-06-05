@@ -114,6 +114,10 @@ public class ShowBooks extends AppCompatActivity
                             ProfileManager.retrieveInformationUser(uid);
                             startActivity(showProfile);
                         });
+
+                        // Map button click listener
+                        findViewById(R.id.books_map_button).setOnClickListener(v -> showMap());
+
                         return view;
                     }
                 });
@@ -144,7 +148,7 @@ public class ShowBooks extends AppCompatActivity
 
                     // Insert the current Book (model) into an array to use it in "showMap"
                     // IN MY_BOOKS "MAP" BUTTON IS NOT VISIBLE ANYMORE
-                    book_list.add(model);
+                    //book_list.add(model);
 
                 }
 
@@ -183,6 +187,8 @@ public class ShowBooks extends AppCompatActivity
                     "\n" + model.getBookOwner().getLocation();
             sharingUser.setText(sharedBy);
 
+            book_list.add(model);
+
             // Checks if the book is available for sharing
             // If it's available, the title is displayed green;
             // otherwise, the title is displayed red
@@ -215,8 +221,6 @@ public class ShowBooks extends AppCompatActivity
 
                 }
             });
-            // Map button click listener
-            findViewById(R.id.books_map_button).setOnClickListener(v -> showMap());
 
         } else if (requestCode == USER_BOOKS) {
             TextView myBookTitle = (TextView) view.findViewById(R.id.my_book_title);

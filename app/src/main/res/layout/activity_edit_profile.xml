@@ -316,6 +316,7 @@
 
             <Button
                 android:id="@+id/logout_button"
+                style="@style/FirebaseUI.Button"
                 android:layout_width="105dp"
                 android:layout_height="47dp"
                 android:layout_alignParentBottom="true"
@@ -325,8 +326,8 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
-                android:background="@color/rosso_scuro"
                 android:text="@string/logout_button_label"
+                android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="@+id/save_button"
                 app:layout_constraintStart_toStartOf="parent"

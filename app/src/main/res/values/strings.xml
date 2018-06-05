@@ -74,7 +74,7 @@
     <string name="book_conditions">Conditions</string>
     <string name="sharing_user">Shared by: Username</string>
     <string name="books_map_button_label">Map</string>
-    <string name="send_request">Request Book</string>
+    <string name="send_request">Request</string>
 
 
     <!-- Authentication -->

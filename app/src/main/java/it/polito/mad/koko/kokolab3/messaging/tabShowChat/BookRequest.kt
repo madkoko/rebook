@@ -117,8 +117,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
 
                     val ratedSwitch = v.findViewById<ViewSwitcher>(R.id.rated_switch)
 
-                    ratingBar.visibility = View.INVISIBLE
-                    feedbackEditText.visibility = View.INVISIBLE
 
                     if (model.status.equals("pending")) {
                         acceptButton.visibility = View.VISIBLE
@@ -156,8 +154,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                         acceptButton.visibility = View.VISIBLE
                         declineButton.visibility = View.INVISIBLE
                         acceptButton.setText(R.string.currency)
-                        ratingBar.visibility = View.VISIBLE
-                        feedbackEditText.visibility = View.VISIBLE
                         acceptButton.setOnClickListener {
                             ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                             RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
@@ -309,8 +305,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                 acceptButton.visibility = View.VISIBLE
                                 declineButton.visibility = View.INVISIBLE
                                 acceptButton.setText(R.string.currency)
-                                ratingBar.visibility = View.VISIBLE
-                                feedbackEditText.visibility = View.VISIBLE
                                 acceptButton.setOnClickListener {
                                     ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                                     RequestManager.putSenderRate(requestId, ratingBar.rating.toInt().toString())

@@ -62,10 +62,10 @@ public class HomeSharingBook extends Fragment {
                 TextView titleBook = v.findViewById(R.id.req_book_title_sharing_home);
                 Button buttonReturn = v.findViewById(R.id.return_button);
                 ratingBar = v.findViewById(R.id.rating_bar_sharing_home);
-                ratingBar.setVisibility(View.INVISIBLE);
+
 
                 feedbackEditText= v.findViewById(R.id.feedback_edit_text_sharing_home);
-                feedbackEditText.setVisibility(View.INVISIBLE);
+
 
                 LinearLayout linearLayoutRated = v.findViewById(R.id.linear_layout_rated_sharing);
                 ViewSwitcher viewSwitcherRated =  v.findViewById(R.id.rated_switch_sharing);
@@ -95,8 +95,6 @@ public class HomeSharingBook extends Fragment {
                     viewSwitcherRated.showNext();
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
-                    ratingBar.setVisibility(View.VISIBLE);
-                    feedbackEditText.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
                         ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()),feedbackEditText.getText().toString());
@@ -111,8 +109,6 @@ public class HomeSharingBook extends Fragment {
                 } else
                     buttonReturn.setVisibility(View.INVISIBLE);
                 if(!model.getRatingReceiver().equals("")) {
-                    ratingBar.setVisibility(View.INVISIBLE);
-                    feedbackEditText.setVisibility(View.INVISIBLE);
                     buttonReturn.setVisibility(View.INVISIBLE);
                 }
             }

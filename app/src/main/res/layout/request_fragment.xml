@@ -88,8 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:numStars="5"
-                    android:stepSize="1.0"
-                    android:visibility="visible" />
+                    android:stepSize="1.0" />
 
                 <EditText
                     android:id="@+id/feedback_edit_text"
@@ -101,8 +100,7 @@
                     android:lines="1"
                     android:maxLines="1"
                     android:minLines="1"
-                    android:scrollbars="vertical"
-                    android:visibility="visible" />
+                    android:scrollbars="vertical" />
             </LinearLayout>
 
 

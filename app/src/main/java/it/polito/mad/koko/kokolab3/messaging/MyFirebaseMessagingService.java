@@ -65,7 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Notification properties
      */
-    private static final int NOTIFICATION_ICON = R.mipmap.icon,
+    private static final int NOTIFICATION_ICON = R.mipmap.notification_icon,
             NOTIFICATION_PRIORITY = NotificationCompat.PRIORITY_MAX;
 
     /**
@@ -228,7 +228,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         // Notification's icon
                         .setSmallIcon(NOTIFICATION_ICON)
 
-                        // Sender's user picture
+                        // Sender's user set
                         .setLargeIcon(ImageManager.getCircleBitmap(ImageManager.getBitmapFromURL(senderObject.get("image"))))
 
                         // Title and expandable subtitle
