@@ -219,5 +219,6 @@
     <string name="no_books">You don\'t have any books yet</string>
     <string name="no_requests">No requests found</string>
     <string name="no_borrowed">No books borrowed yet</string>
+    <string name="application_logo">Application logo</string>
 
 </resources>

@@ -193,13 +193,14 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
-        ///
 
-        Bitmap resultBmp = BlurBuilder.blur(this, BitmapFactory.decodeResource(getResources(), R.mipmap.koko));
-        Drawable drawable = new BitmapDrawable(getResources(), resultBmp);
+        // Background blurring
+        //Bitmap resultBmp = BlurBuilder.blur(this, BitmapFactory.decodeResource(getResources(), R.mipmap.koko));
+
+        // Setting the splashscreen background image
+        Drawable drawable = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.mipmap.bg));
         linearLayout = findViewById(R.id.lay);
         linearLayout.setBackground(drawable);
-
 
         ImageView imageView = findViewById(R.id.koko_logo);
         Picasso.get().load(R.mipmap.logo).into(imageView);
