@@ -346,6 +346,10 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent searchBooks = new Intent(getApplicationContext(), SearchBooks.class);
+            // BookManager.removeUserBooksEventListener();
+            // startActivityForResult(searchBooks, SEARCH_BOOKS);
+            startActivity(searchBooks);
             return true;
         }
 

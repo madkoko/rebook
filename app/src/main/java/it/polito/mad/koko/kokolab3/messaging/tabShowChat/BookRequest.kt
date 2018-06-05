@@ -3,6 +3,7 @@ package it.polito.mad.koko.kokolab3.messaging.tabShowChat
 import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.app.Fragment
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -22,11 +23,11 @@ import it.polito.mad.koko.kokolab3.messaging.UserChatInfo
 import it.polito.mad.koko.kokolab3.profile.ProfileManager
 import it.polito.mad.koko.kokolab3.request.Request
 import it.polito.mad.koko.kokolab3.request.RequestManager
+import it.polito.mad.koko.kokolab3.profile.ShowProfile
+
 import org.w3c.dom.Text
 import java.util.*
 import android.widget.FrameLayout
-
-
 
 
 @SuppressLint("ValidFragment")
@@ -98,8 +99,19 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                     val acceptButton = v.findViewById<Button>(R.id.accept)
                     val declineButton = v.findViewById<Button>(R.id.decline)
 
-                    val sendrName = v.findViewById<TextView>(R.id.req_requester)
-                    sendrName.setText(model.senderName)
+                    val senderName = v.findViewById<TextView>(R.id.req_requester)
+                    if (model.senderId.equals(ProfileManager.getCurrentUserID()))
+                        senderName.setText("Request by me")
+                    else {
+                        senderName.setText("Request by " + model.senderName)
+                        senderName.setOnClickListener(View.OnClickListener {
+                            val showProfile = Intent(activity, ShowProfile::class.java)
+                            showProfile.putExtra("UserID", model.senderId)
+                            ProfileManager.retrieveInformationUser(model.senderId)
+                            startActivity(showProfile)
+                        })
+                    }
+
 
                     val linearLayoutRated = v.findViewById<LinearLayout>(R.id.linear_layout_rated)
 
@@ -155,7 +167,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             ratedSwitch.showPrevious();
                             val ratedText = v.findViewById<TextView>(R.id.rated_text)
                             ratedText.setText(R.string.rated_added)
-                            if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0){
+                            if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0) {
                                 RequestManager.ratedTransition(getRef(position).key)
 
                             }
@@ -205,9 +217,9 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                     val thisChatRequests = HashMap<String, Request>()
                     // For each current user's request
                     for ((key, value) in allCurrentUserRequests)
-                        // If the request involves the user with whom the chat is opened
+                    // If the request involves the user with whom the chat is opened
                         if (requester!!.secondPartyId.compareTo(allCurrentUserRequests.get(key)!!.senderId!!) === 0)
-                            // Add it to the current chat requests map
+                        // Add it to the current chat requests map
                             thisChatRequests.put(key, value)
 
                     myListView.adapter = object : BaseAdapter() {
@@ -241,8 +253,18 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             bookTitle.text = model!!.bookName
                             Picasso.get().load(model.bookImage).into(bookRequest)
 
-                            val sendrName = v.findViewById<TextView>(R.id.req_requester)
-                            sendrName.setText(model.senderName)
+                            val senderName = v.findViewById<TextView>(R.id.req_requester)
+                            if (model.senderId.equals(ProfileManager.getCurrentUserID()))
+                                senderName.setText("Request by me")
+                            else {
+                                senderName.setText("Request by " + model.senderName)
+                                senderName.setOnClickListener(View.OnClickListener {
+                                    val showProfile = Intent(activity, ShowProfile::class.java)
+                                    showProfile.putExtra("UserID", model.senderId)
+                                    ProfileManager.retrieveInformationUser(model.senderId)
+                                    startActivity(showProfile)
+                            })
+                        }
 
                             val acceptButton = v.findViewById<Button>(R.id.accept)
                             val declineButton = v.findViewById<Button>(R.id.decline)
@@ -297,7 +319,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                     ratedSwitch.showPrevious();
                                     val ratedText = v.findViewById<TextView>(R.id.rated_text)
                                     ratedText.setText(R.string.rated_added)
-                                    if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0){
+                                    if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0) {
                                         RequestManager.ratedTransition(requestId)
                                     }
                                 }

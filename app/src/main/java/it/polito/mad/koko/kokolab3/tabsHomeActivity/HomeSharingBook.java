@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.tabsHomeActivity;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.squareup.picasso.Picasso;
 
 import it.polito.mad.koko.kokolab3.R;
 import it.polito.mad.koko.kokolab3.profile.ProfileManager;
+import it.polito.mad.koko.kokolab3.profile.ShowProfile;
 import it.polito.mad.koko.kokolab3.request.Request;
 import it.polito.mad.koko.kokolab3.request.RequestManager;
 
@@ -67,8 +69,19 @@ public class HomeSharingBook extends Fragment {
 
                 LinearLayout linearLayoutRated = v.findViewById(R.id.linear_layout_rated_sharing);
                 ViewSwitcher viewSwitcherRated =  v.findViewById(R.id.rated_switch_sharing);
-                TextView textViewRequester = v.findViewById(R.id.req_requester_sharing);
-                textViewRequester.setText("Request by "+model.getSenderName());
+                TextView senderName = v.findViewById(R.id.req_requester_sharing);
+                if (model.getSenderId().equals(ProfileManager.getCurrentUserID()))
+                    senderName.setText("Request by me");
+                else {
+                    senderName.setText("Request by " + model.getSenderId());
+                    senderName.setOnClickListener(vprofile-> {
+                        Intent showProfile = new Intent(getActivity(), ShowProfile.class);
+                        showProfile.putExtra("UserID", model.getSenderId());
+                        ProfileManager.retrieveInformationUser(model.getSenderId());
+                        startActivity(showProfile);
+                    });
+                }
+
                 TextView textViewCompletSession = v.findViewById(R.id.rated_text_sharing);
 
                 titleBook.setText(model.getBookName());
