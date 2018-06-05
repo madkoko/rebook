@@ -1,6 +1,7 @@
 package it.polito.mad.koko.kokolab3.messaging.tabShowChat
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.app.Fragment
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,9 @@ import it.polito.mad.koko.kokolab3.request.Request
 import it.polito.mad.koko.kokolab3.request.RequestManager
 import org.w3c.dom.Text
 import java.util.*
+import android.widget.FrameLayout
+
+
 
 
 @SuppressLint("ValidFragment")
@@ -97,6 +101,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                     val sendrName = v.findViewById<TextView>(R.id.req_requester)
                     sendrName.setText(model.senderName)
 
+                    val linearLayoutRated = v.findViewById<LinearLayout>(R.id.linear_layout_rated)
+
                     val ratedSwitch = v.findViewById<ViewSwitcher>(R.id.rated_switch)
 
                     ratingBar.visibility = View.INVISIBLE
@@ -130,6 +136,11 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                         }
                     } else if (model.status == "returned") {
                         ratedSwitch.showNext();
+                        //
+                        //linearLayoutRated.setLayoutParams(LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+                        //
+                        linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+                        //
                         acceptButton.visibility = View.VISIBLE
                         declineButton.visibility = View.INVISIBLE
                         acceptButton.setText(R.string.currency)
@@ -138,11 +149,15 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                         acceptButton.setOnClickListener {
                             ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                             RequestManager.putSenderRate(getRef(position).key, ratingBar.rating.toInt().toString())
+                            //
+                            linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(0, 0))
+                            //
+                            ratedSwitch.showPrevious();
                             val ratedText = v.findViewById<TextView>(R.id.rated_text)
                             ratedText.setText(R.string.rated_added)
                             if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0){
                                 RequestManager.ratedTransition(getRef(position).key)
-                                ratedSwitch.showPrevious();
+
                             }
                         }
                         //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })
@@ -232,6 +247,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             val acceptButton = v.findViewById<Button>(R.id.accept)
                             val declineButton = v.findViewById<Button>(R.id.decline)
 
+                            val linearLayoutRated = v.findViewById<LinearLayout>(R.id.linear_layout_rated)
+
                             val ratedSwitch = v.findViewById<ViewSwitcher>(R.id.rated_switch)
 
 
@@ -263,6 +280,9 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                 }
                             } else if (model.status == "returned") {
                                 ratedSwitch.showNext();
+                                //
+                                linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+                                //
                                 acceptButton.visibility = View.VISIBLE
                                 declineButton.visibility = View.INVISIBLE
                                 acceptButton.setText(R.string.currency)
@@ -271,11 +291,14 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                 acceptButton.setOnClickListener {
                                     ProfileManager.addRating(model.senderId, ratingBar.rating.toString(), feedbackEditText.text.toString())
                                     RequestManager.putSenderRate(requestId, ratingBar.rating.toInt().toString())
+                                    //
+                                    linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(0, 0))
+                                    //
+                                    ratedSwitch.showPrevious();
                                     val ratedText = v.findViewById<TextView>(R.id.rated_text)
                                     ratedText.setText(R.string.rated_added)
                                     if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0){
                                         RequestManager.ratedTransition(requestId)
-                                        ratedSwitch.showPrevious();
                                     }
                                 }
                                 //buttonReturn.setOnClickListener({ v2 -> ProfileManager.getInstance().addRating(model.receiverId, ratingBar.numStars) })

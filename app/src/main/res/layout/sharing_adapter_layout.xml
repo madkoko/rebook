@@ -1,63 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:dividerPadding="8dp"
+    android:orientation="horizontal"
     android:padding="8dp">
 
     <ImageView
         android:id="@+id/book_sharing_home"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical"
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:dividerPadding="8dp"
-        android:padding="10dp"
-        android:layout_width="match_parent">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/req_book_title_sharing_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:hint="@string/book_title"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.25"/>
+            android:layout_weight="0.25"
+            android:hint="@string/book_title"
+            android:textSize="20sp" />
 
-
-            <Button
-                android:id="@+id/return_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/return_book" />
-
-        <RatingBar
-            android:id="@+id/rating_bar_sharing_home"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            android:stepSize="1.0"
-            android:visibility="invisible"/>
-
-        <EditText
-            android:id="@+id/feedback_edit_text_sharing_home"
+        <TextView
+            android:id="@+id/req_requester_sharing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|start"
-            android:inputType="textMultiLine"
-            android:lines="8"
-            android:maxLines="10"
-            android:minLines="6"
-            android:hint="@string/feedback_edit_text"
-            android:scrollbars="vertical"
-            android:visibility="invisible"/>
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.25"
+            android:hint="@string/book_title"
+            android:textSize="15sp" />
+
+
+        <Button
+            android:id="@+id/return_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/return_book" />
+
+        <ViewSwitcher
+            android:id="@+id/rated_switch_sharing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/rated_text_sharing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_layout_rated_sharing"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical">
+
+                <RatingBar
+                    android:id="@+id/rating_bar_sharing_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:visibility="invisible" />
+
+                <EditText
+                    android:id="@+id/feedback_edit_text_sharing_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:hint="@string/feedback_edit_text"
+                    android:inputType="textMultiLine"
+                    android:lines="8"
+                    android:maxLines="10"
+                    android:minLines="6"
+                    android:scrollbars="vertical"
+                    android:visibility="invisible" />
+            </LinearLayout>
+        </ViewSwitcher>
 
 
     </LinearLayout>

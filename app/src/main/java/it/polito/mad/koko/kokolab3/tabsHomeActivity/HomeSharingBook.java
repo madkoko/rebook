@@ -6,11 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
@@ -62,6 +65,12 @@ public class HomeSharingBook extends Fragment {
                 feedbackEditText= v.findViewById(R.id.feedback_edit_text_sharing_home);
                 feedbackEditText.setVisibility(View.INVISIBLE);
 
+                LinearLayout linearLayoutRated = v.findViewById(R.id.linear_layout_rated_sharing);
+                ViewSwitcher viewSwitcherRated =  v.findViewById(R.id.rated_switch_sharing);
+                TextView textViewRequester = v.findViewById(R.id.req_requester_sharing);
+                textViewRequester.setText("Request by "+model.getSenderName());
+                TextView textViewCompletSession = v.findViewById(R.id.rated_text_sharing);
+
                 titleBook.setText(model.getBookName());
                 Picasso.get().load(model.getBookImage()).into(imageBook);
 
@@ -69,6 +78,8 @@ public class HomeSharingBook extends Fragment {
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v1 -> RequestManager.Companion.returnRequest(getRef(position).getKey()));
                 } else if (model.getStatus().equals("returned")) {
+                    linearLayoutRated.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    viewSwitcherRated.showNext();
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
                     ratingBar.setVisibility(View.VISIBLE);
@@ -77,6 +88,9 @@ public class HomeSharingBook extends Fragment {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
                         ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()),feedbackEditText.getText().toString());
                         RequestManager.Companion.putReceiverRate(getRef(position).getKey(), String.valueOf((int) ratingBar.getRating()));
+                        textViewCompletSession.setText(R.string.rated_added);
+                        linearLayoutRated.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
+                        viewSwitcherRated.showPrevious();
                         if (model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0) {
                             RequestManager.Companion.ratedTransition(getRef(position).getKey());
                         }
