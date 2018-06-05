@@ -854,4 +854,21 @@ public class MessageManager {
     public static String getReceiverToken() {
         return receiverToken;
     }
+
+
+    public static void isRead(String chatID,String messageID,final OnGetDataListener listener) {
+        DatabaseManager.get("chats", chatID, "messages",messageID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (listener != null)
+                    listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if (listener != null)
+                    listener.onFailed(databaseError);
+            }
+        });
+    }
 }

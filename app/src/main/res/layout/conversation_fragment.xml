@@ -3,25 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:dividerPadding="8dp"
+    android:orientation="horizontal"
     android:padding="10dp">
 
-        <TextView
-            android:id="@+id/message_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_weight="10"
-            android:padding="5dp"
-            android:textColor="@color/secondary_text"
-            android:textSize="16sp" />
+    <TextView
+        android:id="@+id/message_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_weight="10"
+        android:padding="5dp"
+        android:textColor="@color/secondary_text"
+        android:textSize="16sp" />
 
-        <ImageView
-            android:id="@+id/check_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/fui_done_check_mark"
-            android:visibility="gone" />
+    <ImageView
+        android:id="@+id/check_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/fui_done_check_mark"
+        android:visibility="gone"/>
 
 </LinearLayout>

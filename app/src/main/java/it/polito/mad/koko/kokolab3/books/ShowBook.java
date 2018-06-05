@@ -175,11 +175,11 @@ public class ShowBook extends AppCompatActivity
             sendMessage = findViewById(R.id.open_chat);      // >>> Send Message Button
 
 
-
             //if the book isn't sharable the request button is hidden
             if (i.getStringExtra("sharable") != null)
                 if (i.getStringExtra("sharable").compareToIgnoreCase("no") == 0)
                     sendRequest.setVisibility(View.INVISIBLE);
+
 
             if (authUser.compareTo(book.getUid()) != 0) {
 
@@ -270,6 +270,9 @@ public class ShowBook extends AppCompatActivity
                 });
 
             }
+            else
+                sendingLayout.setVisibility(View.INVISIBLE);
+
         }
     }
 

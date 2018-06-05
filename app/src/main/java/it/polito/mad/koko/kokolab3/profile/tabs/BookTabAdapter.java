@@ -49,10 +49,11 @@ public class BookTabAdapter extends FirebaseListAdapter<Book> {
         titleBook.setText(model.getTitle());
         Picasso.get().load(model.getImage()).into(coverBook);
 
-        Button deleteBookButton = (Button) view.findViewById(R.id.delete_my_book);
+        //Button deleteBookButton = (Button) view.findViewById(R.id.delete_my_book);
 
+        view.findViewById(R.id.delete_my_book).setVisibility(View.INVISIBLE);
         // set the listener to the delete button with an alert dialog
-        deleteBookButton.setOnClickListener(new View.OnClickListener() {
+        /*deleteBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -96,15 +97,13 @@ public class BookTabAdapter extends FirebaseListAdapter<Book> {
                     }
                 });
             }
-        });
+        })*/
 
         view.setOnClickListener(v -> {
-            Intent editBook = new Intent(context, EditBook.class);
-
-            editBook.putExtra("updatingBook", model);
-            editBook.putExtra("bookKey", getRef(position).getKey());
-            //showBook.putExtra("bookPhoto",bookVals.get("image"));
-            context.startActivity(editBook);
+            Intent showBook = new Intent(context, ShowBook.class);
+            showBook.putExtra("book", model);
+            showBook.putExtra("bookId", getRef(position).getKey());
+            context.startActivity(showBook);
 
         });
     }

@@ -14,10 +14,13 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import it.polito.mad.koko.kokolab3.R;
+import it.polito.mad.koko.kokolab3.firebase.OnGetDataListener;
 import it.polito.mad.koko.kokolab3.messaging.Message;
 import it.polito.mad.koko.kokolab3.messaging.MessageManager;
 import it.polito.mad.koko.kokolab3.messaging.MyFirebaseMessagingService;
@@ -79,7 +82,7 @@ public class Conversation extends Fragment {
             receiverUsername = getArguments().getString("receiverUsername");
             receiverImage = getArguments().getString("receiverImage");
             receiverToken = getArguments().getString("receiverToken");*/
-            chatID = getArguments().getString("chatID");
+        chatID = getArguments().getString("chatID");
         //}
 
         Query query = FirebaseDatabase.getInstance().getReference().child("chats").child(chatID).child("messages");
@@ -106,12 +109,34 @@ public class Conversation extends Fragment {
                     //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
                     messageText.setGravity(Gravity.RIGHT);
 
-                    if (message.getCheck().compareTo("true") == 0)
-                        checkImage.setVisibility(View.VISIBLE);
+                    MessageManager.isRead(chatID, adapter.getRef(position).getKey(), new OnGetDataListener() {
+                        @Override
+                        public void onSuccess(DataSnapshot data) {
+                            if (data.exists()) {
+                                Log.d(TAG, data.getValue().toString());
+                                if (data.child("sender").getValue().toString().compareToIgnoreCase(ProfileManager.getCurrentUserID()) == 0) {
+
+                                    if (data.child("check").getValue().toString().compareTo("true") == 0)
+                                        checkImage.setVisibility(View.VISIBLE);
+
+                                    else
+                                        checkImage.setVisibility(View.INVISIBLE);
+
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailed(DatabaseError databaseError) {
+
+                        }
+                    });
+
                 } else {
                     //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
                     messageText.setGravity(Gravity.LEFT);
                     MessageManager.setFirebaseCheck(chatID, adapter.getRef(position).getKey());
+                    checkImage.setVisibility(View.INVISIBLE);
 
                 }
             }
