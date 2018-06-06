@@ -298,7 +298,6 @@ public class HomeActivity extends AppCompatActivity
                         // Load the profile picture in the UI
                         Profile p = ProfileManager.getProfile();
                         ImageManager.loadBitmap(p.getImage());
-
                     }
                 }
 
@@ -390,10 +389,6 @@ public class HomeActivity extends AppCompatActivity
 
         ImageView sideMenuImage=navigationView.getHeaderView(0).findViewById(R.id.sideMenuImage);
         Picasso.get().load(R.mipmap.logo).fit().centerCrop().into(sideMenuImage);
-        if(ProfileManager.getProfile()!=null){
-            TextView sideMenuEmail=navigationView.getHeaderView(0).findViewById(R.id.sideMenuEmail);
-            sideMenuEmail.setText(ProfileManager.getProfile().getEmail());
-        }
     }
 
     /**

@@ -128,11 +128,8 @@ public class ShowProfile extends AppCompatActivity {
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
-        viewPager.setOnTouchListener((v, event) -> setScroll(event));
     }
 
 

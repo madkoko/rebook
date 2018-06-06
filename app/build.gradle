@@ -51,7 +51,7 @@ dependencies {
     //implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true }
     // Twitter
 
-    //
+    // Gson (Google JSON de/serializer)
     implementation 'com.google.code.gson:gson:2.8.4'
 
     // Firebase storage and database
