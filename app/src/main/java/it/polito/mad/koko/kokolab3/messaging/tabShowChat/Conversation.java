@@ -1,14 +1,19 @@
 package it.polito.mad.koko.kokolab3.messaging.tabShowChat;
 
 import android.app.Fragment;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -106,7 +111,8 @@ public class Conversation extends Fragment {
                 messageText.setText(message.getText());
 
                 if (message.getSender().equalsIgnoreCase(senderId)) {
-                    //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
+
+                    view.setBackgroundResource(R.drawable.bg_custom_outcoming_message);
                     messageText.setGravity(Gravity.RIGHT);
 
                     if (message.getCheck().compareTo("true") == 0)
@@ -117,6 +123,7 @@ public class Conversation extends Fragment {
 
                 } else {
                     //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
+                    view.setBackgroundResource(R.drawable.bg_custom_incoming_message);
                     messageText.setGravity(Gravity.LEFT);
                     MessageManager.setFirebaseCheck(chatID, adapter.getRef(position).getKey());
                     checkImage.setVisibility(View.INVISIBLE);
