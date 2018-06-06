@@ -112,7 +112,7 @@
 
     <!-- Chat UI-->
     <string name="borrowed">Presi in Prestito</string>
-    <string name="request_book">In attessa</string>
+    <string name="request_book">In attesa</string>
     <string name="element_text">Elemento</string>
     <string name="open_chat">Apri la Chat</string>
     <string name="accept">Accetta</string>
@@ -125,11 +125,11 @@
     <!-- Empty view -->
     <string name="no_chats">Nessuna chat trovata</string>
     <string name="no_books">Non hai ancora nessun libro</string>
-    <string name="no_requests">Nessuna Richiesta Trovata</string>
+    <string name="no_requests">Nessuna richiesta trovata</string>
     <string name="no_borrowed">Nessun libro preso in prestito</string>
     <string name="application_logo">Logo applicazione</string>
 
     <string name="request_by_me">Richiesto da me</string>
-    <string name="no_request_found">Nessun riechiesta trovata</string>
+    <string name="no_requests_found">Nessuna richiesta trovata</string>
 
 </resources>
