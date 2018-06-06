@@ -48,7 +48,7 @@ public class HomeListBook extends Fragment {
                 .getReference()
                 .child("books")
                 .orderByChild("visualizations")
-                .limitToFirst(5);
+                .limitToLast(5);
 
         FirebaseRecyclerOptions<Book> optionsRecyclerMostViewed = new FirebaseRecyclerOptions.Builder<Book>()
                 .setQuery(queryRecyclerMostViewed, Book.class)
