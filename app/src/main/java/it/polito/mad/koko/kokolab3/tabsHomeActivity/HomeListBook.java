@@ -41,7 +41,8 @@ public class HomeListBook extends Fragment {
 
         Query queryRecyclerRecentlyAdded = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("books");
+                .child("books")
+                .limitToFirst(10);
 
         Query queryRecyclerMostViewed = FirebaseDatabase.getInstance()
                 .getReference()

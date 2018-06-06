@@ -13,9 +13,9 @@
             android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/edit_profile" />
         <item
-            android:id="@+id/my_books"
+            android:id="@+id/my_library"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/my_books" />
+            android:title="@string/my_library" />
     </group>
 
     <item android:title="Sign Out">

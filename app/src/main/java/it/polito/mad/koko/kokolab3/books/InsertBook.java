@@ -155,6 +155,8 @@ public class InsertBook extends AppCompatActivity {
 
         BookManager.insertBook(book,shown_image);
 
+        Toast.makeText(InsertBook.this, "Book Inserted!", Toast.LENGTH_LONG).show();
+
         finish();
     }
 

@@ -232,6 +232,7 @@ public class EditProfile extends AppCompatActivity {
                                 }
                             });
 
+                            Toast.makeText(EditProfile.this, "Profile Modified", Toast.LENGTH_LONG).show();
                             // Terminating the activity
                             finish();
                         }

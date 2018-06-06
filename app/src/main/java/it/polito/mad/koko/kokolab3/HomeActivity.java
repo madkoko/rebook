@@ -367,7 +367,7 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.edit_profile) {
             startActivity(new Intent(getApplicationContext(), EditProfile.class));
-        } else if (id == R.id.my_books) {
+        } else if (id == R.id.my_library) {
 
             Intent showBooks = new Intent(getApplicationContext(), ShowBooks.class);
             showBooks.putExtra("request_code", USER_BOOKS);
