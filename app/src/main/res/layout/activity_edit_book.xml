@@ -27,7 +27,7 @@
                     android:layout_height="150dp"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/user_profile_pic"
-                    android:src="@mipmap/ic_launcher_round" />
+                    android:src="@mipmap/icon" />
 
                 <ImageButton
                     android:id="@+id/edit_book_photo_button"

@@ -40,7 +40,7 @@
                             android:contentDescription="@string/user_profile_pic"
                             android:padding="20dp"
                             android:paddingTop="10dp"
-                            android:src="@mipmap/ic_launcher_round" />
+                            android:src="@mipmap/icon" />
 
                     </android.support.v7.widget.CardView>
 

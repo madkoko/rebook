@@ -14,7 +14,7 @@
             android:padding="35dp"
             android:layout_gravity="center"
             android:contentDescription="@string/user_profile_pic"
-            android:src="@mipmap/ic_launcher_round"/>
+            android:src="@mipmap/icon"/>
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_info"
