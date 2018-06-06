@@ -116,7 +116,7 @@ public class HomeSharingBook extends Fragment {
             @Override
             public void onDataChanged() {
                 if(adapter.getCount()==0) {
-                    listView.setEmptyView(getActivity().findViewById(R.id.no_borrowed_found));
+                    //listView.setEmptyView(getActivity().findViewById(R.id.no_borrowed_found));
                     Toast.makeText(getActivity().getApplicationContext(), "No books borrowed found.", Toast.LENGTH_SHORT).show();
                 }
             }

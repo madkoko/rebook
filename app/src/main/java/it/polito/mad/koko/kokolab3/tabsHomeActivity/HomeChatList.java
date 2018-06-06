@@ -108,7 +108,7 @@ public class HomeChatList extends Fragment{
             @Override
             public void onDataChanged() {
                 if(adapter.getCount()==0) {
-                    chatsListView.setEmptyView(getActivity().findViewById(R.id.no_chats_found));
+                    //chatsListView.setEmptyView(getActivity().findViewById(R.id.no_chats_found));
                     Toast.makeText(getActivity().getApplicationContext(), "No chats found.", Toast.LENGTH_SHORT).show();
                 }
             }

@@ -7,6 +7,10 @@
     <string name="action_settings">Settings</string>
     <string name="map">Map</string>
     <string name="home">home</string>
+    <string name="recently_added">Recently Added</string>
+    <string name="most_viewed">Most Viewed</string>
+
+
 
 
     <!-- Buttons -->
@@ -220,5 +224,4 @@
     <string name="no_requests">No requests found</string>
     <string name="no_borrowed">No books borrowed yet</string>
     <string name="application_logo">Application logo</string>
-
 </resources>

@@ -52,7 +52,7 @@
                         android:layout_height="match_parent"
                         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-                    <TextView
+                    <!--TextView
                         android:id="@+id/no_chats_found"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                         android:text="@string/no_borrowed"
                         android:textAlignment="center"
                         android:textSize="21sp"
-                        android:visibility="gone" />
+                        android:visibility="gone" /-->
 
                 </LinearLayout>
 
@@ -89,7 +89,7 @@
                         android:autoText="false"
                         android:gravity="center"
                         android:lineSpacingExtra="12sp"
-                        android:text="Recently Added"
+                        android:text="@string/recently_added"
                         android:textSize="18sp"
                         android:textStyle="italic" />
 
@@ -108,7 +108,7 @@
                         android:autoText="false"
                         android:gravity="center"
                         android:lineSpacingExtra="12sp"
-                        android:text="Most Viewed"
+                        android:text="@string/most_viewed"
                         android:textSize="18sp"
                         android:textStyle="italic" />
 
