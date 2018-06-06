@@ -48,16 +48,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
     val flag: Int = flag
     val requester: UserChatInfo? = receiverInfo
 
-    /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle): View? {
-
-        val rootBookReqView = inflater.inflate(R.layout.request_fragment, container, false)
-        val listBookReqView = rootBookReqView.findViewById<ListView>(R.id.list_chat) // Carica parte grafica lista
-
-        // UI elements
-        reqListView = rootBookReqView.findViewById<ListView>(R.id.list_chat)
-
-        return rootBookReqView
-     }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -252,6 +242,9 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             bookTitle.text = model!!.bookName
                             Picasso.get().load(model.bookImage).into(bookRequest)
 
+                            val acceptButton = v.findViewById<Button>(R.id.accept)
+                            val declineButton = v.findViewById<Button>(R.id.decline)
+
                             val senderName = v.findViewById<TextView>(R.id.req_requester)
                             if (model.senderId.equals(ProfileManager.getCurrentUserID()))
                                 senderName.setText(R.string.request_by_me)
@@ -265,8 +258,6 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                 })
                             }
 
-                            val acceptButton = v.findViewById<Button>(R.id.accept)
-                            val declineButton = v.findViewById<Button>(R.id.decline)
 
                             val linearLayoutRated = v.findViewById<LinearLayout>(R.id.linear_layout_rated)
 
@@ -300,7 +291,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                     FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                                 }
                             } else if (model.status == "returned") {
-                                ratedSwitch.showNext();
+                                if (ratedSwitch.currentView != v.findViewById(R.id.linear_layout_rated))
+                                    ratedSwitch.showNext();
                                 //
                                 linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
                                 //
@@ -313,7 +305,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                     //
                                     linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(0, 0))
                                     //
-                                    ratedSwitch.showPrevious();
+                                    if (ratedSwitch.currentView != v.findViewById(R.id.layout_before))
+                                        ratedSwitch.showPrevious();
                                     val ratedText = v.findViewById<TextView>(R.id.rated_text)
                                     ratedText.setText(R.string.rated_added)
                                     if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0) {
@@ -353,12 +346,12 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
 
     override fun onStart() {
         super.onStart()
-            adapter?.startListening()
+        adapter?.startListening()
     }
 
     override fun onStop() {
         super.onStop()
-            adapter?.stopListening()
+        adapter?.stopListening()
     }
 
 }
