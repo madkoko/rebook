@@ -73,7 +73,8 @@ public class EditBook extends AppCompatActivity {
         saveEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateBook(bookKey,updatingBook);
+                if (!bookTitleIsMissingFromUI())
+                    updateBook(bookKey, updatingBook);
             }
         });
         Picasso.get().load(updatingBook.getImage()).fit().centerCrop().into(editBookPhoto);
@@ -169,7 +170,7 @@ public class EditBook extends AppCompatActivity {
      *
      * @param bookId Id of the book to be updated
      */
-    private void updateBook(String bookId,Book updatingBook) {
+    private void updateBook(String bookId, Book updatingBook) {
 
         editBookPhoto.setDrawingCacheEnabled(true);
         editBookPhoto.buildDrawingCache();
@@ -185,13 +186,19 @@ public class EditBook extends AppCompatActivity {
         bookValues.put("publisher", editBookPublisher.getText().toString());
         bookValues.put("editionYear", editBookEditionYear.getText().toString());
         bookValues.put("bookConditions", editBookConditions.getText().toString());
-        bookValues.put("uid",updatingBook.getUid());
-        bookValues.put("sharable",updatingBook.getSharable());
-        bookValues.put("bookOwner",updatingBook.getBookOwner());
+        bookValues.put("uid", updatingBook.getUid());
+        bookValues.put("sharable", updatingBook.getSharable());
+        bookValues.put("bookOwner", updatingBook.getBookOwner());
 
         BookManager.updateBook(bookId, bookValues, shown_image);
 
         finish();
+    }
+
+    private boolean bookTitleIsMissingFromUI() {
+        if (editBookTitle != null && editBookTitle.getText().toString().equals(""))
+            editBookTitle.setError("Please insert a valid title");
+        return editBookTitle != null && editBookTitle.getText().toString().equals("");
     }
 
 }

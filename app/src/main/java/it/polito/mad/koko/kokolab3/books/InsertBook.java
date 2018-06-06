@@ -235,7 +235,7 @@ public class InsertBook extends AppCompatActivity {
 
     private boolean bookTitleIsMissingFromUI() {
         if (bookTitle != null && bookTitle.getText().toString().equals(""))
-            bookTitle.setError("please insert a valid title");
+            bookTitle.setError("Please insert a valid title");
         return bookTitle != null && bookTitle.getText().toString().equals("");
     }
 
