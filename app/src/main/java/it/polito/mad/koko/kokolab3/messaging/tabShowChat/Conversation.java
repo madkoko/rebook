@@ -1,20 +1,17 @@
 package it.polito.mad.koko.kokolab3.messaging.tabShowChat;
 
 import android.app.Fragment;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
@@ -50,19 +47,6 @@ public class Conversation extends Fragment {
     private String receiverImage;
     private String receiverToken;
     private ListView chatListView;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        // importa parametri dall'act: String strtext = getArguments().getString("edttext");
-
-        View rootConversationView = inflater.inflate(R.layout.conversation_fragment, container, false); // !! da fare conversation_fragment
-        ListView listConversationView = rootConversationView.findViewById(R.id.list_chat); // Carica parte grafica lista
-
-        // UI elements
-        chatListView = rootConversationView.findViewById(R.id.list_chat);
-
-        return rootConversationView;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,29 +89,43 @@ public class Conversation extends Fragment {
             @Override
             protected void populateView(View view, Message message, int position) {
                 Log.d(TAG, String.valueOf(message));
-                TextView messageText = view.findViewById(R.id.message_text);
+                TextView messageTextSender = view.findViewById(R.id.message_text_sender);
+                TextView messageTextReciver = view.findViewById(R.id.message_text_reciver);
                 ImageView checkImage = view.findViewById(R.id.check_image);
 
-                messageText.setText(message.getText());
+                ViewSwitcher viewSwitcher = view.findViewById(R.id.switcher_conversation);
+                LinearLayout linearLayout = view.findViewById(R.id.layout_sender);
 
-                if (message.getSender().equalsIgnoreCase(senderId)) {
+                if (message.getText() == null || message.getText().compareTo("") == 0) {
+                    linearLayout.setVisibility(View.INVISIBLE);
+                    messageTextSender.setBackgroundResource(0);
+                } else {
 
-                    view.setBackgroundResource(R.drawable.bg_custom_outcoming_message);
-                    messageText.setGravity(Gravity.RIGHT);
+                    if (message.getSender().compareToIgnoreCase(senderId) == 0) {
+                        linearLayout.setVisibility(View.VISIBLE);
+                        if (viewSwitcher.getCurrentView() != view.findViewById(R.id.layout_sender)) {
+                            viewSwitcher.showPrevious();
+                        }
+                        messageTextSender.setText(message.getText());
+                        //messageText.setTextColor(getResources().getColor(R.color.secondary_text));
+                        //messageText.setGravity(Gravity.RIGHT);
 
-                    if (message.getCheck().compareTo("true") == 0)
-                        checkImage.setVisibility(View.VISIBLE);
+                        if (message.getCheck().compareTo("true") == 0)
+                            checkImage.setVisibility(View.VISIBLE);
+                        else
+                            checkImage.setVisibility(View.INVISIBLE);
 
-                    else
+                    } else {
+                        //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
+                        if (viewSwitcher.getCurrentView() != view.findViewById(R.id.layout_reciver)) {
+                            viewSwitcher.showNext();
+                        }
+                        //messageTextReciver.setGravity(Gravity.LEFT);
+                        messageTextReciver.setText(message.getText());
+                        MessageManager.setFirebaseCheck(chatID, adapter.getRef(position).getKey());
                         checkImage.setVisibility(View.INVISIBLE);
 
-                } else {
-                    //messageText.setBackgroundResource(R.drawable.rounde_rectangle);
-                    view.setBackgroundResource(R.drawable.bg_custom_incoming_message);
-                    messageText.setGravity(Gravity.LEFT);
-                    MessageManager.setFirebaseCheck(chatID, adapter.getRef(position).getKey());
-                    checkImage.setVisibility(View.INVISIBLE);
-
+                    }
                 }
             }
         };
