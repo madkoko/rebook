@@ -81,7 +81,7 @@ public class HomeActivity extends AppCompatActivity
     private ListView listView;
     private ViewSwitcher viewSwitcher;
     private LinearLayout layoutRecycler;
-    private ListView layoutList;
+    private LinearLayout layoutList;
     private Fragment homeListBook;
     private Fragment homeListChats;
     private Fragment homeSharingBook;
@@ -131,8 +131,7 @@ public class HomeActivity extends AppCompatActivity
         // UI (tabs)
         viewSwitcher = findViewById(R.id.home_switcher);
         layoutRecycler = findViewById(R.id.home_recycler_switcher);
-        //layoutList = findViewById(R.id.home_list_switcher);
-        layoutList = findViewById(R.id.list_home_chats);
+        layoutList = findViewById(R.id.home_list_switcher);
         TabLayout tab_layout = findViewById(R.id.tabs_home);
         tab_layout.setTabMode(TabLayout.MODE_FIXED);
         //Tab for list of Books
