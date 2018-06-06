@@ -10,9 +10,6 @@
     <string name="recently_added">Recently Added</string>
     <string name="most_viewed">Most Viewed</string>
 
-
-
-
     <!-- Buttons -->
     <string name="edit_button_label">Edit</string>
     <string name="add_button_label">Add</string>
@@ -224,4 +221,6 @@
     <string name="no_requests">No requests found</string>
     <string name="no_borrowed">No books borrowed yet</string>
     <string name="application_logo">Application logo</string>
+    <string name="request_by_me">Request by me</string>
+    <string name="no_requests_found">No requests found</string>
 </resources>

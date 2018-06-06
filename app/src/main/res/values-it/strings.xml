@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- General UI -->
+    <string name="navigation_drawer_open">Apri navigation drawer</string>
+    <string name="navigation_drawer_close">Chiudi navigation drawer</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="map">Mappa</string>
+    <string name="recently_added">Ultimi Aggiunti</string>
+    <string name="most_viewed">Più visti</string>
+
+    <!-- Buttons -->
+    <string name="edit_button_label">Modifica</string>
+    <string name="add_button_label">Aggingi</string>
+    <string name="scan_button_label">Scan</string>
+    <string name="show_book_button">Mostra</string>
+    <string name="search_button_label">Cerca</string>
+
+    <!-- Sidebar menu-->
+    <string name="view_profile">Mostra Profilo</string>
+    <string name="edit_profile">Modifica Profilo</string>
+    <string name="my_library">La mia Libreria</string>
+    <string name="books">Libri</string>
+    <string name="search_books">Ricerca Libri</string>
+
+    <!-- Login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (opzionale)</string>
+    <string name="action_sign_in">Sign in o registrati</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">Questo indirizzo email non è valido</string>
+    <string name="error_invalid_password">Questa password è troppo corta</string>
+    <string name="error_incorrect_password">La password è scoretta</string>
+    <string name="error_field_required">Questo campo è obbligatorio</string>
+
+    <!-- Profiles -->
+    <string name="show_profile">Profilo</string>
+    <string name="user_phone">Telefono</string>
+    <string name="user_location">Luogo</string>
+    <string name="user_profile_pic">Immagine Profilo</string>
+    <string name="save_button_label">Salva</string>
+    <string name="user_born_name">Nome</string>
+    <string name="required_fields">Campi obbligatorio</string>
+    <string name="extra_fields">Campi Axtra</string>
+    <string name="edit_location"> Inserisi la tua posizione </string>
+
+    <!-- Rating -->
+    <string name="feedback_edit_text">Lascia un feedback&#8230;</string>
+
+    <!-- Camera -->
+    <string name="image_file_creation_error_title">Non posso fare una foto</string>
+    <string name="image_file_creation_error_message">Svuota la
+        memoria del telefono e / o
+        controlla le autorizzazioni di questa app
+        nelle Impostazioni.
+            </string>
+
+    <!-- Books -->
+    <string name="book_title">Titolo</string>
+    <string name="book_author">Autore</string>
+    <string name="book_publisher">Editore</string>
+    <string name="book_edition_year">Anno di pubblicazione</string>
+    <string name="book_conditions">Condizione</string>
+    <string name="sharing_user">Condiviso da: Username</string>
+    <string name="books_map_button_label">Mappa</string>
+    <string name="send_request">Richiedi</string>
+
+    <!-- Authentication -->
+    <string name="desc_google_sign_in">Utilizza le credenziali di Google Sign In per autenticarti.</string>
+    <string name="desc_facebook_login">Utilizza le credenziali di Facebook Login per autenticarti.</string>
+    <string name="desc_emailpassword">Usa email e password per autenticarti.</string>
+
+    <!-- Authentication messages -->
+    <string name="get_custom_token">Prendi il Token</string>
+    <string name="create_account">Crea Account</string>
+    <string name="send_link">Invia Link</string>
+    <string name="verify_email">Verifica Email</string>
+    <string name="disconnect">Disconetti</string>
+    <string name="loading">Caricameto…</string>
+    <string name="desc_firebase_lockup">Firebase logo e nome</string>
+    <string name="auth_failed">Authentication fallita</string>
+    <string name="start_phone_auth">Inizia</string>
+    <string name="verify_phone_auth">Verifica</string>
+    <string name="resend_phone_auth">Rinvia</string>
+    <string name="hint_phone_number">Numero di cellulare</string>
+    <string name="hint_verification_code">Codice di Verifica</string>
+    <string name="status_code_sent">Codice Inviato</string>
+    <string name="status_verification_failed">Verifica fallita</string>
+    <string name="status_verification_succeeded">Verifica effetuata con successo</string>
+    <string name="status_sign_in_failed">Sign-in fallita</string>
+    <string name="instant_validation">(validazione istantanea)</string>
+
+    <!-- Authentication status -->
+    <string name="status_email_not_sent">Invia link alla tua email per iniziare.</string>
+    <string name="status_email_sent">Link inviato, controlla la tua email per continuare.</string>
+    <string name="status_link_found">Link ricevuto, inserisci la tua email per fare il log-in.</string>
+    <string name="phone_title_text">Numero di cellulare</string>
+
+    <!-- Messaging -->
+    <string name="quickstart_message">Clicca il bottone SOTTOSCRIVI LE NEWS qui sotto per iscriverti alle news
+        . Saranno ricevuti tutti i messaggi su  questo argomento. IL bottone LOG TOKEN
+        registra l'InstanceID token al logcat.</string>
+    <string name="subscribe_to_news">Sottoscrivi le news</string>
+    <string name="msg_subscribed">Sottoscrivi le news ai topic</string>
+    <!--    This is the name that users will see when interacting with this channel.
+            It should describe the category of notifications that will be sent through this channel -->
+    <string name="default_notification_channel_name" translatable="true">Novità</string>
+    <string name="no_user_error_title">Questo utente non esiste più</string>
+    <string name="no_user_error_message">
+                Questo utente potrebbe avere cancellato il suo account.
+            </string>
+
+    <!-- Chat UI-->
+    <string name="borrowed">Presi in Prestito</string>
+    <string name="request_book">In attessa</string>
+    <string name="element_text">Elemento</string>
+    <string name="open_chat">Apri la Chat</string>
+    <string name="accept">Accetta</string>
+    <string name="decline">Declina</string>
+    <string name="return_book">Restituisci</string>
+    <string name="check_if_return">Ok, ricevuto!</string>
+    <string name="currency">Vota</string>
+    <string name="rated_added">Voto aggiunto!</string>
+
+    <!-- Empty view -->
+    <string name="no_chats">Nessuna chat trovata</string>
+    <string name="no_books">Non hai ancora nessun libro</string>
+    <string name="no_requests">Nessuna Richiesta Trovata</string>
+    <string name="no_borrowed">Nessun libro preso in prestito</string>
+    <string name="application_logo">Logo applicazione</string>
+
+    <string name="request_by_me">Richiesto da me</string>
+    <string name="no_request_found">Nessun riechiesta trovata</string>
+
+</resources>

@@ -145,7 +145,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             FirebaseDatabase.getInstance().reference.child("books").child(model.bookId).child("sharable").setValue("yes")
                         }
                     } else if (model.status == "returned") {
-                        ratedSwitch.showNext();
+                        if (ratedSwitch.currentView != v.findViewById(R.id.linear_layout_rated))
+                            ratedSwitch.showNext();
                         //
                         //linearLayoutRated.setLayoutParams(LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
                         //
@@ -160,7 +161,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                             //
                             linearLayoutRated.setLayoutParams(FrameLayout.LayoutParams(0, 0))
                             //
-                            ratedSwitch.showPrevious();
+                            if (ratedSwitch.currentView != v.findViewById(R.id.layout_before))
+                                ratedSwitch.showPrevious();
                             val ratedText = v.findViewById<TextView>(R.id.rated_text)
                             ratedText.setText(R.string.rated_added)
                             if (model.ratingReceiver != null && !model.ratingReceiver!!.isEmpty() && model.ratingReceiver!!.compareTo("") != 0) {
@@ -185,7 +187,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                 override fun onDataChanged() {
                     if (adapter!!.count == 0) {
                         myListView.emptyView = activity.findViewById<View>(R.id.no_requests_found)
-                        Toast.makeText(activity.applicationContext, "No requests found.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity.applicationContext, R.string.no_requests_found, Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -252,7 +254,7 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
 
                             val senderName = v.findViewById<TextView>(R.id.req_requester)
                             if (model.senderId.equals(ProfileManager.getCurrentUserID()))
-                                senderName.setText("Request by me")
+                                senderName.setText(R.string.request_by_me)
                             else {
                                 senderName.setText("Request by " + model.senderName)
                                 senderName.setOnClickListener(View.OnClickListener {
@@ -260,8 +262,8 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
                                     showProfile.putExtra("UserID", model.senderId)
                                     ProfileManager.retrieveInformationUser(model.senderId)
                                     startActivity(showProfile)
-                            })
-                        }
+                                })
+                            }
 
                             val acceptButton = v.findViewById<Button>(R.id.accept)
                             val declineButton = v.findViewById<Button>(R.id.decline)
@@ -351,13 +353,11 @@ class BookRequest(flag: Int, receiverInfo: UserChatInfo?) : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (flag == 0)
             adapter?.startListening()
     }
 
     override fun onStop() {
         super.onStop()
-        if (flag == 0)
             adapter?.stopListening()
     }
 

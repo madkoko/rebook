@@ -69,6 +69,8 @@ public class HomeSharingBook extends Fragment {
 
                 LinearLayout linearLayoutRated = v.findViewById(R.id.linear_layout_rated_sharing);
                 ViewSwitcher viewSwitcherRated =  v.findViewById(R.id.rated_switch_sharing);
+                if(viewSwitcherRated.getCurrentView() != v.findViewById(R.id.before_rated))
+                    viewSwitcherRated.showPrevious();
                 TextView senderName = v.findViewById(R.id.req_requester_sharing);
                 if (model.getSenderId().equals(ProfileManager.getCurrentUserID()))
                     senderName.setText("Request by me");
@@ -92,16 +94,19 @@ public class HomeSharingBook extends Fragment {
                     buttonReturn.setOnClickListener(v1 -> RequestManager.Companion.returnRequest(getRef(position).getKey()));
                 } else if (model.getStatus().equals("returned")) {
                     linearLayoutRated.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    viewSwitcherRated.showNext();
+                    if(viewSwitcherRated.getCurrentView()!= v.findViewById(R.id.linear_layout_rated_sharing))
+                        viewSwitcherRated.showNext();
                     buttonReturn.setVisibility(View.VISIBLE);
                     buttonReturn.setText(R.string.currency);
+                    //ratingBar.setVisibility(View.VISIBLE);
                     buttonReturn.setOnClickListener(v2 -> {
                         Log.d(TAG, String.valueOf(ratingBar.getRating()));
                         ProfileManager.addRating(model.getReceiverId(), String.valueOf(ratingBar.getRating()),feedbackEditText.getText().toString());
                         RequestManager.Companion.putReceiverRate(getRef(position).getKey(), String.valueOf((int) ratingBar.getRating()));
                         textViewCompletSession.setText(R.string.rated_added);
                         linearLayoutRated.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
-                        viewSwitcherRated.showPrevious();
+                        if(viewSwitcherRated.getCurrentView() != v.findViewById(R.id.before_rated))
+                            viewSwitcherRated.showPrevious();
                         if (model.getRatingSender() != null && !model.getRatingSender().isEmpty() && model.getRatingSender().compareTo("") != 0) {
                             RequestManager.Companion.ratedTransition(getRef(position).getKey());
                         }
@@ -117,7 +122,7 @@ public class HomeSharingBook extends Fragment {
             public void onDataChanged() {
                 if(adapter.getCount()==0) {
                     //listView.setEmptyView(getActivity().findViewById(R.id.no_borrowed_found));
-                    Toast.makeText(getActivity().getApplicationContext(), "No books borrowed found.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.no_borrowed, Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -8,9 +8,9 @@
 
     <ImageView
         android:id="@+id/book_sharing_home"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center_vertical"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="top"
         android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
@@ -50,7 +50,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+
+
             <LinearLayout
+                android:id="@+id/before_rated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -64,7 +67,8 @@
                 android:id="@+id/linear_layout_rated_sharing"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_gravity="start">
 
                 <RatingBar
                     android:id="@+id/rating_bar_sharing_home"
@@ -72,8 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:numStars="5"
-                    android:stepSize="1.0"
-                    android:visibility="invisible" />
+                    android:stepSize="1.0" />
 
                 <EditText
                     android:id="@+id/feedback_edit_text_sharing_home"
@@ -81,13 +84,10 @@
                     android:layout_height="wrap_content"
                     android:gravity="top|start"
                     android:hint="@string/feedback_edit_text"
-                    android:inputType="textMultiLine"
-                    android:lines="8"
-                    android:maxLines="10"
-                    android:minLines="6"
-                    android:scrollbars="vertical"
-                    android:visibility="invisible" />
+                    android:scrollbars="vertical" />
             </LinearLayout>
+
+
         </ViewSwitcher>
 
 
