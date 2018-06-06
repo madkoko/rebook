@@ -205,7 +205,7 @@
     <string name="title_activity_show_chat_recycler">ShowChatRecycler</string>
 
     <!-- Chat UI-->
-    <string name="borrowed">borrow</string>
+    <string name="borrowed">borrowed</string>
     <string name="request_book">pending</string>
     <string name="element_text">Element</string>
     <string name="chats_activity_title">Chats</string>
