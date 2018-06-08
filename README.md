@@ -1,4 +1,4 @@
-# rebook
+# ReBook
 
 A simple sharing book app for Android
 <br />
