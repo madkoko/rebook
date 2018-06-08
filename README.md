@@ -2,7 +2,7 @@
 
 A simple sharing book app for Android
 <br />
-<p align="center"><img src="http://rbk.altervista.org/app.png"/></p>
+<p align="center"><img src="http://rbk.altervista.org/app2.png"/></p>
 
 ### Team
 
