@@ -1,6 +1,6 @@
 # ReBook
 
-A simple sharing book app for Android
+A simple sharing book app for Android. Download it [here](http://marcomicera.altervista.org/koko.apk).
 <br />
 <p align="center"><img src="http://rbk.altervista.org/app2.png"/></p>
 
