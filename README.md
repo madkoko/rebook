@@ -1,6 +1,6 @@
 # ReBook
 
-A simple book sharing app for Android. Download it [here](http://rbk.altervista.org/rebook.apk).
+A simple book sharing app for Android. Download it [here](https://github.com/madkoko/rebook/releases/download/1.0/rebook.apk).
 <br />
 <p align="center"><img src="http://rbk.altervista.org/app2.png"/></p>
 
@@ -13,4 +13,4 @@ A simple book sharing app for Android. Download it [here](http://rbk.altervista.
 
 ### Project presentation
 
-A quick slideshow can be found [here](https://docs.google.com/presentation/d/1BhJkaHjowAq2R_E4sTybv5Crc9nghLY5N8HZON2GRn0/edit?usp=sharing)
+[Here](https://docs.google.com/presentation/d/1BhJkaHjowAq2R_E4sTybv5Crc9nghLY5N8HZON2GRn0/edit?usp=sharing) you can find the slides used during the presentation.
