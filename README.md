@@ -1,8 +1,15 @@
 # ReBook
 
 A simple book sharing app for Android. Download it [here](https://github.com/madkoko/rebook/releases/download/1.0/rebook.apk).
-<br />
-<p align="center"><img src="http://rbk.altervista.org/app2.png"/></p>
+
+<p align="center">
+    <img alt="ReBook's home" src="media/home.png"/>
+    <img alt="" src="media/add.png"/>
+    <img alt="" src="media/search.png"/>
+    <img alt="" src="media/borrow.png"/>
+</p>
+
+
 
 ### Team
 
@@ -11,6 +18,6 @@ A simple book sharing app for Android. Download it [here](https://github.com/mad
 - [Francesco Petrolino](https://github.com/FrancescoPetro)
 - [Marco Micera](https://github.com/marcomicera)
 
-### Project presentation
+### Some slides
 
-[Here](https://docs.google.com/presentation/d/1BhJkaHjowAq2R_E4sTybv5Crc9nghLY5N8HZON2GRn0/edit?usp=sharing) you can find the slides used during the presentation.
+Here's a [quick slideshow](https://docs.google.com/presentation/d/1BhJkaHjowAq2R_E4sTybv5Crc9nghLY5N8HZON2GRn0/edit?usp=sharing)!
